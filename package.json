@@ -1,0 +1,72 @@
+{
+  "name": "telegram-contest",
+  "version": "0.0.1",
+  "description": "Telegram contest application ",
+  "scripts": {
+    "build": "NODE_ENV=production webpack",
+    "start": "NODE_ENV=development webpack",
+    "test": "jest",
+    "testw": "jest --watch",
+    "lint": "eslint src/",
+    "lintw": "esw -w --quiet --color --clear src/",
+    "lint-fix": "eslint --fix src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zapix/telegram-contest.git"
+  },
+  "keywords": [
+    "Telegram",
+    "Vanilla",
+    "JS",
+    "Contest"
+  ],
+  "author": "Aleksandr Aibulatov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zapix/telegram-contest/issues"
+  },
+  "homepage": "https://github.com/Zapix/telegram-contest#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "babel-jest": "^24.9.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-import-resolver-webpack": "^0.11.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^23.0.2",
+    "eslint-watch": "^6.0.1",
+    "event-target-shim": "^5.0.1",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.9.0",
+    "jest-environment-jsdom": "^24.9.0",
+    "jest-environment-jsdom-fifteen": "^1.0.2",
+    "jsdom": "^15.2.1",
+    "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "dependencies": {
+    "aes-js": "^3.1.2",
+    "browserify-rsa": "^4.0.1",
+    "countries-list": "^2.5.0",
+    "crypto-js": "^3.1.9-1",
+    "node-forge": "^0.9.1",
+    "pako": "^1.0.11",
+    "ramda": "^0.26.1",
+    "random-bigint": "0.0.1",
+    "rxjs": "^6.5.3"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  }
+}
