@@ -16,12 +16,16 @@ import {
   loadFlag,
 } from './utils';
 import { getConstructor } from '../utils';
-import { buildLoadFunc, sliceBuffer, withConstantOffset } from '../../utils';
+import {
+  buildLoadFunc,
+  sliceBuffer,
+  withConstantOffset,
+} from '../../utils';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
 const getSchemaFromBufferArray = R.unapply(R.pipe(
   R.of,
-  R.ap([R.nth(0), R.pipe(R.nth(1), getConstructor)]),
+  R.ap([R.nth(0), R.pipe(R.nth(1), R.pipe(getConstructor))]),
   R.apply(getParseSchemaById),
 ));
 
@@ -92,10 +96,12 @@ const getObjectConstructorPair = R.cond([
  */
 function loadBySchema(schema, buffer, withOffset) {
   function getLoaderForType(type) {
+    const load = R.partial(loadBySchema, [schema]);
     return R.cond([
       [isBareType, getBareTypeLoader],
       [isVector, R.pipe(getVectorType, getLoaderForType, R.of, R.partial(loadVector))],
-      [R.T, R.always(R.partial(loadBySchema, [schema]))],
+      [R.equals('Vector'), R.always(R.partial(loadVector, [load]))],
+      [R.T, R.always(load)],
     ])(type);
   }
 
