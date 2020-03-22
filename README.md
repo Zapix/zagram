@@ -70,12 +70,38 @@ Node version to build: `v12.13.0`
  **Arguments**
  
  * `schema` - telegram schema object that will be used to generate request
- * `methodName` - method name that will be invoked on server 
+ * `constructorName` - method name that will be invoked on server 
  * `params` - object with params for `methodName`
  
- ### constructor
+ ### construct
  
- `constructor(constructorName, params)` - same as `constructorFromSchema` but with predefined schema
+ `construct(constructorName, params)` - same as `constructorFromSchema` but with predefined schema
+ 
+ ### isMessageOf
+ 
+ `isMessageOf(type, obj)` - checks that `obj` has type `type`
+ 
+ **Arguments**
+ 
+ * `type` - string 
+ * `obj` - object 
+ 
+ ### isMethodOf
+ 
+ `isMethodOf(methodName, obj)` - checks that `obj` is built as method with `methodName`
+ 
+ **Arguments**
+ 
+ * `methodName` - string
+ * `obj` - object 
+ 
+ 
+ ### isObjectOf
+ 
+ `isObjectOf(constructorName, obj)` - checks that `obj` is built with constructor `constructorName`
+ 
+ * `constructorName` - string
+ * `obj` - object 
  
  ### tlLoads
  

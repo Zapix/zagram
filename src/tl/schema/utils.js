@@ -96,8 +96,11 @@ export const isFromSchemaFactory = R.pipe(
 
 export const isMethodObject = R.has(METHOD_KEY);
 
-
 export const isConstuctorObject = R.has(CONSTRUCTOR_KEY);
+
+export const isMethodOf = R.propEq(METHOD_KEY);
+
+export const isObjectOf = R.propEq(CONSTRUCTOR_KEY);
 
 
 /**
