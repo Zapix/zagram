@@ -361,15 +361,18 @@ export default class MTProto extends EventTarget {
 
         const buildPartLoadObjects = R.pipe(
           R.of,
-          R.ap([R.always(fileId), R.identity, sliceBufferByPart]),
-          R.zip(['file_id', 'file_part', 'bytes']),
+          R.ap([R.always(fileId), R.always(parts), R.identity, sliceBufferByPart]),
+          R.zip(['file_id', 'file_total_parts', 'file_part', 'bytes']),
           R.fromPairs,
         );
+
+        const bigFile = buffer.byteLength % (1024 * 1024) > 10;
+        const uploadMethod = bigFile ? 'update.saveBigFilePart' : 'update.saveFilePart';
 
         const uploadPromiseFuncs = R.times(
           R.pipe(
             buildPartLoadObjects,
-            R.partial(methodFromSchema, [this.schema, 'upload.saveFilePart']),
+            R.partial(methodFromSchema, [this.schema, uploadMethod]),
             (message) => () => this.request(message),
           ),
           parts,

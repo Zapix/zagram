@@ -476,5 +476,35 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it('test upload file file big file', () => {});
+  it('test upload file file big file', (done) => {
+    const file = new File(
+      (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
+      'avatar.jpg',
+    );
+
+    file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(15 * 1024 * 1024));
+
+    const progressCb = jest.fn();
+
+    createAuthorizationKey.mockResolvedValueOnce({
+      authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+        41, 19],
+      authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+      serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+    });
+    const connection = new MTProto(url, schema);
+    connection.request = () => Promise.resolve('success');
+    connection.httpWait = () => {};
+    connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+      connection.upload(file, progressCb).then((result) => {
+        expect(progressCb).toHaveBeenCalledTimes(31);
+        expect(result.filename).toEqual('avatar.jpg');
+        expect(result).toHaveProperty('fileId');
+        expect(result).toHaveProperty('md5sum');
+        expect(result.parts).toEqual(30);
+        done();
+      });
+    });
+    connection.init();
+  });
 });
