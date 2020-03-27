@@ -10,6 +10,7 @@ import {
   arrayBufferToHex,
   mergeArrayBuffer,
   hexToArrayBuffer,
+  promiseChain,
 } from './utils';
 
 describe('isValidInitPayload()', () => {
@@ -104,10 +105,26 @@ describe('generateKeyDataFromNonce()', () => {
 });
 
 describe('mergeArrayBuffers', () => {
-  const bufferA = hexToArrayBuffer('aabbcc');
-  const bufferB = hexToArrayBuffer('ffeec0dd');
+  test('merge', () => {
+    const bufferA = hexToArrayBuffer('aabbcc');
+    const bufferB = hexToArrayBuffer('ffeec0dd');
 
-  const buffer = mergeArrayBuffer(bufferA, bufferB);
-  expect(buffer.byteLength).toEqual(7);
-  expect(arrayBufferToHex(buffer)).toEqual('aabbccffeec0dd');
+    const buffer = mergeArrayBuffer(bufferA, bufferB);
+    expect(buffer.byteLength).toEqual(7);
+    expect(arrayBufferToHex(buffer)).toEqual('aabbccffeec0dd');
+  });
+});
+
+describe('promiseChain', () => {
+  test('test', (done) => {
+    const promiseList = (new Array(100)).fill(1).map((value, idx) => (() => Promise.resolve(idx)));
+    console.log(promiseList);
+    const progressCb = jest.fn();
+
+    promiseChain(promiseList, progressCb).then((result) => {
+      expect(progressCb).toHaveBeenCalledTimes(101);
+      expect(result).toEqual(99);
+      done();
+    });
+  });
 });

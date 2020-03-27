@@ -614,3 +614,21 @@ export const buildTypeLoader = R.pipe(
   R.zipObj(['value', 'offset']),
   R.always,
 );
+
+/**
+ * Call function that returns promise one bo one, and handle progress by progressCb
+ * @param {Array<>} promiseFuncList - function that will returns promise
+ * @param {} - callback to track progress
+ */
+export function promiseChain(promiseFuncList, progressCb) {
+  function innerCaller(i, result) {
+    progressCb(i, promiseFuncList.length);
+    if (i === promiseFuncList.length) {
+      return result;
+    }
+    const promise = promiseFuncList[i](result);
+    return promise.then(R.partial(innerCaller, [i + 1]));
+  }
+
+  return innerCaller(0);
+}

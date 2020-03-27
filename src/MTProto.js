@@ -1,11 +1,20 @@
 import * as R from 'ramda';
+import md5 from 'md5';
 
 import createAuthorizationKey from './createAuthorizationKey';
 import seqNoGenerator from './seqNoGenerator';
-import { dumps, loads } from './tl';
+import { dumps, loads, methodFromSchema } from './tl';
 import encryptMessage from './encryptMessage';
 import decryptMessage from './decryptMessage';
-import { arrayBufferToHex, getMessageId, getNRandomBytes } from './utils';
+import {
+  arrayBufferToHex,
+  arrayBufferToUint8Array,
+  getMessageId,
+  getNRandomBytes,
+  promiseChain,
+  sliceBuffer,
+  uint8ToBigInt,
+} from './utils';
 import sendRequest from './sendRequest';
 import { isMessageOf } from './tl/utils';
 import {
@@ -25,6 +34,8 @@ export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
 export const AUTH_KEY_CREATE_FAILED = 'AUTH_KEY_CREATE_FAILED';
 
 export const STATUS_CHANGED_EVENT = 'statusChanged';
+
+const PART_SIZE = 512 * 1024; // one part of file is 512KB
 
 /**
  * Class for working with mtproto protocols
@@ -138,7 +149,6 @@ export default class MTProto extends EventTarget {
         sendRequest(this.serverUrl),
       );
 
-      console.log(message);
       const promise = sendEncryptedRequest(message)
         .then((response) => response.arrayBuffer())
         .then(decrypt)
@@ -323,5 +333,57 @@ export default class MTProto extends EventTarget {
       maxWait: 25000,
     })
       .then(this.httpWait.bind(this));
+  }
+
+  /**
+   * Takes file that should be uploaded, split by parts and upload them one by one.
+   * Returns stream
+   * @param {File} file - file that will be uploaded to telegram server
+   * @param {Function} progressCb - callback function to track progress
+   * @returns {PromiseLike<{ filename: string, fileId: BigInt, md5sum: string, parts: number}>}
+   */
+  upload(file, progressCb) {
+    return file
+      .arrayBuffer()
+      .then((buffer) => {
+        const fileId = uint8ToBigInt(getNRandomBytes(8));
+        const parts = Math.ceil(buffer.byteLength / PART_SIZE);
+
+        if (parts > 3000) {
+          throw Error(`File ${file.filename} is too big`);
+        }
+
+        const sliceBufferByPart = R.pipe(
+          R.pipe(R.of, R.ap([R.identity, R.add(1)]), R.map(R.multiply(PART_SIZE))),
+          R.apply(R.partial(sliceBuffer, [buffer])),
+          arrayBufferToUint8Array,
+        );
+
+        const buildPartLoadObjects = R.pipe(
+          R.of,
+          R.ap([R.always(fileId), R.always(parts), R.identity, sliceBufferByPart]),
+          R.zip(['file_id', 'file_total_parts', 'file_part', 'bytes']),
+          R.fromPairs,
+        );
+
+        const bigFile = buffer.byteLength % (1024 * 1024) > 10;
+        const uploadMethod = bigFile ? 'update.saveBigFilePart' : 'update.saveFilePart';
+
+        const uploadPromiseFuncs = R.times(
+          R.pipe(
+            buildPartLoadObjects,
+            R.partial(methodFromSchema, [this.schema, uploadMethod]),
+            (message) => () => this.request(message),
+          ),
+          parts,
+        );
+
+        return promiseChain(uploadPromiseFuncs, progressCb).then(() => ({
+          fileId,
+          parts,
+          md5sum: md5(buffer),
+          filename: file.name,
+        }));
+      });
   }
 }
