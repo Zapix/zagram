@@ -12,6 +12,15 @@ import { RPC_ERROR_TYPE } from './constants';
 export { isMessageOf } from './tl/utils';
 export { isObjectOf, isMethodOf } from './tl/schema/utils';
 export { dumpString, loadString} from './tl/string';
+export {
+  mergeAllArrayBuffers,
+  mergeArrayBuffer,
+  uint8ToBigInt,
+  uint8ToArrayBuffer,
+  arrayBufferToUint8Array,
+  bigIntToUint8Array,
+  powModulo,
+} from './utils'
 
 export { TYPE_KEY, CONSTRUCTOR_KEY, METHOD_KEY, RPC_ERROR_TYPE } from './constants';
 export { default as MTProto } from './MTProto';

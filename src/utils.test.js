@@ -116,7 +116,7 @@ describe('mergeArrayBuffers', () => {
 });
 
 describe('promiseChain', () => {
-  test.only('test', (done) => {
+  test('test', (done) => {
     const promiseList = (new Array(100)).fill(1).map((value, idx) => (() => Promise.resolve(idx)));
     console.log(promiseList);
     const progressCb = jest.fn();
