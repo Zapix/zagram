@@ -1,14 +1,15 @@
 import * as R from 'ramda';
-import md5 from 'md5';
 
 import createAuthorizationKey from './createAuthorizationKey';
 import seqNoGenerator from './seqNoGenerator';
-import { dumps, loads, methodFromSchema } from './tl';
+import {
+  dumps, loads, methodFromSchema, constructorFromSchema,
+} from './tl';
 import encryptMessage from './encryptMessage';
 import decryptMessage from './decryptMessage';
 import {
   arrayBufferToHex,
-  arrayBufferToUint8Array,
+  arrayBufferToUint8Array, debug,
   getMessageId,
   getNRandomBytes,
   promiseChain,
@@ -208,7 +209,9 @@ export default class MTProto extends EventTarget {
       );
 
       const sendEncryptedRequest = R.pipe(
+        debug,
         R.partial(dumps, [this.schema]),
+        debug,
         encrypt,
         sendRequest(this.serverUrl),
       );
@@ -366,8 +369,8 @@ export default class MTProto extends EventTarget {
           R.fromPairs,
         );
 
-        const bigFile = buffer.byteLength % (1024 * 1024) > 10;
-        const uploadMethod = bigFile ? 'update.saveBigFilePart' : 'update.saveFilePart';
+        const bigFile = buffer.byteLength / (1024 * 1024) > 10;
+        const uploadMethod = bigFile ? 'upload.saveBigFilePart' : 'upload.saveFilePart';
 
         const uploadPromiseFuncs = R.times(
           R.pipe(
@@ -378,12 +381,17 @@ export default class MTProto extends EventTarget {
           parts,
         );
 
-        return promiseChain(uploadPromiseFuncs, progressCb).then(() => ({
-          fileId,
-          parts,
-          md5sum: md5(buffer),
-          filename: file.name,
-        }));
+        const inputFileConstructor = bigFile ? 'inputFileBig' : 'inputFile';
+        return promiseChain(uploadPromiseFuncs, progressCb).then(() => (constructorFromSchema(
+          this.schema,
+          inputFileConstructor,
+          {
+            parts,
+            id: fileId,
+            md5_checksum: '',
+            name: file.name,
+          },
+        ))).then(debug);
       });
   }
 }
