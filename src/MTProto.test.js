@@ -22,7 +22,9 @@ import {
 } from './constants';
 import MTProto, { STATUS_CHANGED_EVENT, AUTH_KEY_CREATED, AUTH_KEY_CREATE_FAILED } from './MTProto';
 import schema from './tl/schema/layer5';
+import schema108 from './tl/schema/layer108';
 import { hexToArrayBuffer } from './utils';
+import { isObjectOf } from './tl/schema/utils';
 /* eslint-enable */
 
 describe('MTProto', () => {
@@ -466,9 +468,10 @@ describe('MTProto', () => {
     connection.addEventListener(STATUS_CHANGED_EVENT, () => {
       connection.upload(file, progressCb).then((result) => {
         expect(progressCb).toHaveBeenCalledTimes(5);
-        expect(result.filename).toEqual('avatar.jpg');
-        expect(result).toHaveProperty('fileId');
-        expect(result).toHaveProperty('md5sum');
+        expect(isObjectOf('inputFile', result)).toEqual(true);
+        expect(result.name).toEqual('avatar.jpg');
+        expect(result).toHaveProperty('id');
+        expect(result).toHaveProperty('md5_checksum');
         expect(result.parts).toEqual(4);
         done();
       });
@@ -492,15 +495,15 @@ describe('MTProto', () => {
       authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
       serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
     });
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema108);
     connection.request = () => Promise.resolve('success');
     connection.httpWait = () => {};
     connection.addEventListener(STATUS_CHANGED_EVENT, () => {
       connection.upload(file, progressCb).then((result) => {
         expect(progressCb).toHaveBeenCalledTimes(31);
-        expect(result.filename).toEqual('avatar.jpg');
-        expect(result).toHaveProperty('fileId');
-        expect(result).toHaveProperty('md5sum');
+        expect(isObjectOf('inputFileBig', result)).toEqual(true);
+        expect(result.name).toEqual('avatar.jpg');
+        expect(result).toHaveProperty('id');
         expect(result.parts).toEqual(30);
         done();
       });
