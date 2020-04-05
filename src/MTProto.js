@@ -33,6 +33,7 @@ import { dumpBigInt } from './tl/bigInt';
 export const INIT = 'INIT';
 export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
 export const AUTH_KEY_CREATE_FAILED = 'AUTH_KEY_CREATE_FAILED';
+export const AUTH_KEY_ERROR = 'AUTH_KEY_ERROR';
 
 export const STATUS_CHANGED_EVENT = 'statusChanged';
 
@@ -109,6 +110,14 @@ export default class MTProto extends EventTarget {
     this.status = AUTH_KEY_CREATED;
     this.fireStatusChange();
     this.httpWait();
+  }
+
+  handleAuthKeyError(error) {
+    this.authKey = null;
+    this.authKeyId = null;
+    this.serverSalt = null;
+    this.status = AUTH_KEY_ERROR;
+    this.fireStatusChange(error);
   }
 
   fireStatusChange(error) {
@@ -329,6 +338,9 @@ export default class MTProto extends EventTarget {
     this.acknowledgements.push(msgId);
 
     if (isMessageOf(RPC_ERROR_TYPE, result)) {
+      if (result.errorCode === 401) {
+        this.handleAuthKeyError(result.errorMessage);
+      }
       const reject = R.pathOr(() => {}, ['rpcPromises', reqMsgId, 'reject'], this);
       reject(result);
       delete this.rpcPromises[reqMsgId];
