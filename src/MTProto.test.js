@@ -48,7 +48,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it.only('auth key where passed on init', (done) => {
+  it('auth key where passed on init', (done) => {
     const authData = {
       authKey: [3, 4, 6, 1, 3],
       authKeyId: [4, 5, 1, 2],
@@ -57,6 +57,11 @@ describe('MTProto', () => {
     const connection = new MTProto(url, schema, authData);
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATED);
+
+      expect(e.detail.authKey).toEqual([3, 4, 6, 1, 3]);
+      expect(e.detail.authKeyId).toEqual([4, 5, 1, 2]);
+      expect(e.detail.serverSalt).toEqual([2, 2, 1]);
+
       expect(connection.authKey).toEqual([3, 4, 6, 1, 3]);
       expect(connection.authKeyId).toEqual([4, 5, 1, 2]);
       expect(connection.serverSalt).toEqual([2, 2, 1]);

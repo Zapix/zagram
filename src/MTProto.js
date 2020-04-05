@@ -114,7 +114,15 @@ export default class MTProto extends EventTarget {
   fireStatusChange(error) {
     const event = new Event(STATUS_CHANGED_EVENT);
     event.status = this.status;
-    event.error = error;
+    if (error) {
+      event.error = error;
+    } else {
+      event.detail = {
+        authKey: this.authKey,
+        authKeyId: this.authKeyId,
+        serverSalt: this.serverSalt,
+      };
+    }
     this.dispatchEvent(event);
   }
 
