@@ -112,8 +112,8 @@ export default class MTProto extends EventTarget {
     this.httpWait();
   }
 
-  static handleAuthKeyError(error) {
-    console.warn(error);
+  handleAuthKeyError(error) {
+    console.warn('Wrong auth key data', this.authKey, error);
   }
 
   fireStatusChange(error) {
