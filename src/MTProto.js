@@ -65,7 +65,6 @@ export default class MTProto extends EventTarget {
     this.serverUrl = serverUrl;
     this.schema = schema;
 
-    console.log(authData);
     this.authKey = getAuthKey(authData);
     this.authKeyId = getAuthKeyId(authData);
     this.serverSalt = getServerSalt(authData);
@@ -81,14 +80,11 @@ export default class MTProto extends EventTarget {
    * Inits connection
    */
   init() {
-    console.log(this);
     if (this.isAuthKeyDataSet()) {
-      console.log('Init with local storage data');
       this.genSeqNo = seqNoGenerator();
       this.sessionId = generateSessionId();
       this.emitAuthKeyCreated();
     } else {
-      console.log('create auth key data');
       createAuthorizationKey(sendRequest(this.serverUrl))
         .then((authData) => {
           this.authKey = getAuthKey(authData);
@@ -117,6 +113,7 @@ export default class MTProto extends EventTarget {
   }
 
   handleAuthKeyError(error) {
+    console.warn('Wrong auth key data', this.authKey, error);
   }
 
   fireStatusChange(error) {
