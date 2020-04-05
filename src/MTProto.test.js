@@ -373,41 +373,6 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it('rpc_result error wrong auth key', (done) => {
-      const connection = new MTProto(url, schema);
-      connection.authKey = [1, 2, 1];
-      connection.authKeyId = [2, 1];
-      connection.serverSalt = [1];
-
-      const resolve = jest.fn();
-      const reject = jest.fn();
-      connection.rpcPromises[BigInt('6798192296169832448')] = { resolve, reject };
-
-      const message = {
-        seqNo: 3,
-        msgId: BigInt('6798192297014662145'),
-        body: {
-          [TYPE_KEY]: RPC_RESULT_TYPE,
-          reqMsgId: BigInt('6798192296169832448'),
-          result: {
-            errorCode: 401,
-            errorMessage: 'AUTH_KEY_INVALID',
-            [TYPE_KEY]: RPC_ERROR_TYPE,
-          },
-        },
-      };
-
-      connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
-        expect(e.status).toEqual(AUTH_KEY_ERROR);
-        expect(e.error).toEqual('AUTH_KEY_INVALID');
-        expect(connection.authKey).toBeNull();
-        expect(connection.authKeyId).toBeNull();
-        expect(connection.serverSalt).toBeNull();
-        done();
-      });
-      connection.handleResponse(message);
-    });
-
     it('handle message container messages one by one', () => {
       const connection = new MTProto(url, schema);
 
