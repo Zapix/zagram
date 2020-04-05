@@ -20,7 +20,12 @@ import {
   PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
   TYPE_KEY
 } from './constants';
-import MTProto, { STATUS_CHANGED_EVENT, AUTH_KEY_CREATED, AUTH_KEY_CREATE_FAILED } from './MTProto';
+import MTProto, {
+  STATUS_CHANGED_EVENT,
+  AUTH_KEY_CREATED,
+  AUTH_KEY_CREATE_FAILED,
+  AUTH_KEY_ERROR
+} from './MTProto';
 import schema from './tl/schema/layer5';
 import schema108 from './tl/schema/layer108';
 import { hexToArrayBuffer } from './utils';
@@ -45,6 +50,28 @@ describe('MTProto', () => {
       done();
     });
 
+    connection.init();
+  });
+
+  it('auth key where passed on init', (done) => {
+    const authData = {
+      authKey: [3, 4, 6, 1, 3],
+      authKeyId: [4, 5, 1, 2],
+      serverSalt: [2, 2, 1],
+    };
+    const connection = new MTProto(url, schema, authData);
+    connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
+      expect(e.status).toEqual(AUTH_KEY_CREATED);
+
+      expect(e.detail.authKey).toEqual([3, 4, 6, 1, 3]);
+      expect(e.detail.authKeyId).toEqual([4, 5, 1, 2]);
+      expect(e.detail.serverSalt).toEqual([2, 2, 1]);
+
+      expect(connection.authKey).toEqual([3, 4, 6, 1, 3]);
+      expect(connection.authKeyId).toEqual([4, 5, 1, 2]);
+      expect(connection.serverSalt).toEqual([2, 2, 1]);
+      done();
+    });
     connection.init();
   });
 
@@ -344,6 +371,41 @@ describe('MTProto', () => {
       });
       expect(connection.acknowledgements).toHaveLength(1);
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
+    });
+
+    it('rpc_result error wrong auth key', (done) => {
+      const connection = new MTProto(url, schema);
+      connection.authKey = [1, 2, 1];
+      connection.authKeyId = [2, 1];
+      connection.serverSalt = [1];
+
+      const resolve = jest.fn();
+      const reject = jest.fn();
+      connection.rpcPromises[BigInt('6798192296169832448')] = { resolve, reject };
+
+      const message = {
+        seqNo: 3,
+        msgId: BigInt('6798192297014662145'),
+        body: {
+          [TYPE_KEY]: RPC_RESULT_TYPE,
+          reqMsgId: BigInt('6798192296169832448'),
+          result: {
+            errorCode: 401,
+            errorMessage: 'AUTH_KEY_INVALID',
+            [TYPE_KEY]: RPC_ERROR_TYPE,
+          },
+        },
+      };
+
+      connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
+        expect(e.status).toEqual(AUTH_KEY_ERROR);
+        expect(e.error).toEqual('AUTH_KEY_INVALID');
+        expect(connection.authKey).toBeNull();
+        expect(connection.authKeyId).toBeNull();
+        expect(connection.serverSalt).toBeNull();
+        done();
+      });
+      connection.handleResponse(message);
     });
 
     it('handle message container messages one by one', () => {

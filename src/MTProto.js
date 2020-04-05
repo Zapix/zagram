@@ -33,32 +33,42 @@ import { dumpBigInt } from './tl/bigInt';
 export const INIT = 'INIT';
 export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
 export const AUTH_KEY_CREATE_FAILED = 'AUTH_KEY_CREATE_FAILED';
+export const AUTH_KEY_ERROR = 'AUTH_KEY_ERROR';
 
 export const STATUS_CHANGED_EVENT = 'statusChanged';
 
 const PART_SIZE = 512 * 1024; // one part of file is 512KB
 
+const getAuthKey = R.propOr(null, 'authKey');
+const getAuthKeyId = R.propOr(null, 'authKeyId');
+const getServerSalt = R.propOr(null, 'serverSalt');
+
+const generateSessionId = R.partial(getNRandomBytes, [8]);
+
 /**
  * Class for working with mtproto protocols
- * Creates base connection on init. allows to send
+ * Creates base connection on init. allows to send rpc calls, upload file to telegram server.
+ * Emits events when connection status has been changed,
  */
 export default class MTProto extends EventTarget {
   /**
    * Creates authorizationKey for mtproto on object init
    * @param {string} serverUrl - url of data center that will be used
    * @param {{constructors: *, methods: *}} schema - should be used for sending/receiving
+   * @param {{ authKey: Uint8Array, authKeyId: Uint8Array, serverSalt: Uint8Array}} [authData]
    * messages from protocol
    */
 
-  constructor(serverUrl, schema) {
+  constructor(serverUrl, schema, authData) {
     super();
     this.status = INIT;
     this.serverUrl = serverUrl;
     this.schema = schema;
 
-    this.authKey = null;
-    this.authKeyId = null;
-    this.serverSalt = null;
+    this.authKey = getAuthKey(authData);
+    this.authKeyId = getAuthKeyId(authData);
+    this.serverSalt = getServerSalt(authData);
+
     this.genSeqNo = null;
     this.sessionId = null;
 
@@ -70,28 +80,58 @@ export default class MTProto extends EventTarget {
    * Inits connection
    */
   init() {
-    createAuthorizationKey(sendRequest(this.serverUrl))
-      .then(({ authKey, authKeyId, serverSalt }) => {
-        this.authKey = authKey;
-        this.authKeyId = authKeyId;
-        this.serverSalt = serverSalt;
-        this.genSeqNo = seqNoGenerator();
-        this.sessionId = getNRandomBytes(8);
+    if (this.isAuthKeyDataSet()) {
+      this.genSeqNo = seqNoGenerator();
+      this.sessionId = generateSessionId();
+      this.emitAuthKeyCreated();
+    } else {
+      createAuthorizationKey(sendRequest(this.serverUrl))
+        .then((authData) => {
+          this.authKey = getAuthKey(authData);
+          this.authKeyId = getAuthKeyId(authData);
+          this.serverSalt = getServerSalt(authData);
+          this.genSeqNo = seqNoGenerator();
+          this.sessionId = generateSessionId();
 
-        this.status = AUTH_KEY_CREATED;
-        this.fireStatusChange();
-        this.httpWait();
-      })
-      .catch((error) => {
-        this.status = AUTH_KEY_CREATE_FAILED;
-        this.fireStatusChange(error);
-      });
+          this.emitAuthKeyCreated();
+        })
+        .catch((error) => {
+          this.status = AUTH_KEY_CREATE_FAILED;
+          this.fireStatusChange(error);
+        });
+    }
+  }
+
+  isAuthKeyDataSet() {
+    return Boolean(this.authKey);
+  }
+
+  emitAuthKeyCreated() {
+    this.status = AUTH_KEY_CREATED;
+    this.fireStatusChange();
+    this.httpWait();
+  }
+
+  handleAuthKeyError(error) {
+    this.authKey = null;
+    this.authKeyId = null;
+    this.serverSalt = null;
+    this.status = AUTH_KEY_ERROR;
+    this.fireStatusChange(error);
   }
 
   fireStatusChange(error) {
     const event = new Event(STATUS_CHANGED_EVENT);
     event.status = this.status;
-    event.error = error;
+    if (error) {
+      event.error = error;
+    } else {
+      event.detail = {
+        authKey: this.authKey,
+        authKeyId: this.authKeyId,
+        serverSalt: this.serverSalt,
+      };
+    }
     this.dispatchEvent(event);
   }
 
@@ -298,6 +338,9 @@ export default class MTProto extends EventTarget {
     this.acknowledgements.push(msgId);
 
     if (isMessageOf(RPC_ERROR_TYPE, result)) {
+      if (result.errorCode === 401) {
+        this.handleAuthKeyError(result.errorMessage);
+      }
       const reject = R.pathOr(() => {}, ['rpcPromises', reqMsgId, 'reject'], this);
       reject(result);
       delete this.rpcPromises[reqMsgId];
