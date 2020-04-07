@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { methodFromSchema } from './tl';
+import { methodFromSchema, constructorFromSchema } from './tl';
 
 jest.mock('./createAuthorizationKey');
 jest.mock('./sendRequest');
@@ -24,7 +24,6 @@ import MTProto, {
   STATUS_CHANGED_EVENT,
   AUTH_KEY_CREATED,
   AUTH_KEY_CREATE_FAILED,
-  AUTH_KEY_ERROR
 } from './MTProto';
 import schema from './tl/schema/layer5';
 import schema108 from './tl/schema/layer108';
@@ -440,11 +439,19 @@ describe('MTProto', () => {
     });
 
     it('handle bad_server_salt', () => {
+      const response = constructorFromSchema(
+        schema108,
+        'nearestDc',
+        { country: 'russia', this_dc: 2, nearest_dc: 2 },
+      );
+
       const connection = new MTProto(url, schema);
       const resolve = jest.fn();
       const reject = jest.fn();
+      const message = methodFromSchema(schema108, 'help.getNearestDc');
 
-      connection.rpcPromises[BigInt('6798186738482151424')] = { resolve, reject };
+      connection.rpcPromises[BigInt('6798186738482151424')] = { resolve, reject, message };
+      connection.request = jest.fn().mockResolvedValue(response);
       connection.handleResponse({
         msgId: BigInt(123123),
         seqNo: 13,
@@ -456,11 +463,10 @@ describe('MTProto', () => {
           newServerSalt: BigInt('14078893447025144951'),
         },
       });
-
       const serverSalt = new Uint8Array([119, 52, 130, 52, 255, 70, 98, 195]);
 
       expect(connection.serverSalt).toEqual(serverSalt);
-      expect(reject).toHaveBeenCalled();
+      expect(connection.request).toHaveBeenCalledWith(message);
     });
 
     it('handle msgs_ack', () => {

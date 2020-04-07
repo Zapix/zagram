@@ -195,7 +195,7 @@ export default class MTProto extends EventTarget {
       if (isMessageOf(HTTP_WAIT_TYPE, message)) {
         promise.then(resolve).catch(reject);
       } else {
-        this.rpcPromises[messageId] = { resolve, reject };
+        this.rpcPromises[messageId] = { resolve, reject, message };
       }
     });
   }
@@ -261,7 +261,7 @@ export default class MTProto extends EventTarget {
       if (isMessageOf(HTTP_WAIT_TYPE, message)) {
         promise.then(resolve).catch(reject);
       } else {
-        this.rpcPromises[messageId] = { resolve, reject };
+        this.rpcPromises[messageId] = { resolve, reject, message };
       }
     });
   }
@@ -323,7 +323,8 @@ export default class MTProto extends EventTarget {
     const badMsgId = R.path(['body', 'badMsgId'], message);
 
     if (R.has(badMsgId, this.rpcPromises)) {
-      this.rpcPromises[badMsgId].reject(message);
+      const { resolve, reject, message: requestMessage } = this.rpcPromises[badMsgId];
+      this.request(requestMessage).then(resolve).catch(reject);
     }
   }
 
