@@ -36,6 +36,7 @@ export const AUTH_KEY_CREATE_FAILED = 'AUTH_KEY_CREATE_FAILED';
 export const AUTH_KEY_ERROR = 'AUTH_KEY_ERROR';
 
 export const STATUS_CHANGED_EVENT = 'statusChanged';
+export const UPDATE_EVENT = 'telegramUpdate';
 
 const PART_SIZE = 512 * 1024; // one part of file is 512KB
 
@@ -282,6 +283,8 @@ export default class MTProto extends EventTarget {
       this.handleBadServerSalt(message);
     } else if (isMessageOf(RPC_RESULT_TYPE, message.body)) {
       this.handleRpcResult(message);
+    } else if (isMessageOf('Updates')) {
+      this.handleUpdates(message);
     } else {
       this.handleUnExpected(message);
     }
@@ -348,6 +351,13 @@ export default class MTProto extends EventTarget {
     }
   }
 
+  handleUpdates(message) {
+    this.acknowledgements.push(message.msgId);
+    const event = new Event(UPDATE_EVENT);
+    event.detail = message.body;
+    this.dispatchEvent(event);
+  }
+
   buildAcknowledgementMessage() {
     const msg = {
       [TYPE_KEY]: MSGS_ACK_TYPE,
@@ -360,7 +370,7 @@ export default class MTProto extends EventTarget {
   loadFromDecrypted({ messageId, message, seqNo }) {
     console.log(arrayBufferToHex(message));
     const body = loads(this.schema, message);
-    console.log(body);
+    console.log(arrayBufferToHex(message));
     return {
       seqNo,
       body,

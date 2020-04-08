@@ -59,6 +59,7 @@ describe('MTProto', () => {
       serverSalt: [2, 2, 1],
     };
     const connection = new MTProto(url, schema, authData);
+    connection.httpWait = () => {};
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATED);
 
@@ -542,5 +543,70 @@ describe('MTProto', () => {
       });
     });
     connection.init();
+  });
+
+  it('fire updates that have been come from server', (done) => {
+    const construct = R.partial(constructorFromSchema, [schema108]);
+
+    const connection = new MTProto(url, schema108);
+    const message = {
+      body: construct(
+        'updateShort',
+        {
+          date: 1586370014,
+          update: construct(
+            'updateMessagePoll',
+            {
+              poll_id: BigInt('5215579087627616260'),
+              results: construct(
+                'pollResults',
+                {
+                  min: true,
+                  results: [
+                    construct(
+                      'pollAnswerVoters',
+                      {
+                        chosen: false,
+                        correct: false,
+                        option: [48],
+                        voters: 10006,
+                      },
+                    ),
+                    construct(
+                      'pollAnswerVoters',
+                      {
+                        chosen: false,
+                        correct: false,
+                        option: [49],
+                        voters: 10006,
+                      },
+                    ),
+                    construct(
+                      'pollAnswerVoters',
+                      {
+                        chosen: false,
+                        correct: false,
+                        option: [49],
+                        voters: 10006,
+                      },
+                    ),
+                  ],
+                  total_voters: 26467,
+                },
+              ),
+            },
+          ),
+        },
+      ),
+      bytes: 76,
+      seqNo: 9,
+      msgId: BigInt('6813405479128620033'),
+    };
+    connection.addEventListener('telegramUpdate', (e) => {
+      expect(e.detail).toEqual(message.body);
+      expect(connection.acknowledgements[0]).toEqual(BigInt('6813405479128620033'));
+      done();
+    });
+    connection.handleResponse(message);
   });
 });
