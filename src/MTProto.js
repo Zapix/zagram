@@ -370,7 +370,7 @@ export default class MTProto extends EventTarget {
   loadFromDecrypted({ messageId, message, seqNo }) {
     console.log(arrayBufferToHex(message));
     const body = loads(this.schema, message);
-    console.log(arrayBufferToHex(message));
+    console.log(body);
     return {
       seqNo,
       body,
