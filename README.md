@@ -39,7 +39,11 @@ Node version to build: `v12.13.0`
  
  `init` - create authorization key and starts connection with telegram server 
  
- `addEventListener(handler)` - added event listener for telegram event. Only `statusChanged` event emits for now
+ `addEventListener(handler)` - added event listener for telegram event.
+ 
+ ***Emited Events:***
+  * `statusChanged`  - emits when auth key has been crated or creation has been failed
+  * `telegramUpdate` - emits when update from telegram received. Event contains telegram `Updates` object in `detail` param
  
  `request(msg_obj)` - sends rpc call to telegram server. `msg_obj` generated 
  with `methodFromSchema` and `constructorFromSchema` functions. Returns promise request with result.

@@ -9,6 +9,7 @@ import {
   FUTURE_SALT,
   FUTURE_SALTS,
   GET_FUTURE_SALTS,
+  GZIP_PACKED,
   HTTP_WAIT,
   MESSAGE_CONTAINER,
   MSG_DETAILED_INFO,
@@ -307,6 +308,11 @@ export const isDestroySessionNone = R.pipe(
 export const isHttpWait = R.pipe(
   getConstructor,
   R.equals(HTTP_WAIT),
+);
+
+export const isGzipped = R.pipe(
+  getConstructor,
+  R.equals(GZIP_PACKED),
 );
 
 export const isMessageOf = R.propEq(TYPE_KEY);

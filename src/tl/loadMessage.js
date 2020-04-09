@@ -31,7 +31,7 @@ import {
   isDestroySession,
   isDestroySessionOk,
   isDestroySessionNone,
-  isHttpWait,
+  isHttpWait, isGzipped,
 } from './utils';
 import { loadMessageContainer } from './msg_container';
 import { loadBadMsgNotification } from './bad_msg_notification';
@@ -62,6 +62,7 @@ import { loadDestroySessionNone } from './destory_session_none';
 import { loadNewSessionCreated } from './new_session_created';
 import { loadHttpWait } from './http_wait';
 import { loadBySchema, isFromSchemaFactory } from './schema';
+import unzipMessage from './unzipMessage';
 
 /**
  * Writes warning message into console and returns null
@@ -93,6 +94,7 @@ const parseUnexpectedMessage = R.pipe(
 export default function loadMessage(schema, buffer, withOffset) {
   const load = R.partial(loadMessage, [schema]);
   return R.cond([
+    [isGzipped, R.partialRight(unzipMessage, [load])],
     [isHttpWait, loadHttpWait],
     [isPong, loadPong],
     [isPing, loadPing],
