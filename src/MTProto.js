@@ -184,6 +184,13 @@ export default class MTProto extends EventTarget {
       const sendEncryptedRequest = R.pipe(
         R.partial(dumps, [this.schema]),
         encrypt,
+        (x) => {
+          console.group('Encrypted data');
+          console.log(arrayBufferToHex(x));
+          console.log('Message length: ', x.byteLength);
+          console.groupEnd();
+          return x;
+        },
         sendRequest(this.serverUrl),
       );
 
