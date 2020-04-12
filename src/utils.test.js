@@ -1,7 +1,4 @@
 import {
-  generateFirstInitPayload,
-  isValidInitPayload,
-  buildSecondInitPayload,
   isPrime,
   findPrimeFactors,
   primeGenerator,
@@ -12,6 +9,11 @@ import {
   hexToArrayBuffer,
   promiseChain,
 } from './utils';
+import {
+  buildSecondInitPayload,
+  generateFirstInitPayload,
+  isValidInitPayload,
+} from './obfuscation';
 
 describe('isValidInitPayload()', () => {
   test('invalid first byte', () => {
