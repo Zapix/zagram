@@ -278,8 +278,6 @@ export function parseDHParamsResponse(buffer) {
     const error = new Error(message);
     throw error;
   }
-  console.log('Server dh param received');
-
   const nonce = new Uint8Array(buffer, 24, 16);
   const serverNonce = new Uint8Array(buffer, 40, 16);
   const encryptedAnswerTl = new Uint8Array(buffer, 56);
@@ -309,7 +307,6 @@ function parseDHParams(buffer) {
     console.error(message);
     throw new Error(message);
   }
-  console.log(`Decrypted size: ${buffer.byteLength}`);
 
   const nonce = new Uint8Array(buffer, 4, 16);
   const serverNonce = new Uint8Array(buffer, 20, 16);
@@ -345,7 +342,6 @@ function parseDHParams(buffer) {
  * @returns {{}}
  */
 export function decryptDHParams(encryptedDHParams, pqInnerData) {
-  console.log('Decrypt DH Params');
   const { key, iv } = generateKeyDataFromNonce(
     encryptedDHParams.server_nonce,
     pqInnerData.new_nonce,
@@ -538,8 +534,6 @@ export function checkDHVerifyResponse({ constructor }) {
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
-
-  console.log('DH generation successfully finished');
 }
 
 function buildAuthKeyHash(authKey) {
@@ -584,10 +578,7 @@ export default function createAuthorizationKey(sendRequest) {
 
   return Promise.race([
     sendRequest(initDHMessage.buffer)
-      .then((response) => response.arrayBuffer())
       .then((buffer) => {
-        console.log('Parse response PQ');
-
         const responsePQ = parseResponsePQ(buffer);
         if (!areNonceEqual(initDHMessage, responsePQ)) {
           throw Error('Nonce are not equal');
@@ -599,8 +590,7 @@ export default function createAuthorizationKey(sendRequest) {
         const exchangeMessage = buildDHExchangeMessage(responsePQ, pqInnerData, encryptedData);
 
         return Promise.all([
-          sendRequest(exchangeMessage.buffer)
-            .then((response) => response.arrayBuffer()),
+          sendRequest(exchangeMessage.buffer),
           new Promise((resolve) => resolve(pqInnerData)),
         ]);
       })
@@ -618,8 +608,7 @@ export default function createAuthorizationKey(sendRequest) {
         const encryptedMessage = encryptInnerMessage(dhInnerMessage, dhParams.key, dhParams.iv);
         const setClientDHParamsMessage = buildSetClientDhParamsMessage(encryptedMessage, dhParams);
         return Promise.all([
-          sendRequest(setClientDHParamsMessage.buffer)
-            .then((response) => response.arrayBuffer()),
+          sendRequest(setClientDHParamsMessage.buffer),
           Promise.resolve(dhValues),
           Promise.resolve(pqInnerData),
         ]);
@@ -630,11 +619,7 @@ export default function createAuthorizationKey(sendRequest) {
         const serverSalt = buildSalt(pqInnerData);
         const authKey = bigIntToUint8Array(dhValues.gab);
         const authKeyHash = buildAuthKeyHash(authKey);
-        console.log('Auth key hash: ', authKeyHash);
         const authKeyId = buildAuthKeyId(authKeyHash);
-        console.log('Auth key id: ', authKeyId);
-        console.log('Auth key id hex: ', uint8ArrayToHex(authKeyId));
-        console.log('Server salt:', serverSalt);
         const authKeyAuxHash = buildAuthKeyAuxHash(authKeyHash);
 
         verifyNewNonce(pqInnerData.new_nonce, authKeyAuxHash, verifyResponse);
@@ -643,7 +628,7 @@ export default function createAuthorizationKey(sendRequest) {
       }),
     new Promise((resolve, reject) => setTimeout(reject, 600 * 100))
       .then(() => {
-        console.log('request is too long');
+        console.error('request is too long');
       }),
   ]);
 }

@@ -7,6 +7,7 @@ import {
   copyBytes,
 } from './utils';
 
+
 /**
  * Decryptes data with ige mode. Please check:
  * https://github.com/LonamiWebs/Telethon/blob/6817e199234b68688c5ae1a128353df34f15ba18/telethon/crypto/aes.py#L35
@@ -58,6 +59,7 @@ export function decryptIge(encodedMessage, key, iv) {
   return arrayBufferToForgeBuffer(plainTextBuffer);
 }
 
+
 /**
  * Encrypts by AES-IGE algorithm
  * @param {forge.util.ByteBuffer} message
@@ -106,4 +108,19 @@ export function encryptIge(message, key, iv) {
   }
 
   return arrayBufferToForgeBuffer(encryptedBuffer);
+}
+
+
+/**
+ * Build AES-CTR cipher
+ * @param {ArrayBuffer} key
+ * @param {ArrayBuffer} iv
+ */
+export function getCipher(key, iv) {
+  const keyView = new Uint8Array(key);
+  const ivView = new Uint8Array(iv);
+
+  /* eslint-disable new-cap */
+  return new aesjs.ModeOfOperation.ctr(keyView, new aesjs.Counter(ivView));
+  /* eslint-enable */
 }

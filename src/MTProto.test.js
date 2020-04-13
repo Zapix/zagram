@@ -4,6 +4,7 @@ import { methodFromSchema, constructorFromSchema } from './tl';
 jest.mock('./createAuthorizationKey');
 jest.mock('./sendRequest');
 jest.mock('./decryptMessage');
+jest.mock('./Connection');
 
 import createAuthorizationKey from './createAuthorizationKey';
 import sendRequest from './sendRequest';
@@ -32,8 +33,8 @@ import { isObjectOf } from './tl/schema/utils';
 /* eslint-enable */
 
 describe('MTProto', () => {
-  const url = 'http://exapmle.com/';
-  it('auth key created', (done) => {
+  const url = 'ws://exapmle.com/';
+  it.only('auth key created', (done) => {
     createAuthorizationKey.mockResolvedValueOnce({
       authKey: 'key',
       authKeyId: 12312,
@@ -52,14 +53,13 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it('auth key where passed on init', (done) => {
+  it.only('auth key where passed on init', (done) => {
     const authData = {
       authKey: [3, 4, 6, 1, 3],
       authKeyId: [4, 5, 1, 2],
       serverSalt: [2, 2, 1],
     };
     const connection = new MTProto(url, schema, authData);
-    connection.httpWait = () => {};
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATED);
 
@@ -75,7 +75,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it('auth key create failed', (done) => {
+  it.only('auth key create failed', (done) => {
     createAuthorizationKey.mockRejectedValueOnce('some reason');
 
     const connection = new MTProto(url, schema);
@@ -88,14 +88,14 @@ describe('MTProto', () => {
   });
 
   describe('request', () => {
-    it('wrong connection status', () => {
+    it.only('wrong connection status', () => {
       const connection = new MTProto(url, schema);
       return connection.request({ a: 1 }).catch((reason) => {
         expect(reason).toEqual(new Error('Auth key has not been created'));
       });
     });
 
-    it('empty array buffer error', (done) => {
+    it.only('empty array buffer error', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -113,43 +113,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it('send http wait request', (done) => {
-      createAuthorizationKey.mockResolvedValueOnce({
-        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
-          41, 19],
-        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
-        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
-      });
-
-      const hexStr = '0809c29e00000000452d075e078cde63a724558fb73e6267c6ab026b';
-      const response = {
-        arrayBuffer: jest.fn(),
-      };
-      response.arrayBuffer.mockReturnValueOnce(hexToArrayBuffer(hexStr));
-      const curried = jest.fn();
-      curried.mockResolvedValue(response);
-      sendRequest.mockReturnValue(curried);
-      decryptMessage.mockResolvedValueOnce({
-        messageId: BigInt('2342143274123'),
-        seqNo: 13,
-        message: hexToArrayBuffer(hexStr),
-      });
-
-      const connection = new MTProto(url, schema);
-      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
-        connection.request({
-          [TYPE_KEY]: HTTP_WAIT_TYPE,
-          maxDelay: 0,
-          waitAfter: 0,
-          maxWait: 25000,
-        }).then(() => {
-          done();
-        });
-      });
-      connection.init();
-    });
-
-    it('send ping request', (done) => {
+    it.only('send ping request', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -184,7 +148,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it('send rpc call', (done) => {
+    it.only('send rpc call', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -221,7 +185,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it('send with message previous acknowledgements', (done) => {
+    it.only('send with message previous acknowledgements', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -267,7 +231,7 @@ describe('MTProto', () => {
   });
 
   describe('handleResponse', () => {
-    it('pong', () => {
+    it.only('pong', () => {
       const connection = new MTProto(url, schema);
       const resolve = jest.fn();
       const reject = jest.fn();
@@ -286,7 +250,7 @@ describe('MTProto', () => {
       expect(resolve).toHaveBeenCalled();
     });
 
-    it('new_session_created', () => {
+    it.only('new_session_created', () => {
       const connection = new MTProto(url, schema);
 
       connection.handleResponse({
@@ -307,7 +271,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt(123123));
     });
 
-    it('rpc_result success', () => {
+    it.only('rpc_result success', () => {
       const connection = new MTProto(url, schema);
 
       const resolve = jest.fn();
@@ -341,7 +305,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it('rpc_result error', () => {
+    it.only('rpc_result error', () => {
       const connection = new MTProto(url, schema);
 
       const resolve = jest.fn();
@@ -373,7 +337,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it('handle message container messages one by one', () => {
+    it.only('handle message container messages one by one', () => {
       const connection = new MTProto(url, schema);
 
       const resolvePing = jest.fn();
@@ -439,7 +403,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it('handle bad_server_salt', () => {
+    it.only('handle bad_server_salt', () => {
       const response = constructorFromSchema(
         schema108,
         'nearestDc',
@@ -470,7 +434,7 @@ describe('MTProto', () => {
       expect(connection.request).toHaveBeenCalledWith(message);
     });
 
-    it('handle msgs_ack', () => {
+    it.only('handle msgs_ack', () => {
       const connection = new MTProto(url, schema);
       connection.handleResponse({
         msgId: BigInt(123123),
@@ -480,7 +444,7 @@ describe('MTProto', () => {
     });
   });
 
-  it('test upload file small file', (done) => {
+  it.only('test upload file small file', (done) => {
     const file = new File(
       (new Array(1869)).fill(new ArrayBuffer(1024)),
       'avatar.jpg',
@@ -498,7 +462,6 @@ describe('MTProto', () => {
     });
     const connection = new MTProto(url, schema);
     connection.request = () => Promise.resolve('success');
-    connection.httpWait = () => {};
     connection.addEventListener(STATUS_CHANGED_EVENT, () => {
       connection.upload(file, progressCb).then((result) => {
         expect(progressCb).toHaveBeenCalledTimes(5);
@@ -513,7 +476,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it('test upload file file big file', (done) => {
+  it.only('test upload file file big file', (done) => {
     const file = new File(
       (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
       'avatar.jpg',
@@ -531,7 +494,6 @@ describe('MTProto', () => {
     });
     const connection = new MTProto(url, schema108);
     connection.request = () => Promise.resolve('success');
-    connection.httpWait = () => {};
     connection.addEventListener(STATUS_CHANGED_EVENT, () => {
       connection.upload(file, progressCb).then((result) => {
         expect(progressCb).toHaveBeenCalledTimes(31);
@@ -545,7 +507,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it('fire updates that have been come from server', (done) => {
+  it.only('fire updates that have been come from server', (done) => {
     const construct = R.partial(constructorFromSchema, [schema108]);
 
     const connection = new MTProto(url, schema108);

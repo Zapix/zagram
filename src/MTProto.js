@@ -1,5 +1,6 @@
 import * as R from 'ramda';
 
+import sendWsRequest from './sendWsRequest';
 import createAuthorizationKey from './createAuthorizationKey';
 import seqNoGenerator from './seqNoGenerator';
 import {
@@ -8,15 +9,13 @@ import {
 import encryptMessage from './encryptMessage';
 import decryptMessage from './decryptMessage';
 import {
-  arrayBufferToHex,
-  arrayBufferToUint8Array, debug,
+  arrayBufferToUint8Array,
   getMessageId,
   getNRandomBytes,
   promiseChain,
   sliceBuffer,
   uint8ToBigInt,
 } from './utils';
-import sendRequest from './sendRequest';
 import { isMessageOf } from './tl/utils';
 import {
   BAD_SERVER_SALT_TYPE,
@@ -29,6 +28,7 @@ import {
   TYPE_KEY,
 } from './constants';
 import { dumpBigInt } from './tl/bigInt';
+import Connection from './Connection';
 
 export const INIT = 'INIT';
 export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
@@ -65,6 +65,7 @@ export default class MTProto extends EventTarget {
     this.status = INIT;
     this.serverUrl = serverUrl;
     this.schema = schema;
+    this.ws = new Connection(serverUrl); // init ws connection;
 
     this.authKey = getAuthKey(authData);
     this.authKeyId = getAuthKeyId(authData);
@@ -81,12 +82,23 @@ export default class MTProto extends EventTarget {
    * Inits connection
    */
   init() {
+    this.ws.addEventListener('wsOpen', () => {
+      this.buildAuthKey();
+    });
+    this.ws.init();
+  }
+
+  /**
+   * Checks has auth key been set before, if not tries to create it;
+   */
+  buildAuthKey() {
     if (this.isAuthKeyDataSet()) {
       this.genSeqNo = seqNoGenerator();
       this.sessionId = generateSessionId();
       this.emitAuthKeyCreated();
+      this.ws.addEventListener('wsMessage', this.read.bind(this));
     } else {
-      createAuthorizationKey(sendRequest(this.serverUrl))
+      createAuthorizationKey(R.partial(sendWsRequest, [this.ws]))
         .then((authData) => {
           this.authKey = getAuthKey(authData);
           this.authKeyId = getAuthKeyId(authData);
@@ -95,6 +107,7 @@ export default class MTProto extends EventTarget {
           this.sessionId = generateSessionId();
 
           this.emitAuthKeyCreated();
+          this.ws.addEventListener('wsMessage', this.read.bind(this));
         })
         .catch((error) => {
           this.status = AUTH_KEY_CREATE_FAILED;
@@ -110,7 +123,6 @@ export default class MTProto extends EventTarget {
   emitAuthKeyCreated() {
     this.status = AUTH_KEY_CREATED;
     this.fireStatusChange();
-    this.httpWait();
   }
 
   handleAuthKeyError(error) {
@@ -140,6 +152,23 @@ export default class MTProto extends EventTarget {
     }
 
     return value;
+  }
+
+
+  /**
+   * Handles message event from ws connection
+   * @param {Event} encryptedBuffer
+   */
+  read(event) {
+    const messageData = decryptMessage(
+      this.authKey,
+      this.authKeyId,
+      this.serverSalt,
+      this.sessionId,
+      event.buffer,
+    );
+    const message = this.loadFromDecrypted(messageData);
+    this.handleResponse(message);
   }
 
   /**
@@ -176,28 +205,14 @@ export default class MTProto extends EventTarget {
         [this.authKey, this.authKeyId, this.serverSalt, this.sessionId, seqNo, messageId],
       );
 
-      const decrypt = R.partial(
-        decryptMessage,
-        [this.authKey, this.authKeyId, this.serverSalt, this.sessionId],
-      );
-
       const sendEncryptedRequest = R.pipe(
         R.partial(dumps, [this.schema]),
         encrypt,
-        sendRequest(this.serverUrl),
+        (x) => this.ws.send(x),
       );
 
-      const promise = sendEncryptedRequest(message)
-        .then((response) => response.arrayBuffer())
-        .then(decrypt)
-        .then(this.loadFromDecrypted.bind(this))
-        .then(this.handleResponse.bind(this));
-
-      if (isMessageOf(HTTP_WAIT_TYPE, message)) {
-        promise.then(resolve).catch(reject);
-      } else {
-        this.rpcPromises[messageId] = { resolve, reject, message };
-      }
+      sendEncryptedRequest(message);
+      this.rpcPromises[messageId] = { resolve, reject, message };
     });
   }
 
@@ -240,24 +255,13 @@ export default class MTProto extends EventTarget {
         ],
       );
 
-      const decrypt = R.partial(
-        decryptMessage,
-        [this.authKey, this.authKeyId, this.serverSalt, this.sessionId],
-      );
-
       const sendEncryptedRequest = R.pipe(
-        debug,
         R.partial(dumps, [this.schema]),
-        debug,
         encrypt,
-        sendRequest(this.serverUrl),
+        (x) => this.ws.send(x),
       );
 
-      const promise = sendEncryptedRequest(containerMessage)
-        .then((response) => response.arrayBuffer())
-        .then(decrypt)
-        .then(this.loadFromDecrypted.bind(this))
-        .then(this.handleResponse.bind(this));
+      const promise = sendEncryptedRequest(containerMessage);
 
       if (isMessageOf(HTTP_WAIT_TYPE, message)) {
         promise.then(resolve).catch(reject);
@@ -319,7 +323,6 @@ export default class MTProto extends EventTarget {
 
   handleBadServerSalt(message) {
     const serverSalt = R.path(['body', 'newServerSalt'], message);
-    console.log('Switch to new server salt:', serverSalt);
     const buffer = dumpBigInt(serverSalt);
     this.serverSalt = new Uint8Array(buffer);
 
@@ -368,24 +371,12 @@ export default class MTProto extends EventTarget {
   }
 
   loadFromDecrypted({ messageId, message, seqNo }) {
-    console.log(arrayBufferToHex(message));
     const body = loads(this.schema, message);
-    console.log(body);
     return {
       seqNo,
       body,
       msgId: messageId,
     };
-  }
-
-  httpWait() {
-    this.request({
-      [TYPE_KEY]: HTTP_WAIT_TYPE,
-      maxDelay: 0,
-      waitAfter: 0,
-      maxWait: 25000,
-    })
-      .then(this.httpWait.bind(this));
   }
 
   /**
@@ -441,7 +432,7 @@ export default class MTProto extends EventTarget {
             md5_checksum: '',
             name: file.name,
           },
-        ))).then(debug);
+        )));
       });
   }
 }

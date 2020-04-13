@@ -1,7 +1,4 @@
 import {
-  generateFirstInitPayload,
-  isValidInitPayload,
-  buildSecondInitPayload,
   isPrime,
   findPrimeFactors,
   primeGenerator,
@@ -12,6 +9,11 @@ import {
   hexToArrayBuffer,
   promiseChain,
 } from './utils';
+import {
+  buildSecondInitPayload,
+  generateFirstInitPayload,
+  isValidInitPayload,
+} from './obfuscation';
 
 describe('isValidInitPayload()', () => {
   test('invalid first byte', () => {
@@ -118,7 +120,6 @@ describe('mergeArrayBuffers', () => {
 describe('promiseChain', () => {
   test('test', (done) => {
     const promiseList = (new Array(100)).fill(1).map((value, idx) => (() => Promise.resolve(idx)));
-    console.log(promiseList);
     const progressCb = jest.fn();
 
     promiseChain(promiseList, progressCb).then((result) => {

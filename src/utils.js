@@ -2,8 +2,6 @@ import * as R from 'ramda';
 import random from 'random-bigint';
 import forge from 'node-forge';
 
-import { DC_ID, PROTOCOL_ID, TEST_DC_INC } from './constants';
-
 export const debug = (x) => {
   console.log(x);
   return x;
@@ -17,31 +15,6 @@ const getRandomByte = R.partial(getRandomInt, [256]);
 
 export const getNRandomBytes = R.times(getRandomByte);
 
-const checkFirstByte = R.pipe(
-  (buffer) => (new Uint8Array(buffer, 0, 1))[0],
-  R.equals(0xef),
-  R.not,
-);
-
-const checkFirstInt = R.pipe(
-  (buffer) => (new Uint32Array(buffer, 0, 4))[0],
-  R.anyPass([
-    R.equals(0x44414548),
-    R.equals(0x54534f50),
-    R.equals(0x20544547),
-    R.equals(0x4954504f),
-    R.equals(0xdddddddd),
-    R.equals(0xeeeeeeee),
-  ]),
-  R.not,
-);
-
-const checkSecondInt = R.pipe(
-  (buffer) => (new Uint32Array(buffer, 4, 4))[0],
-  R.equals(0x00000000),
-  R.not,
-);
-
 /**
  * Copy bytes from Uint8Array `from` to Uint*Array `to`;
  * @param {Uint8Array|Number[]} fromArr
@@ -51,61 +24,6 @@ export function copyBytes(fromArr, toArr) {
   for (let i = 0; i < fromArr.length; i += 1) {
     toArr[i] = fromArr[i];
   }
-}
-
-/**
- * Takes ArrayBuffer init payload and return is it valid or not
- * @param {ArrayBuffer} buffer
- * @returns {boolean}
- */
-export const isValidInitPayload = R.allPass([
-  checkFirstByte,
-  checkFirstInt,
-  checkSecondInt,
-]);
-
-/**
- * Generates init payload for websocket communication. Please check:
- * https://core.telegram.org/mtproto/mtproto-transports#transport-obfuscation
- * @returns {ArrayBuffer}
- */
-export function generateFirstInitPayload() {
-  const buffer = new ArrayBuffer(64);
-  const prefix = new Uint8Array(buffer, 0, 56);
-  const protocol = new Uint32Array(buffer, 56, 1);
-  const dc = new Int16Array(buffer, 60, 1);
-  const postfix = new Uint8Array(buffer, 62, 2);
-
-  while (!isValidInitPayload(buffer)) {
-    for (let i = 0; i < prefix.length; i += 1) {
-      prefix[i] = getRandomInt(256);
-    }
-    protocol[0] = PROTOCOL_ID;
-    dc[0] = DC_ID + TEST_DC_INC;
-    for (let i = 0; i < postfix.length; i += 1) {
-      postfix[i] = getRandomInt(256);
-    }
-  }
-
-  return buffer;
-}
-
-/**
- * Builds second init payload by reversing first init payload
- * @param {ArrayBuffer} initPayloadBuffer
- * @returns {ArrayBuffer}
- */
-export function buildSecondInitPayload(initPayloadBuffer) {
-  const buffer = new ArrayBuffer(initPayloadBuffer.byteLength);
-
-  const firstView = new Uint8Array(initPayloadBuffer);
-  const secondView = new Uint8Array(buffer);
-
-  for (let i = 0; i < secondView.length; i += 1) {
-    secondView[secondView.length - i - 1] = firstView[i];
-  }
-
-  return buffer;
 }
 
 /**
@@ -282,10 +200,6 @@ export function findPrimeFactors(pq) {
 
   const p = g;
   q = pq / p;
-  console.log(`PQ: ${pq.toString(16)}`);
-  console.log(`P: ${p.toString(16)}`);
-  console.log(`Q: ${q.toString(16)}`);
-  console.log(`P * Q: ${(p * q).toString(16)}`);
   return (p < q) ? [p, q] : [q, p];
 }
 

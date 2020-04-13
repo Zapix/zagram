@@ -3,10 +3,7 @@
  * @param {ArrayBuffer} wrappedMessage
  * @returns {{}}
  */
-import { uint8ArrayToHex } from './utils';
-
 export default function unwrapMessage(wrappedMessage) {
-  console.log(uint8ArrayToHex(new Uint8Array(wrappedMessage)));
   const authKeyId = new Uint8Array(wrappedMessage, 0, 8);
   const messageIdArr = new BigUint64Array(wrappedMessage, 8, 1);
   const messageId = messageIdArr[0];

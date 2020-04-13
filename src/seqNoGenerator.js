@@ -7,7 +7,6 @@ export default function* seqNoGenerator() {
     } else {
       seqNo += 2;
     }
-    console.log(`Generated seqNo: ${seqNo}`);
     isContentRelated = yield seqNo;
   }
 }
