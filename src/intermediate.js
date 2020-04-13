@@ -1,12 +1,11 @@
 import {
   getNRandomBytes,
-  getRandomInt,
   mergeAllArrayBuffers,
   sliceBuffer,
   uint8ToArrayBuffer,
 } from './utils';
 
-export const tag = 0xdddddddd;
+export const tag = 0xeeeeeeee;
 
 /**
  * Encode message for wrapper
@@ -14,8 +13,8 @@ export const tag = 0xdddddddd;
  * @returns {ArrayBuffer} padded value
  */
 export function encode(buffer) {
-  const padSize = getRandomInt(3);
-  console.log('Pad size:', padSize);
+  const padSize = 0;
+  // console.log('Pad size:', padSize);
   const randomBytes = getNRandomBytes(padSize);
   const randomBuffer = uint8ToArrayBuffer(randomBytes);
   const tlen = padSize + buffer.byteLength;

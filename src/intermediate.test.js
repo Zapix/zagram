@@ -1,7 +1,7 @@
-import { encode, decode } from './paddedIntermidiate';
+import { encode, decode } from './intermediate';
 import { arrayBufferToHex, hexToArrayBuffer, sliceBuffer } from './utils';
 
-describe('paddedIntermidiate', () => {
+describe('intermidiate', () => {
   describe('encode', () => {
     test('encode', () => {
       /* eslint-disable */
