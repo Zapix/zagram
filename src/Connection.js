@@ -1,4 +1,4 @@
-import { tag, encode, decode } from './paddedIntermidiate';
+import { tag, encode, decode } from './intermediate';
 import getObfuscation from './obfuscation';
 
 /**
@@ -19,34 +19,36 @@ export default class Connection extends EventTarget {
   }
 
   init() {
-    this.ws = new WebSocket(this.url, 'binary');
-    this.ws.onopen = (e) => {
+    this.ws = new WebSocket(this.url, ['binary']);
+    this.ws.binaryType = 'arraybuffer';
+    this.ws.addEventListener('open', (e) => {
       const event = new Event('wsOpen');
       event.originEvent = e;
       this.ws.send(this.header);
       this.dispatchEvent(event);
-    };
-    this.ws.onclose = (e) => {
+    });
+
+    this.ws.addEventListener('close', (e) => {
       const event = new Event('wsClose');
       event.originEvent = e;
       this.dispatchEvent(event);
-    };
-    this.ws.onerror = (e) => {
+    });
+
+    this.ws.addEventListener('error', (e) => {
       const event = new Event('wsError');
       event.originEvent = e;
       this.dispatchEvent(event);
-    };
-    this.ws.onmessage = (e) => {
-      e.data.arrayBuffer().then((encryptedBuffer) => {
-        const paddedBuffer = this.decrypt(encryptedBuffer);
-        const buffer = this.decode(paddedBuffer);
+    });
 
-        const event = new Event('wsMessage');
-        event.originEvent = e;
-        event.buffer = buffer;
-        this.dispatchEvent(event);
-      });
-    };
+    this.ws.addEventListener('message', (e) => {
+      const paddedBuffer = this.decrypt(e.data);
+      const buffer = this.decode(paddedBuffer);
+
+      const event = new Event('wsMessage');
+      event.originEvent = e;
+      event.buffer = buffer;
+      this.dispatchEvent(event);
+    });
   }
 
   get readyState() {
