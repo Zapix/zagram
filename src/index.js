@@ -8,10 +8,15 @@ import{
   methodFromSchema as methodFromSchema_
 } from './tl';
 import { isMessageOf } from './tl/utils';
-import { RPC_ERROR_TYPE } from './constants';
+import { RPC_ERROR_TYPE, PROTOCOL_ID } from './constants';
+import { getInitialDHExchangeMessage } from './createAuthorizationKey';
 export { isMessageOf } from './tl/utils';
 export { isObjectOf, isMethodOf } from './tl/schema/utils';
 export { dumpString, loadString} from './tl/string';
+export { default as Connection } from './Connection';
+export { default as getObfuscation } from './obfuscation'
+export { tag, decode as padDecode, encode as padEncode} from './intermediate';
+export { getInitialDHExchangeMessage } from './createAuthorizationKey';
 export {
   mergeAllArrayBuffers,
   mergeArrayBuffer,
@@ -37,4 +42,3 @@ export const isRpcError = isMessageOf(RPC_ERROR_TYPE);
 
 export const tlDumps = dumps;
 export const tlLoads = loads;
-

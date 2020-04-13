@@ -133,7 +133,7 @@ Node version to build: `v12.13.0`
 
 const { MTProto, schema, methodFromSchema } = zagram;
 
-const url = 'http://149.154.167.40/apiw';
+const url = 'ws://149.154.167.40/apiws';
   const API_ID = 1005944;
   const API_HASH = 'dfbf8ed1e37d1cd1ad370e7431ed8a87';
 

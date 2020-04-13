@@ -200,10 +200,6 @@ export function findPrimeFactors(pq) {
 
   const p = g;
   q = pq / p;
-  console.log(`PQ: ${pq.toString(16)}`);
-  console.log(`P: ${p.toString(16)}`);
-  console.log(`Q: ${q.toString(16)}`);
-  console.log(`P * Q: ${(p * q).toString(16)}`);
   return (p < q) ? [p, q] : [q, p];
 }
 

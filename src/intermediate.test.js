@@ -10,7 +10,6 @@ describe('intermidiate', () => {
       const buffer = hexToArrayBuffer(hexStr);
 
       const encodedBuffer = encode(buffer);
-      console.log(arrayBufferToHex(encodedBuffer));
 
       const tlen = (new Uint32Array(encodedBuffer, 0, 1))[0];
       const paddingSize = tlen % 4;

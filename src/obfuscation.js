@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import {
-  arrayBufferToHex, arrayBufferToUint8Array,
+  arrayBufferToUint8Array,
   getRandomInt,
   mergeAllArrayBuffers,
   sliceBuffer, uint8ToArrayBuffer,
@@ -104,7 +104,6 @@ export function buildHeader(init, encrypt) {
  */
 export default function getObfuscation(protocolTag) {
   const initBuffer = generateFirstInitPayload(protocolTag);
-  console.log(arrayBufferToHex(initBuffer));
   const reversedInitBuffer = buildSecondInitPayload(initBuffer);
 
   const encryptKey = sliceBuffer(initBuffer, 8, 40);

@@ -91,7 +91,6 @@ export default function dumpBySchema(schema, message) {
     );
 
     function dumpWithFlag(obj) {
-      console.log('Dump with flag', obj);
       const buffers = [dumpId(objSchema)(obj)];
       let flagId = 0;
       const flags = (new Array(32)).fill(false);
