@@ -12,8 +12,8 @@ import {
   arrayBufferToUint8Array,
   getMessageId,
   getNRandomBytes,
-  promiseChain,
-  sliceBuffer,
+  promiseChain, promiseChainUntil,
+  sliceBuffer, uint8ToArrayBuffer,
   uint8ToBigInt,
 } from './utils';
 import { isMessageOf } from './tl/utils';
@@ -29,6 +29,7 @@ import {
 } from './constants';
 import { dumpBigInt } from './tl/bigInt';
 import Connection from './Connection';
+import { getFileName, getFileType } from './downloadHelpers';
 
 export const INIT = 'INIT';
 export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
@@ -38,13 +39,22 @@ export const AUTH_KEY_ERROR = 'AUTH_KEY_ERROR';
 export const STATUS_CHANGED_EVENT = 'statusChanged';
 export const UPDATE_EVENT = 'telegramUpdate';
 
-const PART_SIZE = 512 * 1024; // one part of file is 512KB
+export const UPLOAD_PART_SIZE = 512 * 1024; // one part of file is 512KB
+export const DOWNLOAD_PART_SIZE = 512 * 1024; // download part size
 
 const getAuthKey = R.propOr(null, 'authKey');
 const getAuthKeyId = R.propOr(null, 'authKeyId');
 const getServerSalt = R.propOr(null, 'serverSalt');
 
 const generateSessionId = R.partial(getNRandomBytes, [8]);
+
+const getDownloadLimitOffset = R.pipe(
+  R.of,
+  R.ap([R.identity, R.always(1)]),
+  R.map(R.multiply(DOWNLOAD_PART_SIZE)),
+  R.zip(['offset', 'limit']),
+  R.fromPairs,
+);
 
 /**
  * Class for working with mtproto protocols
@@ -272,6 +282,9 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
+    console.group('[MTPROTO] Income message');
+    console.log(message);
+    console.groupEnd();
     if (isMessageOf(MESSAGE_CONTAINER_TYPE, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
@@ -391,14 +404,14 @@ export default class MTProto extends EventTarget {
       .arrayBuffer()
       .then((buffer) => {
         const fileId = uint8ToBigInt(getNRandomBytes(8));
-        const parts = Math.ceil(buffer.byteLength / PART_SIZE);
+        const parts = Math.ceil(buffer.byteLength / UPLOAD_PART_SIZE);
 
         if (parts > 3000) {
           throw Error(`File ${file.filename} is too big`);
         }
 
         const sliceBufferByPart = R.pipe(
-          R.pipe(R.of, R.ap([R.identity, R.add(1)]), R.map(R.multiply(PART_SIZE))),
+          R.pipe(R.of, R.ap([R.identity, R.add(1)]), R.map(R.multiply(UPLOAD_PART_SIZE))),
           R.apply(R.partial(sliceBuffer, [buffer])),
           arrayBufferToUint8Array,
         );
@@ -434,5 +447,64 @@ export default class MTProto extends EventTarget {
           },
         )));
       });
+  }
+
+  /**
+   * Downloads file by his location. If not `InputFileLocation` then reject file downloading,
+   * If size has been passed then split file to download parts and download them one by one
+   * If size hasn't been passed then download parts one by one until part lesser
+   * then size of part wouldn't come. Join all parts and return whole file on promise
+   * If location isn't `InputFileLocation` then raise error
+   * @param {*} location - object of InputFileLocation telegrams type
+   * @param {{ size: Number, progressCb: Function }} [options]- size and progress tracker
+   * @returns {PromiseLike<File>}}
+   */
+  download(location, options) {
+    if (location[TYPE_KEY] !== 'InputFileLocation') {
+      throw new Error('Only `InputFileLocation` type is supported for downloading');
+    }
+
+    const progressCb = R.propOr(() => {}, 'progressCb', options);
+    const size = R.propOr(null, 'size', options);
+    let promise;
+
+    const buildDownloadRequest = R.pipe(
+      R.mergeLeft({ location }),
+      R.partial(methodFromSchema, [this.schema, 'upload.getFile']),
+    );
+
+    if (!size) {
+      const getPromiseFunc = R.pipe(
+        R.nthArg(1),
+        getDownloadLimitOffset,
+        buildDownloadRequest,
+        (x) => this.request(x),
+      );
+
+      const isDownloadedPartSmaller = R.pipe(
+        R.nthArg(0),
+        R.path(['bytes', 'length']),
+        R.gt(DOWNLOAD_PART_SIZE),
+      );
+
+      promise = promiseChainUntil(getPromiseFunc, isDownloadedPartSmaller, progressCb);
+    } else {
+      const parts = Math.ceil(size / DOWNLOAD_PART_SIZE);
+      const downloadPromiseList = R.pipe(
+        R.times(getDownloadLimitOffset),
+        R.map(R.pipe(buildDownloadRequest, (x) => () => {
+          console.log('[DOWNLOAD REQUEST]: ', x);
+          return this.request(x);
+        })),
+      )(parts);
+      promise = promiseChain(downloadPromiseList, progressCb);
+    }
+
+    return promise
+      .then((result) => new File(
+        R.map(R.pipe(R.prop('bytes'), uint8ToArrayBuffer))(result),
+        R.pipe(R.last, R.prop('type'), getFileName)(result),
+        { type: R.pipe(R.last, getFileType)(result) },
+      ));
   }
 }
