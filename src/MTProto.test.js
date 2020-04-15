@@ -25,6 +25,7 @@ import MTProto, {
   STATUS_CHANGED_EVENT,
   AUTH_KEY_CREATED,
   AUTH_KEY_CREATE_FAILED,
+  DOWNLOAD_PART_SIZE,
 } from './MTProto';
 import schema from './tl/schema/layer5';
 import schema108 from './tl/schema/layer108';
@@ -34,7 +35,7 @@ import { isObjectOf } from './tl/schema/utils';
 
 describe('MTProto', () => {
   const url = 'ws://exapmle.com/';
-  it.only('auth key created', (done) => {
+  it('auth key created', (done) => {
     createAuthorizationKey.mockResolvedValueOnce({
       authKey: 'key',
       authKeyId: 12312,
@@ -53,7 +54,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it.only('auth key where passed on init', (done) => {
+  it('auth key where passed on init', (done) => {
     const authData = {
       authKey: [3, 4, 6, 1, 3],
       authKeyId: [4, 5, 1, 2],
@@ -75,7 +76,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it.only('auth key create failed', (done) => {
+  it('auth key create failed', (done) => {
     createAuthorizationKey.mockRejectedValueOnce('some reason');
 
     const connection = new MTProto(url, schema);
@@ -88,14 +89,14 @@ describe('MTProto', () => {
   });
 
   describe('request', () => {
-    it.only('wrong connection status', () => {
+    it('wrong connection status', () => {
       const connection = new MTProto(url, schema);
       return connection.request({ a: 1 }).catch((reason) => {
         expect(reason).toEqual(new Error('Auth key has not been created'));
       });
     });
 
-    it.only('empty array buffer error', (done) => {
+    it('empty array buffer error', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -113,7 +114,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it.only('send ping request', (done) => {
+    it('send ping request', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -148,7 +149,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it.only('send rpc call', (done) => {
+    it('send rpc call', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -185,7 +186,7 @@ describe('MTProto', () => {
       connection.init();
     });
 
-    it.only('send with message previous acknowledgements', (done) => {
+    it('send with message previous acknowledgements', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
         authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
           41, 19],
@@ -231,7 +232,7 @@ describe('MTProto', () => {
   });
 
   describe('handleResponse', () => {
-    it.only('pong', () => {
+    it('pong', () => {
       const connection = new MTProto(url, schema);
       const resolve = jest.fn();
       const reject = jest.fn();
@@ -250,7 +251,7 @@ describe('MTProto', () => {
       expect(resolve).toHaveBeenCalled();
     });
 
-    it.only('new_session_created', () => {
+    it('new_session_created', () => {
       const connection = new MTProto(url, schema);
 
       connection.handleResponse({
@@ -271,7 +272,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt(123123));
     });
 
-    it.only('rpc_result success', () => {
+    it('rpc_result success', () => {
       const connection = new MTProto(url, schema);
 
       const resolve = jest.fn();
@@ -305,7 +306,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it.only('rpc_result error', () => {
+    it('rpc_result error', () => {
       const connection = new MTProto(url, schema);
 
       const resolve = jest.fn();
@@ -337,7 +338,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it.only('handle message container messages one by one', () => {
+    it('handle message container messages one by one', () => {
       const connection = new MTProto(url, schema);
 
       const resolvePing = jest.fn();
@@ -403,7 +404,7 @@ describe('MTProto', () => {
       expect(connection.acknowledgements[0]).toEqual(BigInt('6798192297014662145'));
     });
 
-    it.only('handle bad_server_salt', () => {
+    it('handle bad_server_salt', () => {
       const response = constructorFromSchema(
         schema108,
         'nearestDc',
@@ -434,7 +435,7 @@ describe('MTProto', () => {
       expect(connection.request).toHaveBeenCalledWith(message);
     });
 
-    it.only('handle msgs_ack', () => {
+    it('handle msgs_ack', () => {
       const connection = new MTProto(url, schema);
       connection.handleResponse({
         msgId: BigInt(123123),
@@ -444,7 +445,7 @@ describe('MTProto', () => {
     });
   });
 
-  it.only('test upload file small file', (done) => {
+  it('test upload file small file', (done) => {
     const file = new File(
       (new Array(1869)).fill(new ArrayBuffer(1024)),
       'avatar.jpg',
@@ -476,7 +477,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it.only('test upload file file big file', (done) => {
+  it('test upload file file big file', (done) => {
     const file = new File(
       (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
       'avatar.jpg',
@@ -507,7 +508,7 @@ describe('MTProto', () => {
     connection.init();
   });
 
-  it.only('fire updates that have been come from server', (done) => {
+  it('fire updates that have been come from server', (done) => {
     const construct = R.partial(constructorFromSchema, [schema108]);
 
     const connection = new MTProto(url, schema108);
@@ -570,5 +571,123 @@ describe('MTProto', () => {
       done();
     });
     connection.handleResponse(message);
+  });
+
+  describe('download file', () => {
+    const construct = R.partial(constructorFromSchema, [schema108]);
+
+    it('download file error', (done) => {
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+      const connection = new MTProto(url, schema);
+      connection.request = () => Promise.resolve('success');
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        expect(() => connection.download({})).toThrowError();
+        done();
+      });
+      connection.init();
+    });
+
+    it('download file without size with callback', (done) => {
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+      const connection = new MTProto(url, schema);
+      connection.request = jest.fn()
+        .mockResolvedValueOnce(
+          construct(
+            'upload.file',
+            {
+              bytes: new Array(1 * DOWNLOAD_PART_SIZE),
+              mtime: 1579673798,
+              type: construct('storage.fileJpeg'),
+            },
+          ),
+        )
+        .mockResolvedValueOnce(
+          construct(
+            'upload.file',
+            {
+              bytes: new Array(2315),
+              mtime: 1579673798,
+              type: construct('storage.fileJpeg'),
+            },
+          ),
+        );
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const photo = construct(
+          'fileLocationToBeDeprecated',
+          {
+            local_id: 295908,
+            volume_id: BigInt('257717321'),
+          },
+        );
+        const peer = construct('peerSelf');
+        const inputFileLocation = construct('inputPeerPhotoFileLocation', { peer, ...photo });
+
+        const progressCb = jest.fn();
+
+        connection.download(inputFileLocation, { progressCb }).then((result) => {
+          expect(result.name).toEqual('image.jpg');
+          expect(progressCb).toBeCalledTimes(3);
+          done();
+        });
+      });
+      connection.init();
+    });
+
+    it('download file with size and callback', (done) => {
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+
+      const resolvedValue = construct(
+        'upload.file',
+        {
+          bytes: new Array(20),
+          mtime: 1579673798,
+          type: construct('storage.fileMov'),
+        },
+      );
+
+      const connection = new MTProto(url, schema);
+      connection.request = jest.fn()
+        .mockResolvedValue(resolvedValue);
+
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const size = 29560491;
+        const inputDocumentFileLocation = construct(
+          'inputDocumentFileLocation',
+          {
+            id: BigInt('5240348864103319253'),
+            access_hash: BigInt('12421989964750953769'),
+            /* eslint-disable */
+            file_reference: [4, 77, 147, 139, 10, 0, 0, 0, 173, 94, 151, 31, 229, 33, 14, 216, 45, 215, 159, 253, 31, 11, 68, 166, 26, 28, 38, 214, 102],
+            /* eslint-enable */
+            thumb_size: 'm',
+          },
+        );
+
+        const progressCb = jest.fn();
+        connection
+          .download(inputDocumentFileLocation, { size, progressCb })
+          .then((result) => {
+            expect(result.name).toEqual('video.mov');
+            expect(progressCb).toBeCalledTimes(Math.ceil(size / DOWNLOAD_PART_SIZE + 1));
+            done();
+          });
+      });
+      connection.init();
+    });
   });
 });

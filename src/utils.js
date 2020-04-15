@@ -532,17 +532,45 @@ export const buildTypeLoader = R.pipe(
 /**
  * Call function that returns promise one bo one, and handle progress by progressCb
  * @param {Array<>} promiseFuncList - function that will returns promise
- * @param {} - callback to track progress
+ * @param {Function} progressCb - callback to track progress
  */
 export function promiseChain(promiseFuncList, progressCb) {
+  const resultArr = [];
   function innerCaller(i, result) {
     progressCb(i, promiseFuncList.length);
+    if (i !== 0) {
+      resultArr.push(result);
+    }
     if (i === promiseFuncList.length) {
-      return result;
+      return Promise.resolve(resultArr);
     }
     const promise = promiseFuncList[i](result);
     return promise.then(R.partial(innerCaller, [i + 1]));
   }
 
   return innerCaller(0);
+}
+
+/**
+ * Get promise function, call
+ * @param {Function} getPromiseFunc - takes previous result, counter and returns new promise;
+ * @param {Function} conditionFunc - takes previous result and returns
+ * @param {Function} progressCb - for tracking progress
+ */
+export function promiseChainUntil(getPromiseFunc, conditionFunc, progressCb) {
+  const resultArr = [];
+  function innerCaller(result, i) {
+    if (i !== 0) {
+      resultArr.push(result);
+    }
+
+    progressCb(i);
+
+    if (i !== 0 && conditionFunc(result, i)) {
+      return Promise.resolve(resultArr);
+    }
+
+    return getPromiseFunc(result, i).then(R.partialRight(innerCaller, [i + 1]));
+  }
+  return innerCaller(undefined, 0);
 }
