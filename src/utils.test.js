@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import {
   isPrime,
   findPrimeFactors,
@@ -8,6 +9,7 @@ import {
   mergeArrayBuffer,
   hexToArrayBuffer,
   promiseChain,
+  promiseChainUntil,
 } from './utils';
 import {
   buildSecondInitPayload,
@@ -123,8 +125,23 @@ describe('promiseChain', () => {
     const progressCb = jest.fn();
 
     promiseChain(promiseList, progressCb).then((result) => {
+      expect(result).toHaveLength(100);
       expect(progressCb).toHaveBeenCalledTimes(101);
-      expect(result).toEqual(99);
+      expect(R.last(result)).toEqual(99);
+      done();
+    });
+  });
+});
+
+describe('promiseChainUntil', () => {
+  test('test', (done) => {
+    const promiseFuncFactory = (prevResult, x) => Promise.resolve(x);
+    const conditionFunc = (prevResult) => prevResult === 4;
+    const progressCb = console.log;
+
+    return promiseChainUntil(promiseFuncFactory, conditionFunc, progressCb).then((result) => {
+      expect(result).toHaveLength(5);
+      // expect(progressCb).toHaveBeenCalledTimes(6);
       done();
     });
   });
