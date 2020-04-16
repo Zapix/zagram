@@ -397,12 +397,31 @@ export default class MTProto extends EventTarget {
    * Returns stream
    * @param {File} file - file that will be uploaded to telegram server
    * @param {Function} progressCb - callback function to track progress
-   * @returns {PromiseLike<{ filename: string, fileId: BigInt, md5sum: string, parts: number}>}
+   * @returns {{
+   *  promise: PromiseLike<{ filename: string, fileId: BigInt, md5sum: string, parts: number}>,
+   *  cancel: Function,
+   * }}
    */
   upload(file, progressCb) {
-    return file
+    let canceled = false;
+    let cancelChain;
+
+    function cancel() {
+      console.log('Cancel promise for uploading');
+      canceled = true;
+      if (cancelChain) {
+        console.log('call cancel chain func', cancelChain);
+        cancelChain();
+      }
+    }
+
+    const promise = file
       .arrayBuffer()
       .then((buffer) => {
+        console.log('Is canceled: ', canceled);
+        if (canceled) {
+          return Promise.reject(new Error('canceled'));
+        }
         const fileId = uint8ToBigInt(getNRandomBytes(8));
         const parts = Math.ceil(buffer.byteLength / UPLOAD_PART_SIZE);
 
@@ -436,17 +455,24 @@ export default class MTProto extends EventTarget {
         );
 
         const inputFileConstructor = bigFile ? 'inputFileBig' : 'inputFile';
-        return promiseChain(uploadPromiseFuncs, progressCb).then(() => (constructorFromSchema(
-          this.schema,
-          inputFileConstructor,
-          {
-            parts,
-            id: fileId,
-            md5_checksum: '',
-            name: file.name,
-          },
-        )));
+        const {
+          promise: chainablePromise,
+          cancel: cancelChainFunc,
+        } = promiseChain(uploadPromiseFuncs, progressCb);
+        cancelChain = cancelChainFunc;
+        return chainablePromise
+          .then(() => (constructorFromSchema(
+            this.schema,
+            inputFileConstructor,
+            {
+              parts,
+              id: fileId,
+              md5_checksum: '',
+              name: file.name,
+            },
+          )));
       });
+    return { cancel, promise };
   }
 
   /**
@@ -467,6 +493,7 @@ export default class MTProto extends EventTarget {
     const progressCb = R.propOr(() => {}, 'progressCb', options);
     const size = R.propOr(null, 'size', options);
     let promise;
+    let cancel;
 
     const buildDownloadRequest = R.pipe(
       R.mergeLeft({ location }),
@@ -487,24 +514,28 @@ export default class MTProto extends EventTarget {
         R.gt(DOWNLOAD_PART_SIZE),
       );
 
-      promise = promiseChainUntil(getPromiseFunc, isDownloadedPartSmaller, progressCb);
+      const result = promiseChainUntil(getPromiseFunc, isDownloadedPartSmaller, progressCb);
+      promise = result.promise;
+      cancel = result.cancel;
     } else {
       const parts = Math.ceil(size / DOWNLOAD_PART_SIZE);
       const downloadPromiseList = R.pipe(
         R.times(getDownloadLimitOffset),
-        R.map(R.pipe(buildDownloadRequest, (x) => () => {
-          console.log('[DOWNLOAD REQUEST]: ', x);
-          return this.request(x);
-        })),
+        R.map(R.pipe(buildDownloadRequest, (x) => () => this.request(x))),
       )(parts);
-      promise = promiseChain(downloadPromiseList, progressCb);
+      const result = promiseChain(downloadPromiseList, progressCb);
+      promise = result.promise;
+      cancel = result.cancel;
     }
 
-    return promise
-      .then((result) => new File(
-        R.map(R.pipe(R.prop('bytes'), uint8ToArrayBuffer))(result),
-        R.pipe(R.last, R.prop('type'), getFileName)(result),
-        { type: R.pipe(R.last, getFileType)(result) },
-      ));
+    return {
+      cancel,
+      promise: promise
+        .then((result) => new File(
+          R.map(R.pipe(R.prop('bytes'), uint8ToArrayBuffer))(result),
+          R.pipe(R.last, R.prop('type'), getFileName)(result),
+          { type: R.pipe(R.last, getFileType)(result) },
+        )),
+    };
   }
 }

@@ -120,16 +120,41 @@ describe('mergeArrayBuffers', () => {
 });
 
 describe('promiseChain', () => {
-  test('test', (done) => {
+  test('successfully finished', (done) => {
     const promiseList = (new Array(100)).fill(1).map((value, idx) => (() => Promise.resolve(idx)));
     const progressCb = jest.fn();
 
-    promiseChain(promiseList, progressCb).then((result) => {
+    const { promise } = promiseChain(promiseList, progressCb);
+    promise.then((result) => {
       expect(result).toHaveLength(100);
       expect(progressCb).toHaveBeenCalledTimes(101);
       expect(R.last(result)).toEqual(99);
       done();
     });
+  });
+
+  test('canceled', (done) => {
+    const promiseList = (new Array(100)).fill(1).map(
+      (v, i) => () => new Promise((resolve) => setTimeout(() => resolve(i), 100)),
+    );
+    const progressCb = jest.fn();
+
+    const { promise, cancel } = promiseChain(promiseList, progressCb);
+    promise
+      .then(() => {
+        done(new Error('cancelation does not work'));
+      })
+      .catch((error) => {
+        expect(error.message).toEqual('canceled');
+        expect(progressCb).toHaveBeenCalledTimes(4);
+        done();
+      });
+    setTimeout(
+      () => {
+        cancel();
+      },
+      350,
+    );
   });
 });
 
@@ -137,12 +162,33 @@ describe('promiseChainUntil', () => {
   test('test', (done) => {
     const promiseFuncFactory = (prevResult, x) => Promise.resolve(x);
     const conditionFunc = (prevResult) => prevResult === 4;
-    const progressCb = console.log;
+    const progressCb = jest.fn();
 
-    return promiseChainUntil(promiseFuncFactory, conditionFunc, progressCb).then((result) => {
+    const { promise } = promiseChainUntil(promiseFuncFactory, conditionFunc, progressCb);
+    promise.then((result) => {
       expect(result).toHaveLength(5);
-      // expect(progressCb).toHaveBeenCalledTimes(6);
+      expect(progressCb).toHaveBeenCalledTimes(6);
       done();
     });
+  });
+
+  test('canceled', (done) => {
+    const promiseFuncFactory = (prevResult, x) => new Promise(
+      (resolve) => setTimeout(() => resolve(x), 100),
+    );
+    const conditionFunc = (prevResult) => prevResult === 99;
+    const progressCb = jest.fn();
+
+    const { promise, cancel } = promiseChainUntil(promiseFuncFactory, conditionFunc, progressCb);
+    promise
+      .then(() => {
+        done(new Error('cancelation does not work'));
+      })
+      .catch((error) => {
+        expect(error.message).toEqual('canceled');
+        expect(progressCb).toHaveBeenCalledTimes(4);
+        done();
+      });
+    setTimeout(cancel, 350);
   });
 });

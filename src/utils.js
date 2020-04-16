@@ -533,10 +533,17 @@ export const buildTypeLoader = R.pipe(
  * Call function that returns promise one bo one, and handle progress by progressCb
  * @param {Array<>} promiseFuncList - function that will returns promise
  * @param {Function} progressCb - callback to track progress
+ * @returns {{ promise: PromiseLike<*>, cancel: Function }} - object with promise and cancel func
  */
 export function promiseChain(promiseFuncList, progressCb) {
   const resultArr = [];
+  let canceled = false;
+
   function innerCaller(i, result) {
+    if (canceled) {
+      return Promise.reject(new Error('canceled'));
+    }
+
     progressCb(i, promiseFuncList.length);
     if (i !== 0) {
       resultArr.push(result);
@@ -548,7 +555,11 @@ export function promiseChain(promiseFuncList, progressCb) {
     return promise.then(R.partial(innerCaller, [i + 1]));
   }
 
-  return innerCaller(0);
+  const promise = innerCaller(0);
+  function cancel() {
+    canceled = true;
+  }
+  return { promise, cancel };
 }
 
 /**
@@ -559,7 +570,11 @@ export function promiseChain(promiseFuncList, progressCb) {
  */
 export function promiseChainUntil(getPromiseFunc, conditionFunc, progressCb) {
   const resultArr = [];
+  let canceled = false;
   function innerCaller(result, i) {
+    if (canceled) {
+      return Promise.reject(new Error('canceled'));
+    }
     if (i !== 0) {
       resultArr.push(result);
     }
@@ -572,5 +587,9 @@ export function promiseChainUntil(getPromiseFunc, conditionFunc, progressCb) {
 
     return getPromiseFunc(result, i).then(R.partialRight(innerCaller, [i + 1]));
   }
-  return innerCaller(undefined, 0);
+  const promise = innerCaller(undefined, 0);
+  function cancel() {
+    canceled = true;
+  }
+  return { promise, cancel };
 }
