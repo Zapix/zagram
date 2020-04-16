@@ -35,18 +35,27 @@ Node version to build: `v12.13.0`
   * schema - object with layer that should be used 
  
  
- **Methods**:
+ **Public Methods**:
  
- `init` - create authorization key and starts connection with telegram server 
+ `init()` - create authorization key and starts connection with telegram server 
  
- `addEventListener(handler)` - added event listener for telegram event.
+ `addEventListener(handler: Function)` - added event listener for telegram event.
  
  ***Emited Events:***
   * `statusChanged`  - emits when auth key has been crated or creation has been failed
   * `telegramUpdate` - emits when update from telegram received. Event contains telegram `Updates` object in `detail` param
+
+ `request(msg_obj: Object) -> Promise` - sends rpc call to telegram server. `msg_obj` generated 
+ with `methodFromSchema` and `constructorFromSchema` functions. Returns promise with result;
  
- `request(msg_obj)` - sends rpc call to telegram server. `msg_obj` generated 
- with `methodFromSchema` and `constructorFromSchema` functions. Returns promise request with result.
+ 
+ `upload(file: File, progressCb: Function) -> { promise: Promise, cancel: Functon }` - upload file to telegram server
+ allow to track progress with `progressCb` function, returns promise and cancel function to stop uploading
+ 
+ `download(location, options: {size: Number, progressCb: Functon}) -> { promise: Promise, cancel: Function } ` - downloads
+ file from telegram server by file location, allow to track downloading progress if `progressCb` passed. 
+ returns promise of downloaded file, and returns cancel function to cancel downloading;
+ 
  
  ### schema
  
