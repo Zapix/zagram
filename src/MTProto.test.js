@@ -25,6 +25,7 @@ import MTProto, {
   STATUS_CHANGED_EVENT,
   AUTH_KEY_CREATED,
   AUTH_KEY_CREATE_FAILED,
+  UPLOAD_PART_SIZE,
   DOWNLOAD_PART_SIZE,
 } from './MTProto';
 import schema from './tl/schema/layer5';
@@ -445,67 +446,109 @@ describe('MTProto', () => {
     });
   });
 
-  it('test upload file small file', (done) => {
-    const file = new File(
-      (new Array(1869)).fill(new ArrayBuffer(1024)),
-      'avatar.jpg',
-    );
+  describe('uplaod', () => {
+    it('test upload file small file', (done) => {
+      const file = new File(
+        (new Array(1869)).fill(new ArrayBuffer(1024)),
+        'avatar.jpg',
+      );
 
-    file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(1869 * 1024));
+      file.arrayBuffer = () => Promise.resolve(
+        new ArrayBuffer(Math.ceil(DOWNLOAD_PART_SIZE * 3.5)),
+      );
 
-    const progressCb = jest.fn();
+      const progressCb = jest.fn();
 
-    createAuthorizationKey.mockResolvedValueOnce({
-      authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
-        41, 19],
-      authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
-      serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
-    });
-    const connection = new MTProto(url, schema);
-    connection.request = () => Promise.resolve('success');
-    connection.addEventListener(STATUS_CHANGED_EVENT, () => {
-      connection.upload(file, progressCb).then((result) => {
-        expect(progressCb).toHaveBeenCalledTimes(5);
-        expect(isObjectOf('inputFile', result)).toEqual(true);
-        expect(result.name).toEqual('avatar.jpg');
-        expect(result).toHaveProperty('id');
-        expect(result).toHaveProperty('md5_checksum');
-        expect(result.parts).toEqual(4);
-        done();
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-    });
-    connection.init();
-  });
-
-  it('test upload file file big file', (done) => {
-    const file = new File(
-      (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
-      'avatar.jpg',
-    );
-
-    file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(15 * 1024 * 1024));
-
-    const progressCb = jest.fn();
-
-    createAuthorizationKey.mockResolvedValueOnce({
-      authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
-        41, 19],
-      authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
-      serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
-    });
-    const connection = new MTProto(url, schema108);
-    connection.request = () => Promise.resolve('success');
-    connection.addEventListener(STATUS_CHANGED_EVENT, () => {
-      connection.upload(file, progressCb).then((result) => {
-        expect(progressCb).toHaveBeenCalledTimes(31);
-        expect(isObjectOf('inputFileBig', result)).toEqual(true);
-        expect(result.name).toEqual('avatar.jpg');
-        expect(result).toHaveProperty('id');
-        expect(result.parts).toEqual(30);
-        done();
+      const connection = new MTProto(url, schema);
+      connection.request = () => Promise.resolve('success');
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const { promise } = connection.upload(file, progressCb);
+        promise.then((result) => {
+          expect(progressCb).toHaveBeenCalledTimes(5);
+          expect(isObjectOf('inputFile', result)).toEqual(true);
+          expect(result.name).toEqual('avatar.jpg');
+          expect(result).toHaveProperty('id');
+          expect(result).toHaveProperty('md5_checksum');
+          expect(result.parts).toEqual(4);
+          done();
+        });
       });
+      connection.init();
     });
-    connection.init();
+
+    it('test upload file file big file', (done) => {
+      const file = new File(
+        (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
+        'avatar.jpg',
+      );
+
+      file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(30 * UPLOAD_PART_SIZE));
+
+      const progressCb = jest.fn();
+
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+      const connection = new MTProto(url, schema108);
+      connection.request = () => Promise.resolve('success');
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const { promise } = connection.upload(file, progressCb);
+        promise.then((result) => {
+          expect(progressCb).toHaveBeenCalledTimes(31);
+          expect(isObjectOf('inputFileBig', result)).toEqual(true);
+          expect(result.name).toEqual('avatar.jpg');
+          expect(result).toHaveProperty('id');
+          expect(result.parts).toEqual(30);
+          done();
+        });
+      });
+      connection.init();
+    });
+
+
+    it('cancel uploading', (done) => {
+      const file = new File(
+        (new Array(15 * 1024)).fill(new ArrayBuffer(1024)),
+        'avatar.jpg',
+      );
+
+      file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(30 * UPLOAD_PART_SIZE));
+
+      const progressCb = jest.fn();
+
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+      const connection = new MTProto(url, schema108);
+      connection.request = () => new Promise((resolve) => setTimeout(
+        () => resolve('success'),
+        100,
+      ));
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const data = connection.upload(file, progressCb);
+        const { promise, cancel } = data;
+        promise
+          .then(() => done(new Error('uploaded')))
+          .catch((error) => {
+            expect(error.message).toEqual('canceled');
+            done();
+          });
+        setTimeout(() => cancel(), 50);
+      });
+      connection.init();
+    });
   });
 
   it('fire updates that have been come from server', (done) => {
@@ -634,7 +677,8 @@ describe('MTProto', () => {
 
         const progressCb = jest.fn();
 
-        connection.download(inputFileLocation, { progressCb }).then((result) => {
+        const { promise } = connection.download(inputFileLocation, { progressCb });
+        promise.then((result) => {
           expect(result.name).toEqual('image.jpg');
           expect(progressCb).toBeCalledTimes(3);
           done();
@@ -679,13 +723,66 @@ describe('MTProto', () => {
         );
 
         const progressCb = jest.fn();
-        connection
-          .download(inputDocumentFileLocation, { size, progressCb })
+        const { promise } = connection
+          .download(inputDocumentFileLocation, { size, progressCb });
+
+        promise
           .then((result) => {
             expect(result.name).toEqual('video.mov');
             expect(progressCb).toBeCalledTimes(Math.ceil(size / DOWNLOAD_PART_SIZE + 1));
             done();
           });
+      });
+      connection.init();
+    });
+
+    it('cancel download', (done) => {
+      createAuthorizationKey.mockResolvedValueOnce({
+        authKey: [51, 226, 44, 202, 188, 62, 184, 113, 57, 203, 114, 87, 206, 49, 208, 130, 207, 59,
+          41, 19],
+        authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
+        serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
+      });
+
+      const resolvedValue = construct(
+        'upload.file',
+        {
+          bytes: new Array(20),
+          mtime: 1579673798,
+          type: construct('storage.fileMov'),
+        },
+      );
+
+      const connection = new MTProto(url, schema);
+      connection.request = () => new Promise(
+        (resolve) => setTimeout(() => resolve(resolvedValue), 100),
+      );
+
+      connection.addEventListener(STATUS_CHANGED_EVENT, () => {
+        const size = 29560491;
+        const inputDocumentFileLocation = construct(
+          'inputDocumentFileLocation',
+          {
+            id: BigInt('5240348864103319253'),
+            access_hash: BigInt('12421989964750953769'),
+            /* eslint-disable */
+            file_reference: [4, 77, 147, 139, 10, 0, 0, 0, 173, 94, 151, 31, 229, 33, 14, 216, 45, 215, 159, 253, 31, 11, 68, 166, 26, 28, 38, 214, 102],
+            /* eslint-enable */
+            thumb_size: 'm',
+          },
+        );
+
+        const progressCb = jest.fn();
+        const { promise, cancel } = connection
+          .download(inputDocumentFileLocation, { size, progressCb });
+
+        promise
+          .then(() => done(new Error('downloaded')))
+          .catch((error) => {
+            expect(error.message).toEqual('canceled');
+            done();
+          });
+        setTimeout(cancel, 50);
       });
       connection.init();
     });
