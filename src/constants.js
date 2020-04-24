@@ -2,9 +2,9 @@
 export const BOOL_TRUE = 0x997275b5;
 export const BOOL_FALSE = 0xbc799737;
 
-export const TYPE_KEY = Symbol('type');
-export const CONSTRUCTOR_KEY = Symbol('constructor');
-export const METHOD_KEY = Symbol('method');
+export const TYPE_KEY = '@@type';
+export const CONSTRUCTOR_KEY = '@@constructor';
+export const METHOD_KEY = '@@method';
 
 export const API_ID = 1005944;
 export const API_HASH = 'dfbf8ed1e37d1cd1ad370e7431ed8a87';
