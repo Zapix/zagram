@@ -282,9 +282,6 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
-    console.group('[MTPROTO] Income message');
-    console.log(message);
-    console.groupEnd();
     if (isMessageOf(MESSAGE_CONTAINER_TYPE, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
