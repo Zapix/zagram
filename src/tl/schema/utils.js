@@ -2,6 +2,23 @@ import * as R from 'ramda';
 import { getConstructor } from '../utils';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
+function memoize(func) {
+  const memo = {};
+  /* eslint-disable */
+  const slice = Array.prototype.slice;
+  /* eslint-enable */
+
+  return function (...funcargs) {
+    const args = slice.call(funcargs);
+
+    if (args in memo) {
+      return memo[args];
+    }
+    memo[args] = func.apply(this, args);
+    return memo[args];
+  };
+}
+
 
 /**
  * Converts int 32 value to unsigned int 32 value without changing bytes
@@ -30,7 +47,7 @@ const updateSchemaWithUintId = R.over(R.lensProp('id'), parseId);
  * builds schema map
  * @param {Array<{id: Number, [method]}>}
  */
-const buildMap = R.pipe(
+const buildMap = memoize(R.pipe(
   R.map(
     R.pipe(
       R.of,
@@ -38,35 +55,35 @@ const buildMap = R.pipe(
     ),
   ),
   R.fromPairs,
-);
+));
 
 /**
  * Takes schema and builds map that allows search constructors by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildConstructorsMap = R.pipe(
+const buildConstructorsMap = memoize(R.pipe(
   R.prop('constructors'),
   buildMap,
-);
+));
 
 /**
  * Takes schema and builds map that allows search methods by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildMethodsMap = R.pipe(
+const buildMethodsMap = memoize(R.pipe(
   R.prop('methods'),
   buildMap,
-);
+));
 
 /**
  * Takes global schema and builds map that allows search item by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildSchemaIdMap = R.pipe(
+const buildSchemaIdMap = memoize(R.pipe(
   R.of,
   R.ap([buildMethodsMap, buildConstructorsMap]),
   R.mergeAll,
-);
+));
 
 
 /**
