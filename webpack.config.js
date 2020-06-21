@@ -14,7 +14,7 @@ module.exports = {
     filename: 'zagram.js',
     path: path.resolve(__dirname, 'dist'),
     library: 'zagram',
-    libraryTarget: 'umd',  
+    libraryTarget: 'umd',
   },
   plugins: [
     new CleanWebpackPlugin(),

@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 
 import constructorFromSchema from './constructorFromSchema';
-import schema from './layer5.json';
+import schema from './layer108.json';
 import { CONSTRUCTOR_KEY, TYPE_KEY } from '../../constants';
 
 describe('constructorFromSchema', () => {
