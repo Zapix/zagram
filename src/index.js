@@ -17,6 +17,7 @@ export { default as Connection } from './Connection';
 export { default as getObfuscation } from './obfuscation'
 export { tag, decode as padDecode, encode as padEncode} from './intermediate';
 export { getInitialDHExchangeMessage } from './createAuthorizationKey';
+export {sha256} from './sha';
 export {
   mergeAllArrayBuffers,
   mergeArrayBuffer,

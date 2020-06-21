@@ -1,8 +1,7 @@
 import * as R from 'ramda';
 
 import loadMessage from './loadMessage';
-import schema from './schema/layer5.json';
-import schema108 from './schema/layer108.json';
+import schema from './schema/layer108.json';
 import {
   TYPE_KEY,
   BAD_MSG_NOTIFICATION_TYPE,
@@ -155,7 +154,7 @@ describe('load', () => {
 
   it('rpc result', () => {
     /* eslint-disable */
-    const hexStr = '016d5cf300000000bc860b5ebdbc1522b57572991235646130343337306165386264323132373800';
+    const hexStr = '016d5cf300000000bc860b5e0225005e04000000a2bb00c0040000001231653833383137316536633537323932353000e8030000';
     /* eslint-enable */
     const buffer = hexToArrayBuffer(hexStr);
 
@@ -165,8 +164,7 @@ describe('load', () => {
       result: {
         [CONSTRUCTOR_KEY]: 'auth.sentCode',
         [TYPE_KEY]: 'auth.SentCode',
-        phone_registered: true,
-        phone_code_hash: '5da04370ae8bd21278',
+        phone_code_hash: '1e838171e6c5729250',
       },
     });
   });
@@ -407,14 +405,19 @@ describe('load', () => {
   });
 
   it('load auth.sentCode', () => {
-    const hexStr = 'bdbc1522b57572991237363064393638363661326264366539343500';
+    const hexStr = '0225005e04000000a2bb00c0040000001231653833383137316536633537323932353000e8030000';
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
       [CONSTRUCTOR_KEY]: 'auth.sentCode',
       [TYPE_KEY]: 'auth.SentCode',
-      phone_registered: true,
-      phone_code_hash: '760d96866a2bd6e945',
+      type: {
+        [CONSTRUCTOR_KEY]: 'auth.sentCodeTypeSms',
+        [TYPE_KEY]: 'auth.SentCodeType',
+        length: 4,
+      },
+      phone_code_hash: '1e838171e6c5729250',
+      timeout: 1000,
     });
   });
 
@@ -425,7 +428,7 @@ describe('load', () => {
 
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       [CONSTRUCTOR_KEY]: 'config',
       [TYPE_KEY]: 'Config',
     });
@@ -440,7 +443,7 @@ describe('load', () => {
     /* eslint-enable */
 
     const buffer = hexToArrayBuffer(hexStr);
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
       messages: [
         {
@@ -475,7 +478,7 @@ describe('load', () => {
     const hexStr = '016d5cf338000000d4b8775ea1cf7230fe1203001f8b08000000000000035d527d485351143fd34adbca0cd2b4cf9b7fd456b26ac9d682cc22b159da979085186f6f77afbbde7b77bdf7365b11d9074543a494b28f8935c43f9248a10f93f52144e51f4552145450101445f657fd1568f76e2eab0387fbe3dc73ceef77cebd65727f5edec39b733200409b3fb3981da0247adbad6f2d50ceb08d790ef37c48196adf721dfecb7d15ce8252864be15fe3b9d3d87933a45d70b545123c96e5c37e21241b694e9c535cde68822417e74cf71bea6ba81f9967824d54222a12a90faf420e6e76b49e22951a4822618c8c3d444fde228322418d501517231cc62a227e76892348172229206818f935aaa01a2c63491394056673cd9f7251509117a3908e7dbc954c25c478198ad090f6a70409a24843aa61473b3052198f86047d2f2206f2538df3333daa84b0ac63bbd9ecf1f36ae4233e75918134bc2f8475e32fc95ea64c8bf0827146aab2369409d6900f8789c8c6d18912942388482ad5c62656b0ae0b12b603a4f7386811eef2fd5ac6307fafccb1fd72c0df86ef35bddfe3166f3dcf7f1dec89b1f5c3402c7e899f93983bf27337565daf3b98fdb9482ee4c1d2fa86be97a5b394b6b26381c58e53e294a12bef63008d4fccdbcc4461429606825882a5d7c6f5d8133d1f4c04a0c564b58a8d5737fcec52bb0a3d052b2f7bbe592d39cf36ccbbf1e9c8a5ce635fa281c1afdd4d076ae2e568ee65b1e9536b469fd8d239a5d9dad571ef71c160fcfc097f5bc9bba18b93566f2eba58f7ebe38b92cca70b7f6c6d4ffc7a9edf37d2dd5169f38a4b700f0c972f697e2207bfcbb1e1191fb3a1fdf19ba8cdb96dd77467c5ba2a97209e8b47e393b75bf7c7a33613ccbe75bfc1a4003c7d7438810e7d8de632bdbd6e803253ca4baa01f80ce959ea065cf26916e7be0776e64dabdd5de5a908a8cb944ad11e084a3c0ffeca1fa83ddeba038e26fff39adbbd275f3d78b8363bfd85d8fdd46a6a103f1105835055079858e270b95c001ef79de1d1d1d1c3bc7ef784d47bad3c7b86ac685913cb5c2b93ac0a418f28349c63b07fe476bb9dcee5dcc09cc48e24e63da0bfa1fe372b1bec8ed80300000000'
     /* eslint-enable */
     const buffer = hexToArrayBuffer(hexStr);
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       [TYPE_KEY]: RPC_RESULT_TYPE,
       result: {
         chats: [],
@@ -500,7 +503,7 @@ describe('load', () => {
     /* eslint-enable */
 
     const buffer = hexToArrayBuffer(hexStr);
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       chats: [],
       dialogs: expect.arrayContaining([
         expect.objectContaining({ [TYPE_KEY]: 'Dialog', [CONSTRUCTOR_KEY]: 'dialog' }),
@@ -522,7 +525,7 @@ describe('load', () => {
     /* eslint-enable */
 
     const buffer = hexToArrayBuffer(hexStr);
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       messages: [
         {
           body: {
@@ -554,7 +557,7 @@ describe('load', () => {
 
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(loadMessage(schema108, buffer)).toMatchObject({
+    expect(loadMessage(schema, buffer)).toMatchObject({
       messages: expect.arrayContaining([
         expect.objectContaining({
           bytes: expect.any(Number),

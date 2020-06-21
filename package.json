@@ -48,15 +48,16 @@
     "jest-environment-jsdom-fifteen": "^1.0.2",
     "jsdom": "^15.2.1",
     "mini-css-extract-plugin": "^0.8.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
     "aes-js": "^3.1.2",
+    "babel-plugin-transform-commonjs-es2015-modules": "^4.0.1",
     "browserify-rsa": "^4.0.1",
     "countries-list": "^2.5.0",
     "crypto-js": "^3.1.9-1",

@@ -30,7 +30,7 @@ import {
   TYPE_KEY,
 } from '../constants';
 import dumpMessage from './dumpMessage';
-import schema from './schema/layer5.json';
+import schema from './schema/layer108.json';
 import { arrayBufferToHex } from '../utils';
 
 describe('dumpMessage', () => {

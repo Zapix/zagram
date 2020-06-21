@@ -1,37 +1,49 @@
 import * as R from 'ramda';
 import { hexToArrayBuffer } from '../../utils';
 
-import layer5 from './layer5.json';
 import layer108 from './layer108.json';
 
 import loadBySchema from './loadBySchema';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
 describe('loadBySchema', () => {
-  describe('user api layer 5', () => {
-    const load = R.partial(loadBySchema, [layer5]);
-    describe('auth.sentCode', () => {
-      const hexStr = 'bdbc1522b57572991231653833383137316536633537323932353000';
-      const arrayBuffer = hexToArrayBuffer(hexStr);
+  describe('user api layer 108', () => {
+    const load = R.partial(loadBySchema, [layer108]);
 
-      it('load without offset', () => {
-        expect(load(arrayBuffer)).toMatchObject({
+    describe('auth.sentCode', () => {
+      /* eslint-disable */
+      const hexStr = '0225005e04000000a2bb00c0040000001231653833383137316536633537323932353000e8030000';
+      /* eslint-enable */
+      const buffer = hexToArrayBuffer(hexStr);
+
+      it('without offset', () => {
+        expect(load(buffer)).toEqual({
           [CONSTRUCTOR_KEY]: 'auth.sentCode',
           [TYPE_KEY]: 'auth.SentCode',
-          phone_registered: true,
+          type: {
+            [CONSTRUCTOR_KEY]: 'auth.sentCodeTypeSms',
+            [TYPE_KEY]: 'auth.SentCodeType',
+            length: 4,
+          },
           phone_code_hash: '1e838171e6c5729250',
+          timeout: 1000,
         });
       });
 
-      it('load with offset', () => {
-        expect(load(arrayBuffer, true)).toEqual({
+      it('with offset', () => {
+        expect(load(buffer, true)).toEqual({
           value: {
             [CONSTRUCTOR_KEY]: 'auth.sentCode',
             [TYPE_KEY]: 'auth.SentCode',
-            phone_registered: true,
+            type: {
+              [CONSTRUCTOR_KEY]: 'auth.sentCodeTypeSms',
+              [TYPE_KEY]: 'auth.SentCodeType',
+              length: 4,
+            },
             phone_code_hash: '1e838171e6c5729250',
+            timeout: 1000,
           },
-          offset: 28,
+          offset: 40,
         });
       });
     });
@@ -67,58 +79,30 @@ describe('loadBySchema', () => {
 
     describe('config', () => {
       /* eslint-disable */
-      const hexStr = '05592d230f784d5eb57572990200000015c4b51c010000003ca4c22e01000000000000000e3134392e3135342e3137352e313000500000001e000000';
+      const hexStr = '67400b33480e00006e92675e079f675eb57572990200000015c4b51c0a0000000da1b71804040000010000000e3230372e3135342e3234312e373300cf38000011ddfdda254c78d9fa202ac536079e88b80800000da1b71810000000010000000e3134392e3135342e3137352e313000500000000da1b718010000000100000027323030313a306232383a663233643a663030313a303030303a303030303a303030303a30303065bb0100000da1b71810000000020000000e3134392e3135342e3136372e343000bb0100000da1b71804040000020000000e3230372e3135342e3234312e373300cf38000011ddfdda254c78d9fa202ac536079e88b80800000da1b71806040000020000000e3230372e3135342e3234312e373300cf38000011ddfdda254c78d9fa202ac536079e88b80800000da1b718010000000200000027323030313a303637633a303465383a663030323a303030303a303030303a303030303a30303065bb0100000da1b71810000000030000000f3134392e3135342e3137352e313137bb0100000da1b71804040000030000000e3230372e3135342e3234312e373300cf38000011ddfdda254c78d9fa202ac536079e88b80800000da1b718010000000300000027323030313a306232383a663233643a663030333a303030303a303030303a303030303a30303065bb0100000e74617076332e7374656c2e636f6d001e0000000f00000064000000503403008813000030750000e093040030750000dc05000060ea0000020000001900000084030000ffffff7fffffff7f00ea2400c8000000050000002c0100000400000003000000204e0000905f010030750000102700000d68747470733a2f2f742e6d652f00000a636f6e74657874626f74000d666f7572737175617265626f74000008696d616765626f74000000000400000010000002000000';
       /* eslint-enable */
       const buffer = hexToArrayBuffer(hexStr);
 
       it('without offset', () => {
-        expect(load(buffer)).toEqual({
+        expect(load(buffer)).toMatchObject({
           [CONSTRUCTOR_KEY]: 'config',
           [TYPE_KEY]: 'Config',
-          date: 0x5e4d780f,
-          test_mode: true,
-          this_dc: 2,
-          dc_options: [
-            {
-              [CONSTRUCTOR_KEY]: 'dcOption',
-              [TYPE_KEY]: 'DcOption',
-              id: 1,
-              hostname: '',
-              port: 80,
-              ip_address: '149.154.175.10',
-            },
-          ],
-          chat_size_max: 0x1e,
         });
       });
 
       it('with offset', () => {
         expect(load(buffer, true)).toEqual({
-          value: {
+          value: expect.objectContaining({
             [CONSTRUCTOR_KEY]: 'config',
             [TYPE_KEY]: 'Config',
-            date: 0x5e4d780f,
-            test_mode: true,
-            this_dc: 2,
-            dc_options: [
-              {
-                [CONSTRUCTOR_KEY]: 'dcOption',
-                [TYPE_KEY]: 'DcOption',
-                id: 1,
-                hostname: '',
-                port: 80,
-                ip_address: '149.154.175.10',
-              },
-            ],
-            chat_size_max: 0x1e,
-          },
-          offset: 60,
+            blocked_mode: expect.any(Boolean),
+            phonecalls_enabled: expect.any(Boolean),
+          }),
+          offset: 688,
         });
       });
     });
-  });
-  describe('user api layer 108', () => {
-    const load = R.partial(loadBySchema, [layer108]);
+
     describe('codeSettings', () => {
       describe('2 flags on', () => {
         const hexStr = '83bebede12000000';

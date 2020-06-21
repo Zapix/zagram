@@ -8,7 +8,7 @@ import {
   dumpFlag, hasConditionalField,
 } from './utils';
 
-import oldSchema from './layer5.json';
+import schema from './layer108.json';
 import { hexToArrayBuffer } from '../../utils';
 
 describe('utils', () => {
@@ -27,19 +27,31 @@ describe('utils', () => {
   });
 
   describe('getParseSchemaByid', () => {
-    describe('old schema parser', () => {
+    describe('schema parser', () => {
       test('find for constructor', () => {
-        expect(getParseSchemaById(oldSchema, 0x2215bcbd)).toEqual({
-          id: 0x2215bcbd,
+        expect(getParseSchemaById(schema, 0x5e002502)).toEqual({
+          id: 0x5e002502,
           predicate: 'auth.sentCode',
           params: [
             {
-              name: 'phone_registered',
-              type: 'Bool',
+              name: 'flags',
+              type: '#',
+            },
+            {
+              name: 'type',
+              type: 'auth.SentCodeType',
             },
             {
               name: 'phone_code_hash',
               type: 'string',
+            },
+            {
+              name: 'next_type',
+              type: 'flags.1?auth.CodeType',
+            },
+            {
+              name: 'timeout',
+              type: 'flags.2?int',
             },
           ],
           type: 'auth.SentCode',
@@ -47,35 +59,39 @@ describe('utils', () => {
       });
 
       test('find for constructor with uint', () => {
-        expect(getParseSchemaById(oldSchema, 0xe300cc3b)).toEqual({
-          id: 0xe300cc3b,
-          predicate: 'auth.checkedPhone',
+        expect(getParseSchemaById(schema, 0x1e287d04)).toEqual({
+          id: 0x1e287d04,
+          predicate: 'inputMediaUploadedPhoto',
           params: [
             {
-              name: 'phone_registered',
-              type: 'Bool',
+              name: 'flags',
+              type: '#',
             },
             {
-              name: 'phone_invited',
-              type: 'Bool',
+              name: 'file',
+              type: 'InputFile',
+            },
+            {
+              name: 'stickers',
+              type: 'flags.0?Vector<InputDocument>',
+            },
+            {
+              name: 'ttl_seconds',
+              type: 'flags.1?int',
             },
           ],
-          type: 'auth.CheckedPhone',
+          type: 'InputMedia',
         });
       });
 
       test('find for method', () => {
-        expect(getParseSchemaById(oldSchema, 0x768d5f4d)).toEqual({
-          id: 0x768d5f4d,
+        expect(getParseSchemaById(schema, 0xa677244f)).toEqual({
+          id: 0xa677244f,
           method: 'auth.sendCode',
           params: [
             {
               name: 'phone_number',
               type: 'string',
-            },
-            {
-              name: 'sms_type',
-              type: 'int',
             },
             {
               name: 'api_id',
@@ -86,8 +102,8 @@ describe('utils', () => {
               type: 'string',
             },
             {
-              name: 'lang_code',
-              type: 'string',
+              name: 'settings',
+              type: 'CodeSettings',
             },
           ],
           type: 'auth.SentCode',
@@ -95,21 +111,21 @@ describe('utils', () => {
       });
 
       test('not found', () => {
-        expect(getParseSchemaById(oldSchema, 0x00110000)).toBeUndefined();
+        expect(getParseSchemaById(schema, 0x00110000)).toBeUndefined();
       });
     });
   });
 
   describe('isFromSchemaFactory', () => {
     describe('layer schema', () => {
-      const isLoadableBySchema = isFromSchemaFactory(oldSchema);
+      const isLoadableBySchema = isFromSchemaFactory(schema);
       test('found constructor', () => {
-        const buffer = hexToArrayBuffer('3bcc00e3');
+        const buffer = hexToArrayBuffer('047d281e');
         expect(isLoadableBySchema(buffer)).toEqual(true);
       });
 
       test('found method', () => {
-        const buffer = hexToArrayBuffer('4d5f8d76');
+        const buffer = hexToArrayBuffer('4f2477a6');
         expect(isLoadableBySchema(buffer)).toEqual(true);
       });
     });
@@ -117,17 +133,13 @@ describe('utils', () => {
 
   describe('getSchemaForMethod', () => {
     it('layer schema', () => {
-      expect(getSchemaForMethod(oldSchema, 'auth.sendCode')).toEqual({
-        id: 1988976461,
+      expect(getSchemaForMethod(schema, 'auth.sendCode')).toEqual({
+        id: 0xa677244f,
         method: 'auth.sendCode',
         params: [
           {
             name: 'phone_number',
             type: 'string',
-          },
-          {
-            name: 'sms_type',
-            type: 'int',
           },
           {
             name: 'api_id',
@@ -138,8 +150,8 @@ describe('utils', () => {
             type: 'string',
           },
           {
-            name: 'lang_code',
-            type: 'string',
+            name: 'settings',
+            type: 'CodeSettings',
           },
         ],
         type: 'auth.SentCode',
@@ -149,7 +161,7 @@ describe('utils', () => {
 
   describe('getSchemaForConstructor', () => {
     describe('layer schema', () => {
-      expect(getSchemaForConstructor(oldSchema, 'photos.photosSlice')).toEqual({
+      expect(getSchemaForConstructor(schema, 'photos.photosSlice')).toEqual({
         id: 352657236,
         predicate: 'photos.photosSlice',
         params: [

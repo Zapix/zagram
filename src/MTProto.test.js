@@ -8,14 +8,13 @@ jest.mock('./Connection');
 
 import createAuthorizationKey from './createAuthorizationKey';
 import sendRequest from './sendRequest';
-import decryptMessage from './decryptMessage';
 
 import * as R from 'ramda';
 
 import {
   API_HASH,
   API_ID, BAD_SERVER_SALT_TYPE, CONSTRUCTOR_KEY,
-  HTTP_WAIT_TYPE, MESSAGE_CONTAINER_TYPE, MSGS_ACK_TYPE,
+  MESSAGE_CONTAINER_TYPE, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PING_TYPE,
   PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
@@ -28,8 +27,7 @@ import MTProto, {
   UPLOAD_PART_SIZE,
   DOWNLOAD_PART_SIZE,
 } from './MTProto';
-import schema from './tl/schema/layer5';
-import schema108 from './tl/schema/layer108';
+import schema from './tl/schema/layer108';
 import { hexToArrayBuffer } from './utils';
 import { isObjectOf } from './tl/schema/utils';
 /* eslint-enable */
@@ -164,14 +162,14 @@ describe('MTProto', () => {
       const connection = new MTProto(url, schema);
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const method = R.partial(methodFromSchema, [schema]);
+        const construct = R.partial(constructorFromSchema, [schema]);
         const message = method(
           'auth.sendCode',
           {
             phone_number: '+79625213997',
             api_id: API_ID,
-            sms_type: 0,
-            lang_code: 'ru',
             api_hash: API_HASH,
+            settings: construct('codeSettings'),
           },
         );
 
@@ -208,14 +206,14 @@ describe('MTProto', () => {
       connection.acknowledgements = [BigInt(1), BigInt(2)];
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const method = R.partial(methodFromSchema, [schema]);
+        const construct = R.partial(constructorFromSchema, [schema]);
         const message = method(
           'auth.sendCode',
           {
             phone_number: '+79625213997',
             api_id: API_ID,
-            sms_type: 0,
-            lang_code: 'ru',
             api_hash: API_HASH,
+            settings: construct('codeSettings', {}),
           },
         );
 
@@ -407,7 +405,7 @@ describe('MTProto', () => {
 
     it('handle bad_server_salt', () => {
       const response = constructorFromSchema(
-        schema108,
+        schema,
         'nearestDc',
         { country: 'russia', this_dc: 2, nearest_dc: 2 },
       );
@@ -415,7 +413,7 @@ describe('MTProto', () => {
       const connection = new MTProto(url, schema);
       const resolve = jest.fn();
       const reject = jest.fn();
-      const message = methodFromSchema(schema108, 'help.getNearestDc');
+      const message = methodFromSchema(schema, 'help.getNearestDc');
 
       connection.rpcPromises[BigInt('6798186738482151424')] = { resolve, reject, message };
       connection.request = jest.fn().mockResolvedValue(response);
@@ -498,7 +496,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema108);
+      const connection = new MTProto(url, schema);
       connection.request = () => Promise.resolve('success');
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const { promise } = connection.upload(file, progressCb);
@@ -531,7 +529,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema108);
+      const connection = new MTProto(url, schema);
       connection.request = () => new Promise((resolve) => setTimeout(
         () => resolve('success'),
         100,
@@ -552,9 +550,9 @@ describe('MTProto', () => {
   });
 
   it('fire updates that have been come from server', (done) => {
-    const construct = R.partial(constructorFromSchema, [schema108]);
+    const construct = R.partial(constructorFromSchema, [schema]);
 
-    const connection = new MTProto(url, schema108);
+    const connection = new MTProto(url, schema);
     const message = {
       body: construct(
         'updateShort',
@@ -617,7 +615,7 @@ describe('MTProto', () => {
   });
 
   describe('download file', () => {
-    const construct = R.partial(constructorFromSchema, [schema108]);
+    const construct = R.partial(constructorFromSchema, [schema]);
 
     it('download file error', (done) => {
       createAuthorizationKey.mockResolvedValueOnce({
