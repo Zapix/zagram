@@ -2,7 +2,7 @@ import * as R from 'ramda';
 
 import { dumpBadMsgNotification } from './bad_msg_notification';
 import {
-  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
   BAD_SERVER_SALT_TYPE,
   DESTROY_SESSION_NONE_TYPE,
   DESTROY_SESSION_OK_TYPE,
@@ -82,7 +82,7 @@ export default function dumpMessage(schema, msg) {
   const dump = R.partial(dumpMessage, [schema]);
 
   return R.cond([
-    [isMessageOf(BAD_MSG_NOTIFICATION_TYPE), dumpBadMsgNotification],
+    [isMessageOf(BAD_MSG_NOTIFICATION_CONSTRUCTOR), dumpBadMsgNotification],
     [isMessageOf(BAD_SERVER_SALT_TYPE), dumpBadServerSalt],
     [isMessageOf(DESTROY_SESSION_TYPE), dumpDestroySession],
     [isMessageOf(DESTROY_SESSION_NONE_TYPE), dumpDestroySessionNone],

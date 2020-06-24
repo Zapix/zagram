@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 
 import {
-  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
   BAD_SERVER_SALT_TYPE,
   DESTROY_SESSION_NONE_TYPE,
   DESTROY_SESSION_OK_TYPE,
@@ -49,7 +49,7 @@ describe('dumpMessage', () => {
       {
         type: 'bad_msg_notification',
         msg: {
-          [TYPE_KEY]: BAD_MSG_NOTIFICATION_TYPE,
+          [TYPE_KEY]: BAD_MSG_NOTIFICATION_CONSTRUCTOR,
           badMsgId: BigInt('0x5e0af67900000000'),
           badSeqNo: 2,
           errorCode: 0x23,

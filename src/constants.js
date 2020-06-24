@@ -53,8 +53,9 @@ export const MESSAGE_CONTAINER_TYPE = 'msg_container';
 export const NEW_SESSION_CREATED = 0x9ec20908;
 export const NEW_SESSION_CREATED_TYPE = 'new_session_created';
 
+export const BAD_MSG_NOTIFICATION_TYPE = 'BadMsgNotification';
 export const BAD_MSG_NOTIFICATION = 0xa7eff811;
-export const BAD_MSG_NOTIFICATION_TYPE = 'bad_msg_notification';
+export const BAD_MSG_NOTIFICATION_CONSTRUCTOR = 'bad_msg_notification';
 
 export const BAD_SERVER_SALT = 0xedab447b;
 export const BAD_SERVER_SALT_TYPE = 'bad_server_salt';

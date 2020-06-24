@@ -4,7 +4,7 @@ import loadMessage from './loadMessage';
 import schema from './schema/layer108.json';
 import {
   TYPE_KEY,
-  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
   MSGS_ACK_TYPE,
   BAD_SERVER_SALT_TYPE,
   MSGS_STATE_REQ_TYPE,
@@ -28,7 +28,11 @@ import {
   DESTROY_SESSION_TYPE,
   DESTROY_SESSION_OK_TYPE,
   DESTROY_SESSION_NONE_TYPE,
-  NEW_SESSION_CREATED_TYPE, MESSAGE_CONTAINER_TYPE, HTTP_WAIT_TYPE, CONSTRUCTOR_KEY,
+  NEW_SESSION_CREATED_TYPE,
+  MESSAGE_CONTAINER_TYPE,
+  HTTP_WAIT_TYPE,
+  CONSTRUCTOR_KEY,
+  BAD_MSG_NOTIFICATION_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -119,6 +123,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: BAD_MSG_NOTIFICATION_TYPE,
+      [CONSTRUCTOR_KEY]: BAD_MSG_NOTIFICATION_CONSTRUCTOR,
       badMsgId: BigInt('0x5e0af67900000000'),
       badSeqNo: 2,
       errorCode: 0x23,

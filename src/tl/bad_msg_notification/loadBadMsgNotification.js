@@ -2,7 +2,12 @@ import * as R from 'ramda';
 import { isWithOffset, sliceBuffer, withConstantOffset } from '../../utils';
 import { loadBigInt } from '../bigInt';
 import { loadInt } from '../int';
-import { BAD_MSG_NOTIFICATION_TYPE, TYPE_KEY } from '../../constants';
+import {
+  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
+  TYPE_KEY,
+  CONSTRUCTOR_KEY,
+} from '../../constants';
 
 const getMsgId = R.pipe(
   R.partialRight(sliceBuffer, [4, 12]),
@@ -27,8 +32,20 @@ const getErrorCode = R.pipe(
  */
 const loadBadMsgNotification = R.pipe(
   R.of,
-  R.ap([R.always(BAD_MSG_NOTIFICATION_TYPE), getMsgId, getSeqNo, getErrorCode]),
-  R.zipObj([TYPE_KEY, 'badMsgId', 'badSeqNo', 'errorCode']),
+  R.ap([
+    R.always(BAD_MSG_NOTIFICATION_TYPE),
+    R.always(BAD_MSG_NOTIFICATION_CONSTRUCTOR),
+    getMsgId,
+    getSeqNo,
+    getErrorCode,
+  ]),
+  R.zipObj([
+    TYPE_KEY,
+    CONSTRUCTOR_KEY,
+    'badMsgId',
+    'badSeqNo',
+    'errorCode',
+  ]),
 );
 
 export default R.cond([
