@@ -13,7 +13,7 @@ import * as R from 'ramda';
 
 import {
   API_HASH,
-  API_ID, BAD_SERVER_SALT_TYPE, CONSTRUCTOR_KEY,
+  API_ID, BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
   MESSAGE_CONTAINER_TYPE, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PING_TYPE,
@@ -421,7 +421,7 @@ describe('MTProto', () => {
         msgId: BigInt(123123),
         seqNo: 13,
         body: {
-          [TYPE_KEY]: BAD_SERVER_SALT_TYPE,
+          [TYPE_KEY]: BAD_SERVER_SALT_CONSTRUCTOR,
           badMsgId: BigInt('6798186738482151424'),
           badMsgSeqNo: 13,
           errorCode: 20,

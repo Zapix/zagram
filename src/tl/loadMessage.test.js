@@ -6,7 +6,7 @@ import {
   TYPE_KEY,
   BAD_MSG_NOTIFICATION_CONSTRUCTOR,
   MSGS_ACK_TYPE,
-  BAD_SERVER_SALT_TYPE,
+  BAD_SERVER_SALT_CONSTRUCTOR,
   MSGS_STATE_REQ_TYPE,
   MSGS_STATE_INFO_TYPE,
   MSGS_ALL_INFO_TYPE,
@@ -136,7 +136,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: BAD_SERVER_SALT_TYPE,
+      [TYPE_KEY]: BAD_MSG_NOTIFICATION_TYPE,
+      [CONSTRUCTOR_KEY]: BAD_SERVER_SALT_CONSTRUCTOR,
       badMsgId: BigInt('0x5e0af67900000000'),
       badSeqNo: 2,
       errorCode: 0x23,

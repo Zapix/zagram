@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import { dumpBadMsgNotification } from './bad_msg_notification';
 import {
   BAD_MSG_NOTIFICATION_CONSTRUCTOR,
-  BAD_SERVER_SALT_TYPE,
+  BAD_SERVER_SALT_CONSTRUCTOR,
   DESTROY_SESSION_NONE_TYPE,
   DESTROY_SESSION_OK_TYPE,
   DESTROY_SESSION_TYPE,
@@ -59,7 +59,7 @@ import { dumpRpcDropAnswer } from './rpc_drop_answer';
 import { dumpRpcError } from './rpc_error';
 import { dumpRpcResult } from './rpc_result';
 import { dumpBySchema, isMsgCouldBeDump } from './schema';
-import { isMessageOf } from './utils';
+import { isMessageOf, isMessageOfType } from './utils';
 
 
 /**
@@ -83,33 +83,33 @@ export default function dumpMessage(schema, msg) {
 
   return R.cond([
     [isMessageOf(BAD_MSG_NOTIFICATION_CONSTRUCTOR), dumpBadMsgNotification],
-    [isMessageOf(BAD_SERVER_SALT_TYPE), dumpBadServerSalt],
-    [isMessageOf(DESTROY_SESSION_TYPE), dumpDestroySession],
-    [isMessageOf(DESTROY_SESSION_NONE_TYPE), dumpDestroySessionNone],
-    [isMessageOf(DESTROY_SESSION_OK_TYPE), dumpDestroySessionOk],
-    [isMessageOf(FUTURE_SALT_TYPE), dumpFutureSalt],
-    [isMessageOf(FUTURE_SALTS_TYPE), dumpFutureSalts],
-    [isMessageOf(GET_FUTURE_SALTS_TYPE), dumpGetFutureSalts],
-    [isMessageOf(HTTP_WAIT_TYPE), dumpHttpWait],
-    [isMessageOf(MESSAGE_CONTAINER_TYPE), R.partialRight(dumpMessageContainer, [dump])],
-    [isMessageOf(MSG_DETAILED_INFO_TYPE), dumpMsgDetailedInfo],
-    [isMessageOf(MSG_NEW_DETAILED_INFO_TYPE), dumpMsgNewDetailedInfo],
-    [isMessageOf(MSG_RESEND_ANS_REQ_TYPE), dumpMsgResendAnsReq],
-    [isMessageOf(MSG_RESEND_REQ_TYPE), dumpMsgResendReq],
-    [isMessageOf(MSGS_ACK_TYPE), dumpMsgsAck],
-    [isMessageOf(MSGS_ALL_INFO_TYPE), dumpMsgsAllInfo],
-    [isMessageOf(MSGS_STATE_INFO_TYPE), dumpMsgsStateInfo],
-    [isMessageOf(MSGS_STATE_REQ_TYPE), dumpMsgsStateReq],
-    [isMessageOf(NEW_SESSION_CREATED_TYPE), dumpNewSessionCreated],
-    [isMessageOf(PING_TYPE), dumpPing],
-    [isMessageOf(PING_DELAY_DISCONNECT_TYPE), dumpPingDelayDisconnect],
-    [isMessageOf(PONG_TYPE), dumpPong],
-    [isMessageOf(RPC_ANSWER_DROPPED_TYPE), dumpRpcAnswerDropped],
-    [isMessageOf(RPC_ANSWER_DROPPED_RUNNING_TYPE), dumpRpcAnswerDroppedRunning],
-    [isMessageOf(RPC_ANSWER_UNKNOWN_TYPE), dumpRpcAnswerUnknown],
-    [isMessageOf(RPC_DROP_ANSWER_TYPE), dumpRpcDropAnswer],
-    [isMessageOf(RPC_ERROR_TYPE), dumpRpcError],
-    [isMessageOf(RPC_RESULT_TYPE), R.partialRight(dumpRpcResult, [dump])],
+    [isMessageOf(BAD_SERVER_SALT_CONSTRUCTOR), dumpBadServerSalt],
+    [isMessageOfType(DESTROY_SESSION_TYPE), dumpDestroySession],
+    [isMessageOfType(DESTROY_SESSION_NONE_TYPE), dumpDestroySessionNone],
+    [isMessageOfType(DESTROY_SESSION_OK_TYPE), dumpDestroySessionOk],
+    [isMessageOfType(FUTURE_SALT_TYPE), dumpFutureSalt],
+    [isMessageOfType(FUTURE_SALTS_TYPE), dumpFutureSalts],
+    [isMessageOfType(GET_FUTURE_SALTS_TYPE), dumpGetFutureSalts],
+    [isMessageOfType(HTTP_WAIT_TYPE), dumpHttpWait],
+    [isMessageOfType(MESSAGE_CONTAINER_TYPE), R.partialRight(dumpMessageContainer, [dump])],
+    [isMessageOfType(MSG_DETAILED_INFO_TYPE), dumpMsgDetailedInfo],
+    [isMessageOfType(MSG_NEW_DETAILED_INFO_TYPE), dumpMsgNewDetailedInfo],
+    [isMessageOfType(MSG_RESEND_ANS_REQ_TYPE), dumpMsgResendAnsReq],
+    [isMessageOfType(MSG_RESEND_REQ_TYPE), dumpMsgResendReq],
+    [isMessageOfType(MSGS_ACK_TYPE), dumpMsgsAck],
+    [isMessageOfType(MSGS_ALL_INFO_TYPE), dumpMsgsAllInfo],
+    [isMessageOfType(MSGS_STATE_INFO_TYPE), dumpMsgsStateInfo],
+    [isMessageOfType(MSGS_STATE_REQ_TYPE), dumpMsgsStateReq],
+    [isMessageOfType(NEW_SESSION_CREATED_TYPE), dumpNewSessionCreated],
+    [isMessageOfType(PING_TYPE), dumpPing],
+    [isMessageOfType(PING_DELAY_DISCONNECT_TYPE), dumpPingDelayDisconnect],
+    [isMessageOfType(PONG_TYPE), dumpPong],
+    [isMessageOfType(RPC_ANSWER_DROPPED_TYPE), dumpRpcAnswerDropped],
+    [isMessageOfType(RPC_ANSWER_DROPPED_RUNNING_TYPE), dumpRpcAnswerDroppedRunning],
+    [isMessageOfType(RPC_ANSWER_UNKNOWN_TYPE), dumpRpcAnswerUnknown],
+    [isMessageOfType(RPC_DROP_ANSWER_TYPE), dumpRpcDropAnswer],
+    [isMessageOfType(RPC_ERROR_TYPE), dumpRpcError],
+    [isMessageOfType(RPC_RESULT_TYPE), R.partialRight(dumpRpcResult, [dump])],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);
