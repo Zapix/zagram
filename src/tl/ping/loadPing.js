@@ -1,8 +1,8 @@
-import { buildTypeLoader, buildLoadFunc } from '../../utils';
+import { buildConstructorLoader, buildLoadFunc } from '../../utils';
 import { PING_TYPE, TYPE_KEY } from '../../constants';
 import { loadBigInt } from '../bigInt';
 
-const loadType = buildTypeLoader(PING_TYPE);
+const loadType = buildConstructorLoader(PING_TYPE);
 const loadPingId = loadBigInt;
 
 /**

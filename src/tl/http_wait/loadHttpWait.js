@@ -1,8 +1,8 @@
-import { buildTypeLoader, buildLoadFunc } from '../../utils';
+import { buildConstructorLoader, buildLoadFunc } from '../../utils';
 import { HTTP_WAIT_TYPE, TYPE_KEY } from '../../constants';
 import { loadInt } from '../int';
 
-const loadType = buildTypeLoader(HTTP_WAIT_TYPE);
+const loadType = buildConstructorLoader(HTTP_WAIT_TYPE);
 const loadMaxDelay = loadInt;
 const loadWaitAfter = loadInt;
 const loadMaxWait = loadInt;

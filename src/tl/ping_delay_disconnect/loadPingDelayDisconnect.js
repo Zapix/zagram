@@ -1,10 +1,10 @@
-import { buildLoadFunc, buildTypeLoader } from '../../utils';
+import { buildLoadFunc, buildConstructorLoader } from '../../utils';
 import { PING_DELAY_DISCONNECT_TYPE, TYPE_KEY } from '../../constants';
 import { loadBigInt } from '../bigInt';
 import { loadInt } from '../int';
 
 
-const loadType = buildTypeLoader(PING_DELAY_DISCONNECT_TYPE);
+const loadType = buildConstructorLoader(PING_DELAY_DISCONNECT_TYPE);
 const loadPingId = loadBigInt;
 const loadDisconnectDelay = loadInt;
 

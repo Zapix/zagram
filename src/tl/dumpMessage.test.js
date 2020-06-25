@@ -5,7 +5,7 @@ import {
   BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
   DESTROY_SESSION_NONE_TYPE,
   DESTROY_SESSION_OK_TYPE,
-  DESTROY_SESSION_TYPE,
+  DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_TYPE,
   FUTURE_SALTS_TYPE,
   GET_FUTURE_SALTS_TYPE,
@@ -27,7 +27,7 @@ import {
   RPC_ANSWER_DROPPED_TYPE,
   RPC_ANSWER_UNKNOWN_TYPE,
   RPC_DROP_ANSWER_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
-  TYPE_KEY,
+  TYPE_KEY, DESTROY_SESSION_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -70,9 +70,10 @@ describe('dumpMessage', () => {
         hexStr: '7b44abed0000000079f60a5e0200000023000000000000000a700b5e',
       },
       {
-        type: 'destory_session',
+        type: 'destroy_session',
         msg: {
           [TYPE_KEY]: DESTROY_SESSION_TYPE,
+          [CONSTRUCTOR_KEY]: DESTROY_SESSION_CONSTRUCTOR,
           sessionId: BigInt('0x56efe14fe8ab347e'),
         },
         hexStr: '262151e77e34abe84fe1ef56',

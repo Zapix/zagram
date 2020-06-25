@@ -6,7 +6,7 @@ import {
   BAD_SERVER_SALT_CONSTRUCTOR,
   DESTROY_SESSION_NONE_TYPE,
   DESTROY_SESSION_OK_TYPE,
-  DESTROY_SESSION_TYPE,
+  DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_TYPE,
   FUTURE_SALTS_TYPE,
   GET_FUTURE_SALTS_TYPE,
@@ -84,7 +84,7 @@ export default function dumpMessage(schema, msg) {
   return R.cond([
     [isMessageOf(BAD_MSG_NOTIFICATION_CONSTRUCTOR), dumpBadMsgNotification],
     [isMessageOf(BAD_SERVER_SALT_CONSTRUCTOR), dumpBadServerSalt],
-    [isMessageOfType(DESTROY_SESSION_TYPE), dumpDestroySession],
+    [isMessageOf(DESTROY_SESSION_CONSTRUCTOR), dumpDestroySession],
     [isMessageOfType(DESTROY_SESSION_NONE_TYPE), dumpDestroySessionNone],
     [isMessageOfType(DESTROY_SESSION_OK_TYPE), dumpDestroySessionOk],
     [isMessageOfType(FUTURE_SALT_TYPE), dumpFutureSalt],

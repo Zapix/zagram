@@ -3,10 +3,10 @@
 import * as R from 'ramda';
 
 import { RPC_RESULT_TYPE, TYPE_KEY } from '../../constants';
-import { buildLoadFunc, buildTypeLoader } from '../../utils';
+import { buildLoadFunc, buildConstructorLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 
-const loadType = buildTypeLoader(RPC_RESULT_TYPE);
+const loadType = buildConstructorLoader(RPC_RESULT_TYPE);
 const loadReqMsgId = loadBigInt;
 
 /**

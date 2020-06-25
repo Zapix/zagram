@@ -1,13 +1,13 @@
 import * as R from 'ramda';
 
-import { buildTypeLoader, buildLoadFunc } from '../../utils';
+import { buildConstructorLoader, buildLoadFunc } from '../../utils';
 import { FUTURE_SALTS_TYPE, TYPE_KEY } from '../../constants';
 import { loadBigInt } from '../bigInt';
 import { loadVector } from '../vector';
 import { loadFutureSalt } from '../future_salt';
 import { loadInt } from '../int';
 
-const loadType = buildTypeLoader(FUTURE_SALTS_TYPE);
+const loadType = buildConstructorLoader(FUTURE_SALTS_TYPE);
 const loadReqMsgId = loadBigInt;
 const loadNow = loadInt;
 const loadSalts = R.partial(loadVector, [loadFutureSalt]);

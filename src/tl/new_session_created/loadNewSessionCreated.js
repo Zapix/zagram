@@ -1,8 +1,8 @@
-import { buildTypeLoader, buildLoadFunc } from '../../utils';
+import { buildConstructorLoader, buildLoadFunc } from '../../utils';
 import { loadBigInt } from '../bigInt';
 import { NEW_SESSION_CREATED_TYPE, TYPE_KEY } from '../../constants';
 
-const loadType = buildTypeLoader(NEW_SESSION_CREATED_TYPE);
+const loadType = buildConstructorLoader(NEW_SESSION_CREATED_TYPE);
 const loadFirstMsgId = loadBigInt;
 const loadUniqueId = loadBigInt;
 const loadServerSalt = loadBigInt;
