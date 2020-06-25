@@ -2,7 +2,7 @@ import * as R from 'ramda';
 
 import { dumpInt } from '../int';
 import { dumpBigInt } from '../bigInt';
-import { getEmptyArrayBuffer, mergeArrayBuffer } from '../../utils';
+import { buildDumpFunc } from '../../utils';
 import { BAD_MSG_NOTIFICATION } from '../../constants';
 
 
@@ -15,8 +15,4 @@ const dumpErrorCode = R.pipe(R.prop('errorCode'), dumpInt);
  * @param {*} value
  * @returns {ArrayBuffer}
  */
-export default R.pipe(
-  R.of,
-  R.ap([dumpType, dumpMsgId, dumpSeqNo, dumpErrorCode]),
-  R.reduce(mergeArrayBuffer, getEmptyArrayBuffer()),
-);
+export default buildDumpFunc([dumpType, dumpMsgId, dumpSeqNo, dumpErrorCode]);
