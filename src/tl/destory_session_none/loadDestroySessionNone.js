@@ -1,8 +1,14 @@
-import { buildConstructorLoader, buildLoadFunc } from '../../utils';
-import { DESTROY_SESSION_NONE_TYPE, TYPE_KEY } from '../../constants';
+import { buildConstructorLoader, buildLoadFunc, buildTypeLoader } from '../../utils';
+import {
+  CONSTRUCTOR_KEY,
+  DESTROY_SESSION_NONE_CONSTRUCTOR,
+  DESTROY_SESSION_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import { loadBigInt } from '../bigInt';
 
-const loadType = buildConstructorLoader(DESTROY_SESSION_NONE_TYPE);
+const loadType = buildTypeLoader(DESTROY_SESSION_TYPE);
+const loadConstructor = buildConstructorLoader(DESTROY_SESSION_NONE_CONSTRUCTOR);
 const loadSessionId = loadBigInt;
 
 /**
@@ -12,5 +18,6 @@ const loadSessionId = loadBigInt;
  */
 export default buildLoadFunc([
   [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
   ['sessionId', loadSessionId],
 ]);

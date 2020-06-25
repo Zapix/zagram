@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import {
   BAD_MSG_NOTIFICATION_CONSTRUCTOR, BAD_MSG_NOTIFICATION_TYPE,
   BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
-  DESTROY_SESSION_NONE_TYPE,
+  DESTROY_SESSION_NONE_CONSTRUCTOR,
   DESTROY_SESSION_OK_TYPE,
   DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_TYPE,
@@ -81,7 +81,8 @@ describe('dumpMessage', () => {
       {
         type: 'destory_session_none',
         msg: {
-          [TYPE_KEY]: DESTROY_SESSION_NONE_TYPE,
+          [TYPE_KEY]: DESTROY_SESSION_TYPE,
+          [CONSTRUCTOR_KEY]: DESTROY_SESSION_NONE_CONSTRUCTOR,
           sessionId: BigInt('0x56efe14fe8ab347e'),
         },
         hexStr: 'c950d3627e34abe84fe1ef56',

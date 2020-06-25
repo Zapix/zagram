@@ -4,7 +4,7 @@ import { dumpBadMsgNotification } from './bad_msg_notification';
 import {
   BAD_MSG_NOTIFICATION_CONSTRUCTOR,
   BAD_SERVER_SALT_CONSTRUCTOR,
-  DESTROY_SESSION_NONE_TYPE,
+  DESTROY_SESSION_NONE_CONSTRUCTOR,
   DESTROY_SESSION_OK_TYPE,
   DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_TYPE,
@@ -85,7 +85,7 @@ export default function dumpMessage(schema, msg) {
     [isMessageOf(BAD_MSG_NOTIFICATION_CONSTRUCTOR), dumpBadMsgNotification],
     [isMessageOf(BAD_SERVER_SALT_CONSTRUCTOR), dumpBadServerSalt],
     [isMessageOf(DESTROY_SESSION_CONSTRUCTOR), dumpDestroySession],
-    [isMessageOfType(DESTROY_SESSION_NONE_TYPE), dumpDestroySessionNone],
+    [isMessageOf(DESTROY_SESSION_NONE_CONSTRUCTOR), dumpDestroySessionNone],
     [isMessageOfType(DESTROY_SESSION_OK_TYPE), dumpDestroySessionOk],
     [isMessageOfType(FUTURE_SALT_TYPE), dumpFutureSalt],
     [isMessageOfType(FUTURE_SALTS_TYPE), dumpFutureSalts],
