@@ -107,11 +107,12 @@ export const RPC_ERROR_TYPE = 'rpc_error_type';
 export const GET_FUTURE_SALTS = 0xb921bd04;
 export const GET_FUTURE_SALTS_TYPE = 'get_future_salts';
 
+export const FUTURE_SALTS_TYPE = 'FutureSalts';
 export const FUTURE_SALT = 0x0949d9dc;
-export const FUTURE_SALT_TYPE = 'future_salt';
+export const FUTURE_SALT_CONSTRUCTOR = 'future_salt';
 
 export const FUTURE_SALTS = 0xae500895;
-export const FUTURE_SALTS_TYPE = 'future_salts';
+export const FUTURE_SALTS_CONSTRUCTOR = 'future_salts';
 
 export const DESTROY_SESSION_TYPE = 'DestroySessionRes';
 export const DESTROY_SESSION = 0xe7512126;

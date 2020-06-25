@@ -20,8 +20,8 @@ import {
   RPC_ANSWER_DROPPED_RUNNING_TYPE,
   RPC_ANSWER_DROPPED_TYPE,
   GET_FUTURE_SALTS,
-  FUTURE_SALT_TYPE,
-  FUTURE_SALTS_TYPE,
+  FUTURE_SALT_CONSTRUCTOR,
+  FUTURE_SALTS_CONSTRUCTOR,
   PING_TYPE,
   PONG_TYPE,
   PING_DELAY_DISCONNECT_TYPE,
@@ -32,7 +32,7 @@ import {
   MESSAGE_CONTAINER_TYPE,
   HTTP_WAIT_TYPE,
   CONSTRUCTOR_KEY,
-  BAD_MSG_NOTIFICATION_TYPE, DESTROY_SESSION_TYPE,
+  BAD_MSG_NOTIFICATION_TYPE, DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -326,7 +326,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: FUTURE_SALT_TYPE,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
       validSince: 256,
       validUntil: 65536,
       salt: BigInt(257),
@@ -341,17 +342,20 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [CONSTRUCTOR_KEY]: FUTURE_SALTS_CONSTRUCTOR,
       reqMsgId: BigInt('0x5e0b800e00000000'),
       now: 255,
       salts: [
         {
-          [TYPE_KEY]: FUTURE_SALT_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
           validSince: 256,
           validUntil: 65536,
           salt: BigInt(257),
         },
         {
-          [TYPE_KEY]: FUTURE_SALT_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
           validSince: 65537,
           validUntil: 16777216,
           salt: BigInt(4369),

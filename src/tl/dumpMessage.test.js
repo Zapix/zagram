@@ -6,8 +6,8 @@ import {
   DESTROY_SESSION_NONE_CONSTRUCTOR,
   DESTROY_SESSION_OK_CONSTRUCTOR,
   DESTROY_SESSION_CONSTRUCTOR,
-  FUTURE_SALT_TYPE,
-  FUTURE_SALTS_TYPE,
+  FUTURE_SALT_CONSTRUCTOR,
+  FUTURE_SALTS_CONSTRUCTOR,
   GET_FUTURE_SALTS_TYPE,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
@@ -26,8 +26,11 @@ import {
   RPC_ANSWER_DROPPED_RUNNING_TYPE,
   RPC_ANSWER_DROPPED_TYPE,
   RPC_ANSWER_UNKNOWN_TYPE,
-  RPC_DROP_ANSWER_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
-  TYPE_KEY, DESTROY_SESSION_TYPE,
+  RPC_DROP_ANSWER_TYPE,
+  RPC_ERROR_TYPE,
+  RPC_RESULT_TYPE,
+  TYPE_KEY,
+  DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -99,7 +102,8 @@ describe('dumpMessage', () => {
       {
         type: 'future_salt',
         msg: {
-          [TYPE_KEY]: FUTURE_SALT_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
           validSince: 256,
           validUntil: 65536,
           salt: BigInt(257),
@@ -110,17 +114,20 @@ describe('dumpMessage', () => {
         type: 'future_salts',
         msg: {
           [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALTS_CONSTRUCTOR,
           reqMsgId: BigInt('0x5e0b800e00000000'),
           now: 255,
           salts: [
             {
-              [TYPE_KEY]: FUTURE_SALT_TYPE,
+              [TYPE_KEY]: FUTURE_SALTS_TYPE,
+              [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
               validSince: 256,
               validUntil: 65536,
               salt: BigInt(257),
             },
             {
-              [TYPE_KEY]: FUTURE_SALT_TYPE,
+              [TYPE_KEY]: FUTURE_SALTS_TYPE,
+              [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
               validSince: 65537,
               validUntil: 16777216,
               salt: BigInt(4369),
