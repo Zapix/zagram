@@ -26,7 +26,7 @@ import {
   PONG_TYPE,
   PING_DELAY_DISCONNECT_TYPE,
   DESTROY_SESSION_CONSTRUCTOR,
-  DESTROY_SESSION_OK_TYPE,
+  DESTROY_SESSION_OK_CONSTRUCTOR,
   DESTROY_SESSION_NONE_CONSTRUCTOR,
   NEW_SESSION_CREATED_TYPE,
   MESSAGE_CONTAINER_TYPE,
@@ -377,7 +377,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: DESTROY_SESSION_OK_TYPE,
+      [TYPE_KEY]: DESTROY_SESSION_TYPE,
+      [CONSTRUCTOR_KEY]: DESTROY_SESSION_OK_CONSTRUCTOR,
       sessionId: BigInt('0x56efe14fe8ab347e'),
     });
   });

@@ -1,6 +1,11 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadDestroySessionOk from './loadDestroySessionOk';
-import { DESTROY_SESSION_OK_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  DESTROY_SESSION_OK_CONSTRUCTOR,
+  DESTROY_SESSION_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadDestroySession', () => {
   // e22045fc
@@ -9,7 +14,8 @@ describe('loadDestroySession', () => {
 
   it('without offset', () => {
     expect(loadDestroySessionOk(buffer)).toEqual({
-      [TYPE_KEY]: DESTROY_SESSION_OK_TYPE,
+      [TYPE_KEY]: DESTROY_SESSION_TYPE,
+      [CONSTRUCTOR_KEY]: DESTROY_SESSION_OK_CONSTRUCTOR,
       sessionId: BigInt('0x56efe14fe8ab347e'),
     });
   });
@@ -17,7 +23,8 @@ describe('loadDestroySession', () => {
   it('with offset', () => {
     expect(loadDestroySessionOk(buffer, true)).toEqual({
       value: {
-        [TYPE_KEY]: DESTROY_SESSION_OK_TYPE,
+        [TYPE_KEY]: DESTROY_SESSION_TYPE,
+        [CONSTRUCTOR_KEY]: DESTROY_SESSION_OK_CONSTRUCTOR,
         sessionId: BigInt('0x56efe14fe8ab347e'),
       },
       offset: 12,
