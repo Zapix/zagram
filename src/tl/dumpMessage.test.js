@@ -8,7 +8,7 @@ import {
   DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_CONSTRUCTOR,
   FUTURE_SALTS_CONSTRUCTOR,
-  GET_FUTURE_SALTS_TYPE,
+  GET_FUTURE_SALTS_METHOD,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
   MSG_DETAILED_INFO_TYPE,
@@ -30,7 +30,7 @@ import {
   RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
-  DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE,
+  DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE, METHOD_KEY,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -141,7 +141,8 @@ describe('dumpMessage', () => {
       {
         type: 'get_future_salts',
         msg: {
-          [TYPE_KEY]: GET_FUTURE_SALTS_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [METHOD_KEY]: GET_FUTURE_SALTS_METHOD,
           num: 18,
         },
         hexStr: '04bd21b912000000',

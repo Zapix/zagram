@@ -8,7 +8,7 @@ function memoize(func) {
   const slice = Array.prototype.slice;
   /* eslint-enable */
 
-  return function (...funcargs) {
+  return function wrapper(...funcargs) {
     const args = slice.call(funcargs);
 
     if (args in memo) {

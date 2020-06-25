@@ -19,7 +19,6 @@ import {
   RPC_DROP_ANSWER_TYPE,
   RPC_ANSWER_DROPPED_RUNNING_TYPE,
   RPC_ANSWER_DROPPED_TYPE,
-  GET_FUTURE_SALTS,
   FUTURE_SALT_CONSTRUCTOR,
   FUTURE_SALTS_CONSTRUCTOR,
   PING_TYPE,
@@ -32,7 +31,11 @@ import {
   MESSAGE_CONTAINER_TYPE,
   HTTP_WAIT_TYPE,
   CONSTRUCTOR_KEY,
-  BAD_MSG_NOTIFICATION_TYPE, DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE,
+  BAD_MSG_NOTIFICATION_TYPE,
+  DESTROY_SESSION_TYPE,
+  FUTURE_SALTS_TYPE,
+  METHOD_KEY,
+  GET_FUTURE_SALTS_METHOD,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -316,7 +319,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: GET_FUTURE_SALTS,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [METHOD_KEY]: GET_FUTURE_SALTS_METHOD,
       num: 18,
     });
   });

@@ -11,7 +11,7 @@ import {
   GET_FUTURE_SALTS,
   GZIP_PACKED,
   HTTP_WAIT,
-  MESSAGE_CONTAINER,
+  MESSAGE_CONTAINER, METHOD_KEY,
   MSG_DETAILED_INFO,
   MSG_NEW_DETAILED_INFO,
   MSG_RESEND_ANS_REQ,
@@ -322,3 +322,5 @@ export const isGzipped = R.pipe(
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
 
 export const isMessageOfType = R.propEq(TYPE_KEY);
+
+export const isMethodOf = R.propEq(METHOD_KEY);

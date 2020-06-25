@@ -536,6 +536,8 @@ export const buildConstructorLoader = R.pipe(
   R.always,
 );
 
+export const buildMethodLoader = buildConstructorLoader;
+
 /**
  * Call function that returns promise one bo one, and handle progress by progressCb
  * @param {Array<>} promiseFuncList - function that will returns promise

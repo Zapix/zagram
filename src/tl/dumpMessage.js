@@ -9,7 +9,7 @@ import {
   DESTROY_SESSION_CONSTRUCTOR,
   FUTURE_SALT_CONSTRUCTOR,
   FUTURE_SALTS_CONSTRUCTOR,
-  GET_FUTURE_SALTS_TYPE,
+  GET_FUTURE_SALTS_METHOD,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
   MSG_DETAILED_INFO_TYPE,
@@ -59,7 +59,7 @@ import { dumpRpcDropAnswer } from './rpc_drop_answer';
 import { dumpRpcError } from './rpc_error';
 import { dumpRpcResult } from './rpc_result';
 import { dumpBySchema, isMsgCouldBeDump } from './schema';
-import { isMessageOf, isMessageOfType } from './utils';
+import { isMessageOf, isMessageOfType, isMethodOf } from './utils';
 
 
 /**
@@ -89,7 +89,7 @@ export default function dumpMessage(schema, msg) {
     [isMessageOf(DESTROY_SESSION_OK_CONSTRUCTOR), dumpDestroySessionOk],
     [isMessageOf(FUTURE_SALT_CONSTRUCTOR), dumpFutureSalt],
     [isMessageOf(FUTURE_SALTS_CONSTRUCTOR), dumpFutureSalts],
-    [isMessageOfType(GET_FUTURE_SALTS_TYPE), dumpGetFutureSalts],
+    [isMethodOf(GET_FUTURE_SALTS_METHOD), dumpGetFutureSalts],
     [isMessageOfType(HTTP_WAIT_TYPE), dumpHttpWait],
     [isMessageOfType(MESSAGE_CONTAINER_TYPE), R.partialRight(dumpMessageContainer, [dump])],
     [isMessageOfType(MSG_DETAILED_INFO_TYPE), dumpMsgDetailedInfo],
