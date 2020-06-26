@@ -19,7 +19,7 @@ import {
 import { isMessageOfType } from './tl/utils';
 import {
   BAD_SERVER_SALT_CONSTRUCTOR,
-  HTTP_WAIT_TYPE,
+  HTTP_WAIT_CONSTRUCTOR,
   MESSAGE_CONTAINER_TYPE,
   MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
@@ -273,7 +273,7 @@ export default class MTProto extends EventTarget {
 
       const promise = sendEncryptedRequest(containerMessage);
 
-      if (isMessageOfType(HTTP_WAIT_TYPE, message)) {
+      if (isMessageOfType(HTTP_WAIT_CONSTRUCTOR, message)) {
         promise.then(resolve).catch(reject);
       } else {
         this.rpcPromises[messageId] = { resolve, reject, message };

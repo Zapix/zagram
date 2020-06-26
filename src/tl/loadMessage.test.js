@@ -29,13 +29,13 @@ import {
   DESTROY_SESSION_NONE_CONSTRUCTOR,
   NEW_SESSION_CREATED_TYPE,
   MESSAGE_CONTAINER_TYPE,
-  HTTP_WAIT_TYPE,
+  HTTP_WAIT_CONSTRUCTOR,
   CONSTRUCTOR_KEY,
   BAD_MSG_NOTIFICATION_TYPE,
   DESTROY_SESSION_TYPE,
   FUTURE_SALTS_TYPE,
   METHOD_KEY,
-  GET_FUTURE_SALTS_METHOD,
+  GET_FUTURE_SALTS_METHOD, HTTP_WAIT_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -415,6 +415,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: HTTP_WAIT_TYPE,
+      [CONSTRUCTOR_KEY]: HTTP_WAIT_CONSTRUCTOR,
       maxDelay: 0,
       waitAfter: 0,
       maxWait: 25000,
