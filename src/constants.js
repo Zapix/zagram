@@ -74,7 +74,8 @@ export const MSGS_STATE_INFO_TYPE = 'msgs_state_info';
 export const MSGS_ALL_INFO = 0x8cc0d131;
 export const MSGS_ALL_INFO_TYPE = 'msgs_all_info';
 
-export const MSG_DETAILED_INFO_TYPE = 'msg_detailed_info';
+export const MSG_DETAILED_INFO_TYPE = 'MsgDetailedInfo';
+export const MSG_DETAILED_INFO_CONSTRUCTOR = 'msg_detailed_info';
 export const MSG_DETAILED_INFO = 0x276d3ec6;
 
 export const MSG_NEW_DETAILED_INFO = 0x809db6df;
