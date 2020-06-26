@@ -11,7 +11,7 @@ import {
   MSGS_STATE_INFO_TYPE,
   MSGS_ALL_INFO_TYPE,
   MSG_DETAILED_INFO_CONSTRUCTOR,
-  MSG_NEW_DETAILED_INFO_TYPE,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
   MSG_RESEND_REQ_TYPE,
   MSG_RESEND_ANS_REQ_TYPE,
   RPC_RESULT_TYPE,
@@ -283,7 +283,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+      [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 12,
       status: 0,

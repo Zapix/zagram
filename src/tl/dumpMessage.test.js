@@ -14,7 +14,7 @@ import {
   HTTP_WAIT_CONSTRUCTOR,
   MESSAGE_CONTAINER_CONSTRUCTOR,
   MSG_DETAILED_INFO_CONSTRUCTOR,
-  MSG_NEW_DETAILED_INFO_TYPE,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
   MSG_RESEND_ANS_REQ_TYPE,
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
@@ -211,7 +211,8 @@ describe('dumpMessage', () => {
       {
         type: 'msg_new_detailed_info',
         msg: {
-          [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+          [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+          [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
           answerMsgId: BigInt('0x5e0b800e00000000'),
           bytes: 12,
           status: 0,

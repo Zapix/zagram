@@ -1,11 +1,17 @@
-import { MSG_NEW_DETAILED_INFO_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
+  TYPE_KEY,
+} from '../../constants';
 import dumpMsgNewDetailedInfo from './dumpMsgNewDetailedInfo';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpMsgNewDetailedInfo', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+      [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 12,
       status: 0,
