@@ -28,14 +28,14 @@ import {
   DESTROY_SESSION_OK_CONSTRUCTOR,
   DESTROY_SESSION_NONE_CONSTRUCTOR,
   NEW_SESSION_CREATED_TYPE,
-  MESSAGE_CONTAINER_TYPE,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
   HTTP_WAIT_CONSTRUCTOR,
   CONSTRUCTOR_KEY,
   BAD_MSG_NOTIFICATION_TYPE,
   DESTROY_SESSION_TYPE,
   FUTURE_SALTS_TYPE,
   METHOD_KEY,
-  GET_FUTURE_SALTS_METHOD, HTTP_WAIT_TYPE,
+  GET_FUTURE_SALTS_METHOD, HTTP_WAIT_TYPE, MESSAGE_CONTAINER_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -94,6 +94,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           msgId: BigInt('0x5e072d4689993001'),
@@ -463,6 +464,7 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
     expect(loadMessage(schema, buffer)).toMatchObject({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           seqNo: 1,
@@ -544,6 +546,8 @@ describe('load', () => {
 
     const buffer = hexToArrayBuffer(hexStr);
     expect(loadMessage(schema, buffer)).toMatchObject({
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           body: {
@@ -564,7 +568,6 @@ describe('load', () => {
           msgId: BigInt('6813361436378866689'),
         },
       ],
-      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
     });
   });
 
@@ -576,13 +579,14 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(loadMessage(schema, buffer)).toMatchObject({
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: expect.arrayContaining([
         expect.objectContaining({
           bytes: expect.any(Number),
           seqNo: expect.any(Number),
         }),
       ]),
-      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
     });
   });
 });

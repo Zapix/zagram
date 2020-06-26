@@ -14,7 +14,7 @@ import * as R from 'ramda';
 import {
   API_HASH,
   API_ID, BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
-  MESSAGE_CONTAINER_TYPE, MSGS_ACK_TYPE,
+  MESSAGE_CONTAINER_CONSTRUCTOR, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PING_TYPE,
   PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
@@ -359,7 +359,7 @@ describe('MTProto', () => {
         seqNo: 4,
         msgId: BigInt(232),
         body: {
-          [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+          [TYPE_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
           messages: [
             {
               msgId: BigInt(123123),

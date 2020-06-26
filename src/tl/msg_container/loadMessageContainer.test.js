@@ -2,7 +2,12 @@ import * as R from 'ramda';
 
 import loadMessageContainer from './loadMessageContainer';
 import { hexToArrayBuffer } from '../../utils';
-import { MESSAGE_CONTAINER_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  MESSAGE_CONTAINER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadMessageContainer', () => {
   /* eslint-disable */
@@ -26,6 +31,7 @@ describe('loadMessageContainer', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           msgId: BigInt('6775433945381679105'),
@@ -59,6 +65,7 @@ describe('loadMessageContainer', () => {
     expect(load(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+        [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
         messages: [
           {
             msgId: BigInt('6775433945381679105'),

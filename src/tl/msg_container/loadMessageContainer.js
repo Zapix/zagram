@@ -1,6 +1,11 @@
 import * as R from 'ramda';
 
-import { MESSAGE_CONTAINER_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  MESSAGE_CONTAINER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import { loadVector } from '../vector';
 import loadMessage from './loadMessage';
 
@@ -16,6 +21,7 @@ function loadMessageContainer(buffer, withOffset, load) {
   const { value: messages, offset } = loadVector(loadMsg, buffer, true);
   const value = {
     [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+    [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
     messages,
   };
   return withOffset ? { offset: offset + 4, value } : value;

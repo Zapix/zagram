@@ -18,9 +18,9 @@ import {
 } from './utils';
 import { isMessageOfType } from './tl/utils';
 import {
-  BAD_SERVER_SALT_CONSTRUCTOR,
+  BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
   HTTP_WAIT_CONSTRUCTOR,
-  MESSAGE_CONTAINER_TYPE,
+  MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
   MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PONG_TYPE, RPC_ERROR_TYPE,
@@ -237,6 +237,7 @@ export default class MTProto extends EventTarget {
 
       const containerMessage = {
         [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+        [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
         messages: [
           {
             seqNo: ackSeqNo,
@@ -282,7 +283,7 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
-    if (isMessageOfType(MESSAGE_CONTAINER_TYPE, message.body)) {
+    if (isMessageOfType(MESSAGE_CONTAINER_CONSTRUCTOR, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
         R.map(this.handleResponse.bind(this)),

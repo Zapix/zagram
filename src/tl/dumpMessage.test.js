@@ -10,7 +10,7 @@ import {
   FUTURE_SALTS_CONSTRUCTOR,
   GET_FUTURE_SALTS_METHOD,
   HTTP_WAIT_CONSTRUCTOR,
-  MESSAGE_CONTAINER_TYPE,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
   MSG_DETAILED_INFO_TYPE,
   MSG_NEW_DETAILED_INFO_TYPE,
   MSG_RESEND_ANS_REQ_TYPE,
@@ -30,7 +30,7 @@ import {
   RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
-  DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE, METHOD_KEY, HTTP_WAIT_TYPE,
+  DESTROY_SESSION_TYPE, FUTURE_SALTS_TYPE, METHOD_KEY, HTTP_WAIT_TYPE, MESSAGE_CONTAINER_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -162,6 +162,7 @@ describe('dumpMessage', () => {
         type: 'msg_container',
         msg: {
           [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+          [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
           messages: [
             {
               msgId: BigInt('0x5e072d4689993001'),

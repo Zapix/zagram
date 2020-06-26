@@ -1,5 +1,7 @@
 import {
-  MESSAGE_CONTAINER,
+  CONSTRUCTOR_KEY,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  MESSAGE_CONTAINER_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PONG_TYPE,
   TYPE_KEY,
@@ -11,7 +13,8 @@ import dumpMessageContainer from './dumpMessageContainer';
 describe('dumpMessage', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: MESSAGE_CONTAINER,
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           msgId: BigInt('0x5e072d4689993001'),
