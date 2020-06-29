@@ -1,6 +1,11 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadMsgResendAnsReq from './loadMsgResendAnsReq';
-import { MSG_RESEND_ANS_REQ_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY,
+  MSG_RESEND_ANS_REQ_METHOD,
+  MSG_RESEND_REQ_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadMsgResendReq', () => {
   // constructor: 86 10 ba eb
@@ -9,7 +14,8 @@ describe('loadMsgResendReq', () => {
 
   it('wihtout offset', () => {
     expect(loadMsgResendAnsReq(buffer)).toEqual({
-      [TYPE_KEY]: MSG_RESEND_ANS_REQ_TYPE,
+      [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_ANS_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -20,7 +26,8 @@ describe('loadMsgResendReq', () => {
   it('with offset', () => {
     expect(loadMsgResendAnsReq(buffer, true)).toEqual({
       value: {
-        [TYPE_KEY]: MSG_RESEND_ANS_REQ_TYPE,
+        [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+        [METHOD_KEY]: MSG_RESEND_ANS_REQ_METHOD,
         msgIds: [
           BigInt('0x5e0b700a00000000'),
           BigInt('0x5e0b800e00000000'),

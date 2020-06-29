@@ -15,8 +15,8 @@ import {
   MESSAGE_CONTAINER_CONSTRUCTOR,
   MSG_DETAILED_INFO_CONSTRUCTOR,
   MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
-  MSG_RESEND_ANS_REQ_TYPE,
-  MSG_RESEND_REQ_TYPE,
+  MSG_RESEND_ANS_REQ_METHOD,
+  MSG_RESEND_REQ_METHOD,
   MSGS_ACK_TYPE,
   MSGS_ALL_INFO_TYPE,
   MSGS_STATE_INFO_TYPE,
@@ -37,7 +37,7 @@ import {
   METHOD_KEY,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
-  MSG_DETAILED_INFO_TYPE,
+  MSG_DETAILED_INFO_TYPE, MSG_RESEND_REQ_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -222,7 +222,8 @@ describe('dumpMessage', () => {
       {
         type: 'msg_resend_ans_req',
         msg: {
-          [TYPE_KEY]: MSG_RESEND_ANS_REQ_TYPE,
+          [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+          [METHOD_KEY]: MSG_RESEND_ANS_REQ_METHOD,
           msgIds: [
             BigInt('0x5e0b700a00000000'),
             BigInt('0x5e0b800e00000000'),
@@ -234,6 +235,7 @@ describe('dumpMessage', () => {
         type: 'msg_resend_req',
         msg: {
           [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+          [METHOD_KEY]: MSG_RESEND_REQ_METHOD,
           msgIds: [
             BigInt('0x5e0b700a00000000'),
             BigInt('0x5e0b800e00000000'),

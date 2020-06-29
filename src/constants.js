@@ -81,11 +81,12 @@ export const MSG_DETAILED_INFO = 0x276d3ec6;
 export const MSG_NEW_DETAILED_INFO = 0x809db6df;
 export const MSG_NEW_DETAILED_INFO_CONSTRUCTOR = 'msg_new_detailed_info';
 
+export const MSG_RESEND_REQ_TYPE = 'MsgResendReq';
 export const MSG_RESEND_REQ = 0x7d861a08;
-export const MSG_RESEND_REQ_TYPE = 'msg_resend_req_type';
+export const MSG_RESEND_REQ_METHOD = 'msg_resend_req_type';
 
 export const MSG_RESEND_ANS_REQ = 0x8610baeb;
-export const MSG_RESEND_ANS_REQ_TYPE = 'msg_resend_ans_req';
+export const MSG_RESEND_ANS_REQ_METHOD = 'msg_resend_ans_req';
 
 export const VECTOR = 0x1cb5c415;
 

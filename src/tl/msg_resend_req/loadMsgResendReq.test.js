@@ -1,6 +1,8 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadMsgResendReq from './loadMsgResendReq';
-import { MSG_RESEND_REQ_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY, MSG_RESEND_REQ_METHOD, MSG_RESEND_REQ_TYPE, TYPE_KEY,
+} from '../../constants';
 
 describe('loadMsgResendReq', () => {
   // constructor: 7d861a08
@@ -10,6 +12,7 @@ describe('loadMsgResendReq', () => {
   it('wihtout offset', () => {
     expect(loadMsgResendReq(buffer)).toEqual({
       [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -21,6 +24,7 @@ describe('loadMsgResendReq', () => {
     expect(loadMsgResendReq(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+        [METHOD_KEY]: MSG_RESEND_REQ_METHOD,
         msgIds: [
           BigInt('0x5e0b700a00000000'),
           BigInt('0x5e0b800e00000000'),

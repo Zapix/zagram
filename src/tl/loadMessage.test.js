@@ -12,8 +12,8 @@ import {
   MSGS_ALL_INFO_TYPE,
   MSG_DETAILED_INFO_CONSTRUCTOR,
   MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
-  MSG_RESEND_REQ_TYPE,
-  MSG_RESEND_ANS_REQ_TYPE,
+  MSG_RESEND_REQ_METHOD,
+  MSG_RESEND_ANS_REQ_METHOD,
   RPC_RESULT_TYPE,
   RPC_ERROR_TYPE,
   RPC_DROP_ANSWER_TYPE,
@@ -35,7 +35,11 @@ import {
   DESTROY_SESSION_TYPE,
   FUTURE_SALTS_TYPE,
   METHOD_KEY,
-  GET_FUTURE_SALTS_METHOD, HTTP_WAIT_TYPE, MESSAGE_CONTAINER_TYPE, MSG_DETAILED_INFO_TYPE,
+  GET_FUTURE_SALTS_METHOD,
+  HTTP_WAIT_TYPE,
+  MESSAGE_CONTAINER_TYPE,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_RESEND_REQ_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -297,6 +301,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -309,7 +314,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: MSG_RESEND_ANS_REQ_TYPE,
+      [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_ANS_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
