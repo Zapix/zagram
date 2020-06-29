@@ -5,7 +5,7 @@ import schema from './schema/layer108.json';
 import {
   TYPE_KEY,
   BAD_MSG_NOTIFICATION_CONSTRUCTOR,
-  MSGS_ACK_TYPE,
+  MSGS_ACK_CONSTRUCTOR,
   BAD_SERVER_SALT_CONSTRUCTOR,
   MSGS_STATE_REQ_TYPE,
   MSGS_STATE_INFO_TYPE,
@@ -39,7 +39,7 @@ import {
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
   MSG_DETAILED_INFO_TYPE,
-  MSG_RESEND_REQ_TYPE,
+  MSG_RESEND_REQ_TYPE, MSGS_ACK_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -159,6 +159,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_ACK_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),

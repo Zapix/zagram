@@ -1,4 +1,6 @@
-import { MSGS_ACK_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY, MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE, TYPE_KEY,
+} from '../../constants';
 import { arrayBufferToHex } from '../../utils';
 
 import dumpMsgsAck from './dumpMsgsAck';
@@ -7,6 +9,7 @@ describe('dumpMsgsAck', () => {
   it('test', () => {
     const msgsAck = {
       [TYPE_KEY]: MSGS_ACK_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),

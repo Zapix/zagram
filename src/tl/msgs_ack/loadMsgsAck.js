@@ -1,21 +1,21 @@
+import * as R from 'ramda';
 import { loadVector } from '../vector';
 import { loadBigInt } from '../bigInt';
-import { MSGS_ACK_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY, MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE, TYPE_KEY,
+} from '../../constants';
+import {
+  buildLoadFunc,
+  buildTypeLoader,
+  buildConstructorLoader,
+} from '../../utils';
 
-/**
- * Parse messages acknowledgment by schema
- * msgs_ack#62d6b459 msg_ids:Vector long = MsgsAck;
- * @param {ArrayBuffer} buffer
- * @param {Boolean} withOffset
- * @returns {{ type: number, msgIds: Array<Number> }}
- */
-export default function loadMsgsAck(buffer, withOffset) {
-  const { value: msgIds, offset } = loadVector(loadBigInt, buffer.slice(4), true);
+const loadType = buildTypeLoader(MSGS_ACK_TYPE);
+const loadConstructor = buildConstructorLoader(MSGS_ACK_CONSTRUCTOR);
+const loadMsgIds = R.partial(loadVector, [loadBigInt]);
 
-  const value = {
-    [TYPE_KEY]: MSGS_ACK_TYPE,
-    msgIds,
-  };
-
-  return (withOffset) ? { value, offset: (offset + 4) } : value;
-}
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['msgIds', loadMsgIds],
+]);

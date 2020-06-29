@@ -17,7 +17,7 @@ import {
   MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
   MSG_RESEND_ANS_REQ_METHOD,
   MSG_RESEND_REQ_METHOD,
-  MSGS_ACK_TYPE,
+  MSGS_ACK_CONSTRUCTOR,
   MSGS_ALL_INFO_TYPE,
   MSGS_STATE_INFO_TYPE,
   MSGS_STATE_REQ_TYPE,
@@ -37,7 +37,7 @@ import {
   METHOD_KEY,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
-  MSG_DETAILED_INFO_TYPE, MSG_RESEND_REQ_TYPE,
+  MSG_DETAILED_INFO_TYPE, MSG_RESEND_REQ_TYPE, MSGS_ACK_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -247,6 +247,7 @@ describe('dumpMessage', () => {
         type: 'msgs_ack',
         msg: {
           [TYPE_KEY]: MSGS_ACK_TYPE,
+          [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
           msgIds: [
             BigInt('0x5e0b700a00000000'),
             BigInt('0x5e0b800e00000000'),

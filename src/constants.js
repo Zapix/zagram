@@ -62,8 +62,9 @@ export const BAD_MSG_NOTIFICATION_CONSTRUCTOR = 'bad_msg_notification';
 export const BAD_SERVER_SALT = 0xedab447b;
 export const BAD_SERVER_SALT_CONSTRUCTOR = 'bad_server_salt';
 
+export const MSGS_ACK_TYPE = 'MsgsAck';
 export const MSGS_ACK = 0x62d6b459;
-export const MSGS_ACK_TYPE = 'msgs_ack';
+export const MSGS_ACK_CONSTRUCTOR = 'msgs_ack';
 
 export const MSGS_STATE_REQ = 0xda69fb52;
 export const MSGS_STATE_REQ_TYPE = 'msgs_state_req';

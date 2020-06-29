@@ -21,7 +21,7 @@ import {
   BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
   HTTP_WAIT_CONSTRUCTOR,
   MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
-  MSGS_ACK_TYPE,
+  MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PONG_TYPE, RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
@@ -288,7 +288,7 @@ export default class MTProto extends EventTarget {
         R.path(['body', 'messages']),
         R.map(this.handleResponse.bind(this)),
       )(message);
-    } else if (isMessageOfType(MSGS_ACK_TYPE, message.body)) {
+    } else if (isMessageOfType(MSGS_ACK_CONSTRUCTOR, message.body)) {
       this.handleMsgsAck(message);
     } else if (isMessageOfType(PONG_TYPE, message.body)) {
       this.handlePong(message);
@@ -375,6 +375,7 @@ export default class MTProto extends EventTarget {
   buildAcknowledgementMessage() {
     const msg = {
       [TYPE_KEY]: MSGS_ACK_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
       msgIds: [...this.acknowledgements],
     };
     this.acknowledgements = [];
