@@ -9,7 +9,7 @@ import {
   BAD_SERVER_SALT_CONSTRUCTOR,
   MSGS_STATE_REQ_TYPE,
   MSGS_STATE_INFO_TYPE,
-  MSGS_ALL_INFO_TYPE,
+  MSGS_ALL_INFO_CONSTRUCTOR,
   MSG_DETAILED_INFO_CONSTRUCTOR,
   MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
   MSG_RESEND_REQ_METHOD,
@@ -39,7 +39,9 @@ import {
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
   MSG_DETAILED_INFO_TYPE,
-  MSG_RESEND_REQ_TYPE, MSGS_ACK_TYPE,
+  MSG_RESEND_REQ_TYPE,
+  MSGS_ACK_TYPE,
+  MSGS_ALL_INFO_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -261,6 +263,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ALL_INFO_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),

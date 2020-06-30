@@ -1,6 +1,11 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadMsgsAllInfo from './loadMsgsAllInfo';
-import { MSGS_ALL_INFO_TYPE, TYPE_KEY } from '../../constants';
+import {
+  MSGS_ALL_INFO_CONSTRUCTOR,
+  TYPE_KEY,
+  CONSTRUCTOR_KEY,
+  MSGS_ALL_INFO_TYPE,
+} from '../../constants';
 
 describe('loadMsgsAllInfo', () => {
   // constructor 8c c0 d1 31
@@ -13,6 +18,7 @@ describe('loadMsgsAllInfo', () => {
   it('without offset', () => {
     expect(loadMsgsAllInfo(buffer)).toEqual({
       [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ALL_INFO_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -25,6 +31,7 @@ describe('loadMsgsAllInfo', () => {
     expect(loadMsgsAllInfo(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
+        [CONSTRUCTOR_KEY]: MSGS_ALL_INFO_CONSTRUCTOR,
         msgIds: [
           BigInt('0x5e0b700a00000000'),
           BigInt('0x5e0b800e00000000'),
