@@ -69,8 +69,9 @@ export const MSGS_ACK_CONSTRUCTOR = 'msgs_ack';
 export const MSGS_STATE_REQ = 0xda69fb52;
 export const MSGS_STATE_REQ_TYPE = 'msgs_state_req';
 
+export const MSGS_STATE_INFO_TYPE = 'MsgsStateInfo';
 export const MSGS_STATE_INFO = 0x04deb57d;
-export const MSGS_STATE_INFO_TYPE = 'msgs_state_info';
+export const MSGS_STATE_INFO_CONSTRUCTOR = 'msgs_state_info';
 
 export const MSGS_ALL_INFO_TYPE = 'MsgsAllInfo';
 export const MSGS_ALL_INFO = 0x8cc0d131;

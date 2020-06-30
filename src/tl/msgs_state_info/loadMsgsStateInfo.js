@@ -1,22 +1,26 @@
-import { sliceBuffer } from '../../utils';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
-import { getStringFromArrayBuffer } from '../tlSerialization';
-import { MSGS_STATE_INFO_TYPE, TYPE_KEY } from '../../constants';
+import {
+  MSGS_STATE_INFO_CONSTRUCTOR,
+  MSGS_STATE_INFO_TYPE,
+  CONSTRUCTOR_KEY,
+  TYPE_KEY,
+} from '../../constants';
+import { loadBytes } from '../bytes';
 
 /**
  * @param {ArrayBuffer} buffer
  * @param {Boolean} withOffset
  * @returns {*}
  */
-export default function loadMsgsStateInfo(buffer, withOffset) {
-  const reqMsgId = loadBigInt(sliceBuffer(buffer, 4, 12));
-  const { incomingString: info, offset } = getStringFromArrayBuffer(buffer, 12);
+const loadType = buildTypeLoader(MSGS_STATE_INFO_TYPE);
+const loadConstructor = buildConstructorLoader(MSGS_STATE_INFO_CONSTRUCTOR);
+const loadReqMsgId = loadBigInt;
+const loadInfo = loadBytes;
 
-  const value = {
-    reqMsgId,
-    info: Array.from(info),
-    [TYPE_KEY]: MSGS_STATE_INFO_TYPE,
-  };
-
-  return (withOffset) ? { value, offset } : value;
-}
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['reqMsgId', loadReqMsgId],
+  ['info', loadInfo],
+]);

@@ -19,7 +19,7 @@ import {
   MSG_RESEND_REQ_METHOD,
   MSGS_ACK_CONSTRUCTOR,
   MSGS_ALL_INFO_CONSTRUCTOR,
-  MSGS_STATE_INFO_TYPE,
+  MSGS_STATE_INFO_CONSTRUCTOR,
   MSGS_STATE_REQ_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PING_DELAY_DISCONNECT_TYPE,
@@ -37,7 +37,11 @@ import {
   METHOD_KEY,
   HTTP_WAIT_TYPE,
   MESSAGE_CONTAINER_TYPE,
-  MSG_DETAILED_INFO_TYPE, MSG_RESEND_REQ_TYPE, MSGS_ACK_TYPE, MSGS_ALL_INFO_TYPE,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_RESEND_REQ_TYPE,
+  MSGS_ACK_TYPE,
+  MSGS_ALL_INFO_TYPE,
+  MSGS_STATE_INFO_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -272,6 +276,7 @@ describe('dumpMessage', () => {
         type: 'msgs_state_info',
         msg: {
           [TYPE_KEY]: MSGS_STATE_INFO_TYPE,
+          [CONSTRUCTOR_KEY]: MSGS_STATE_INFO_CONSTRUCTOR,
           reqMsgId: BigInt('0x5e072d4500000000'),
           info: [1, 1, 4, 12],
         },
