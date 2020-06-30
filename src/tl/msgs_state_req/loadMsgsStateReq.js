@@ -1,18 +1,23 @@
+import * as R from 'ramda';
+
 import { loadVector } from '../vector';
 import { loadBigInt } from '../bigInt';
-import { MSGS_STATE_REQ_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY, MSGS_STATE_REQ_METHOD, MSGS_STATE_REQ_TYPE, TYPE_KEY,
+} from '../../constants';
+import { buildLoadFunc, buildTypeLoader, buildMethodLoader } from '../../utils';
+
+const loadType = buildTypeLoader(MSGS_STATE_REQ_TYPE);
+const loadMethod = buildMethodLoader(MSGS_STATE_REQ_METHOD);
+const loadMsgIds = R.partial(loadVector, [loadBigInt]);
 
 /**
  * @param {ArrayBuffer} buffer,
+ * @param {Boolean} withOffset
  * @return {*}
  */
-export default function loadMsgsStateReq(buffer, withOffset) {
-  const { value: msgIds, offset } = loadVector(loadBigInt, buffer.slice(4), true);
-
-  const value = {
-    msgIds,
-    [TYPE_KEY]: MSGS_STATE_REQ_TYPE,
-  };
-
-  return (withOffset) ? { value, offset: offset + 4 } : value;
-}
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [METHOD_KEY, loadMethod],
+  ['msgIds', loadMsgIds],
+]);

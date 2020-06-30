@@ -1,6 +1,8 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadMsgsStateReq from './loadMsgsStateReq';
-import { MSGS_STATE_REQ_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY, MSGS_STATE_REQ_METHOD, MSGS_STATE_REQ_TYPE, TYPE_KEY,
+} from '../../constants';
 
 describe('loadMsgsStateReq', () => {
   // da 69 fb 52
@@ -10,6 +12,7 @@ describe('loadMsgsStateReq', () => {
   it('without offset', () => {
     expect(loadMsgsStateReq(buffer)).toEqual({
       [TYPE_KEY]: MSGS_STATE_REQ_TYPE,
+      [METHOD_KEY]: MSGS_STATE_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -21,6 +24,7 @@ describe('loadMsgsStateReq', () => {
     expect(loadMsgsStateReq(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: MSGS_STATE_REQ_TYPE,
+        [METHOD_KEY]: MSGS_STATE_REQ_METHOD,
         msgIds: [
           BigInt('0x5e0b700a00000000'),
           BigInt('0x5e0b800e00000000'),
