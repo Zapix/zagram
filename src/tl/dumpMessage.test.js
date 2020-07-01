@@ -21,7 +21,7 @@ import {
   MSGS_ALL_INFO_CONSTRUCTOR,
   MSGS_STATE_INFO_CONSTRUCTOR,
   MSGS_STATE_REQ_METHOD,
-  NEW_SESSION_CREATED_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
   PING_DELAY_DISCONNECT_TYPE,
   PING_TYPE,
   PONG_TYPE,
@@ -41,7 +41,7 @@ import {
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
   MSGS_ALL_INFO_TYPE,
-  MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE,
+  MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -180,6 +180,7 @@ describe('dumpMessage', () => {
               seqNo: 1,
               body: {
                 [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+                [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
                 firstMsgId: BigInt('0x5e072d4500000000'),
                 uniqueId: BigInt('0x8f5524a763de8c07'),
                 serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -298,6 +299,7 @@ describe('dumpMessage', () => {
         type: 'new_session_created',
         msg: {
           [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+          [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
           firstMsgId: BigInt('0x5e072d4500000000'),
           uniqueId: BigInt('0x8f5524a763de8c07'),
           serverSalt: BigInt('0x6b02abc667623eb7'),

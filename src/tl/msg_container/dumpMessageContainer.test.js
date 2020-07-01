@@ -2,7 +2,7 @@ import {
   CONSTRUCTOR_KEY,
   MESSAGE_CONTAINER_CONSTRUCTOR,
   MESSAGE_CONTAINER_TYPE,
-  NEW_SESSION_CREATED_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
   PONG_TYPE,
   TYPE_KEY,
 } from '../../constants';
@@ -20,7 +20,7 @@ describe('dumpMessage', () => {
           msgId: BigInt('0x5e072d4689993001'),
           seqNo: 1,
           body: {
-            [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [TYPE_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('0x5e072d4500000000'),
             uniqueId: BigInt('0x8f5524a763de8c07'),
             serverSalt: BigInt('0x6b02abc667623eb7'),

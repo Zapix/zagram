@@ -22,7 +22,7 @@ import {
   HTTP_WAIT_CONSTRUCTOR,
   MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
   MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
-  NEW_SESSION_CREATED_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
   PONG_TYPE, RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
@@ -292,7 +292,7 @@ export default class MTProto extends EventTarget {
       this.handleMsgsAck(message);
     } else if (isMessageOfType(PONG_TYPE, message.body)) {
       this.handlePong(message);
-    } else if (isMessageOfType(NEW_SESSION_CREATED_TYPE, message.body)) {
+    } else if (isMessageOfType(NEW_SESSION_CREATED_CONSTRUCTOR, message.body)) {
       this.handleNewSessionCreated(message);
     } else if (isMessageOfType(BAD_SERVER_SALT_CONSTRUCTOR, message.body)) {
       this.handleBadServerSalt(message);

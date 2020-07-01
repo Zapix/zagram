@@ -27,7 +27,7 @@ import {
   DESTROY_SESSION_CONSTRUCTOR,
   DESTROY_SESSION_OK_CONSTRUCTOR,
   DESTROY_SESSION_NONE_CONSTRUCTOR,
-  NEW_SESSION_CREATED_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
   MESSAGE_CONTAINER_CONSTRUCTOR,
   HTTP_WAIT_CONSTRUCTOR,
   CONSTRUCTOR_KEY,
@@ -41,7 +41,7 @@ import {
   MSG_DETAILED_INFO_TYPE,
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
-  MSGS_ALL_INFO_TYPE, MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE,
+  MSGS_ALL_INFO_TYPE, MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -86,6 +86,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+      [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
       firstMsgId: BigInt('0x5e072d4500000000'),
       uniqueId: BigInt('0x8f5524a763de8c07'),
       serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -108,6 +109,7 @@ describe('load', () => {
           bytes: 28,
           body: {
             [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('0x5e072d4500000000'),
             uniqueId: BigInt('0x8f5524a763de8c07'),
             serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -486,6 +488,7 @@ describe('load', () => {
           bytes: 28,
           body: {
             [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('6802566759015514128'),
             serverSalt: BigInt('4900676089628893644'),
             uniqueId: BigInt('283200375724287429'),
