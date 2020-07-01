@@ -23,7 +23,7 @@ import {
   MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
   MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_CONSTRUCTOR,
-  PONG_TYPE, RPC_ERROR_TYPE,
+  PONG_CONSTRUCTOR, RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
 } from './constants';
@@ -290,7 +290,7 @@ export default class MTProto extends EventTarget {
       )(message);
     } else if (isMessageOfType(MSGS_ACK_CONSTRUCTOR, message.body)) {
       this.handleMsgsAck(message);
-    } else if (isMessageOfType(PONG_TYPE, message.body)) {
+    } else if (isMessageOfType(PONG_CONSTRUCTOR, message.body)) {
       this.handlePong(message);
     } else if (isMessageOfType(NEW_SESSION_CREATED_CONSTRUCTOR, message.body)) {
       this.handleNewSessionCreated(message);

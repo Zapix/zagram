@@ -32,13 +32,14 @@ export const AUTH_SEND_CODE = 0xa677244f;
 export const AUTH_SENT_CODE = 0x2215bcbd;
 export const CODE_SETTINGS = 0xdebebe83;
 
+export const PONG_TYPE = 'Pong';
 export const PING = 0x7abe77ec;
-export const PING_TYPE = 'ping';
+export const PING_METHOD = 'ping';
 export const PONG = 0x347773c5;
-export const PONG_TYPE = 'pong';
+export const PONG_CONSTRUCTOR = 'pong';
 
 export const PING_DELAY_DISCONNECT = 0xf3427b8c;
-export const PING_DELAY_DISCONNECT_TYPE = 'ping_delay_disconnect';
+export const PING_DELAY_DISCONNECT_METHOD = 'ping_delay_disconnect';
 
 export const GET_CONFIG = 0xc4f9186b;
 

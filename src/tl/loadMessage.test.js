@@ -21,9 +21,9 @@ import {
   RPC_ANSWER_DROPPED_TYPE,
   FUTURE_SALT_CONSTRUCTOR,
   FUTURE_SALTS_CONSTRUCTOR,
-  PING_TYPE,
-  PONG_TYPE,
-  PING_DELAY_DISCONNECT_TYPE,
+  PING_METHOD,
+  PONG_CONSTRUCTOR,
+  PING_DELAY_DISCONNECT_METHOD,
   DESTROY_SESSION_CONSTRUCTOR,
   DESTROY_SESSION_OK_CONSTRUCTOR,
   DESTROY_SESSION_NONE_CONSTRUCTOR,
@@ -41,7 +41,11 @@ import {
   MSG_DETAILED_INFO_TYPE,
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
-  MSGS_ALL_INFO_TYPE, MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE,
+  MSGS_ALL_INFO_TYPE,
+  MSGS_STATE_INFO_TYPE,
+  MSGS_STATE_REQ_TYPE,
+  NEW_SESSION_CREATED_TYPE,
+  PONG_TYPE,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -54,6 +58,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: PONG_TYPE,
+      [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
       msgId: BigInt('0x5e072d4500000000'),
       pingId: BigInt('0x56efe14fe8ab347e'),
     });
@@ -64,7 +69,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: PING_TYPE,
+      [TYPE_KEY]: PONG_TYPE,
+      [METHOD_KEY]: PING_METHOD,
       pingId: BigInt('0x5e0b800e00000000'),
     });
   });
@@ -74,7 +80,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: PING_DELAY_DISCONNECT_TYPE,
+      [TYPE_KEY]: PONG_TYPE,
+      [METHOD_KEY]: PING_DELAY_DISCONNECT_METHOD,
       pingId: BigInt('0x5e0b800e00000000'),
       disconnectDelay: 75,
     });
@@ -121,6 +128,7 @@ describe('load', () => {
           bytes: 20,
           body: {
             [TYPE_KEY]: PONG_TYPE,
+            [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
             msgId: BigInt('0x5e072d4500000000'),
             pingId: BigInt('0x56efe14fe8ab347e'),
           },

@@ -22,9 +22,9 @@ import {
   MSGS_STATE_INFO_CONSTRUCTOR,
   MSGS_STATE_REQ_METHOD,
   NEW_SESSION_CREATED_CONSTRUCTOR,
-  PING_DELAY_DISCONNECT_TYPE,
-  PING_TYPE,
-  PONG_TYPE,
+  PING_DELAY_DISCONNECT_METHOD,
+  PING_METHOD,
+  PONG_CONSTRUCTOR,
   RPC_ANSWER_DROPPED_RUNNING_TYPE,
   RPC_ANSWER_DROPPED_TYPE,
   RPC_ANSWER_UNKNOWN_TYPE,
@@ -41,7 +41,7 @@ import {
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
   MSGS_ALL_INFO_TYPE,
-  MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE,
+  MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE, PONG_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -191,6 +191,7 @@ describe('dumpMessage', () => {
               seqNo: 2,
               body: {
                 [TYPE_KEY]: PONG_TYPE,
+                [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
                 msgId: BigInt('0x5e072d4500000000'),
                 pingId: BigInt('0x56efe14fe8ab347e'),
               },
@@ -309,7 +310,8 @@ describe('dumpMessage', () => {
       {
         type: 'ping',
         msg: {
-          [TYPE_KEY]: PING_TYPE,
+          [TYPE_KEY]: PONG_TYPE,
+          [METHOD_KEY]: PING_METHOD,
           pingId: BigInt('0x5e0b800e00000000'),
         },
         hexStr: 'ec77be7a000000000e800b5e',
@@ -317,7 +319,8 @@ describe('dumpMessage', () => {
       {
         type: 'ping_delay_disconnect',
         msg: {
-          [TYPE_KEY]: PING_DELAY_DISCONNECT_TYPE,
+          [TYPE_KEY]: PONG_TYPE,
+          [METHOD_KEY]: PING_DELAY_DISCONNECT_METHOD,
           pingId: BigInt('0x5e0b800e00000000'),
           disconnectDelay: 75,
         },
@@ -327,6 +330,7 @@ describe('dumpMessage', () => {
         type: 'pong',
         msg: {
           [TYPE_KEY]: PONG_TYPE,
+          [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
           msgId: BigInt('0x5e072d4500000000'),
           pingId: BigInt('0x56efe14fe8ab347e'),
         },

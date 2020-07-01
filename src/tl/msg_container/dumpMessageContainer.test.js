@@ -3,7 +3,7 @@ import {
   MESSAGE_CONTAINER_CONSTRUCTOR,
   MESSAGE_CONTAINER_TYPE,
   NEW_SESSION_CREATED_CONSTRUCTOR,
-  PONG_TYPE,
+  PONG_CONSTRUCTOR,
   TYPE_KEY,
 } from '../../constants';
 import { arrayBufferToHex, hexToArrayBuffer } from '../../utils';
@@ -30,7 +30,7 @@ describe('dumpMessage', () => {
           msgId: BigInt('0x5e072d4689996801'),
           seqNo: 2,
           body: {
-            [TYPE_KEY]: PONG_TYPE,
+            [TYPE_KEY]: PONG_CONSTRUCTOR,
             msgId: BigInt('0x5e072d4500000000'),
             pingId: BigInt('0x56efe14fe8ab347e'),
           },

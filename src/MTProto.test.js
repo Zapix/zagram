@@ -14,10 +14,10 @@ import * as R from 'ramda';
 import {
   API_HASH,
   API_ID, BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
-  MESSAGE_CONTAINER_CONSTRUCTOR, MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
+  MESSAGE_CONTAINER_CONSTRUCTOR, METHOD_KEY, MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
   NEW_SESSION_CREATED_CONSTRUCTOR,
-  PING_TYPE,
-  PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
+  PING_METHOD,
+  PONG_CONSTRUCTOR, PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
   TYPE_KEY
 } from './constants';
 import MTProto, {
@@ -134,8 +134,9 @@ describe('MTProto', () => {
       const connection = new MTProto(url, schema);
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         connection.request({
+          [TYPE_KEY]: PONG_TYPE,
+          [METHOD_KEY]: PING_METHOD,
           pingId: BigInt(2323423423),
-          [TYPE_KEY]: PING_TYPE,
         }).then((value) => {
           expect(value).toEqual('OK');
           done();
@@ -241,7 +242,7 @@ describe('MTProto', () => {
         msgId: BigInt(123123),
         seqNo: 13,
         body: {
-          [TYPE_KEY]: PONG_TYPE,
+          [TYPE_KEY]: PONG_CONSTRUCTOR,
           msgId: BigInt(123),
           pingId: BigInt(222),
         },
@@ -365,7 +366,7 @@ describe('MTProto', () => {
               msgId: BigInt(123123),
               seqNo: 13,
               body: {
-                [TYPE_KEY]: PONG_TYPE,
+                [TYPE_KEY]: PONG_CONSTRUCTOR,
                 msgId: BigInt(123),
                 pingId: BigInt(222),
               },
@@ -390,7 +391,7 @@ describe('MTProto', () => {
       connection.handleResponse(message);
 
       expect(resolvePing).toHaveBeenCalledWith({
-        [TYPE_KEY]: PONG_TYPE,
+        [TYPE_KEY]: PONG_CONSTRUCTOR,
         msgId: BigInt(123),
         pingId: BigInt(222),
       });
