@@ -28,7 +28,8 @@ import {
   RPC_ANSWER_DROPPED_CONSTRUCTOR,
   RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
   RPC_DROP_ANSWER_METHOD,
-  RPC_RESULT_TYPE, RPC_ERROR_CONSTRUCTOR, RPC_RESULT_CONSTRUCTOR,
+  RPC_ERROR_CONSTRUCTOR,
+  RPC_RESULT_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -58,7 +59,7 @@ import { dumpRpcDropAnswer } from './rpc_drop_answer';
 import { dumpRpcError } from './rpc_error';
 import { dumpRpcResult } from './rpc_result';
 import { dumpBySchema, isMsgCouldBeDump } from './schema';
-import { isMessageOf, isMessageOfType, isMethodOf } from './utils';
+import { isMessageOf, isMethodOf } from './utils';
 
 
 /**

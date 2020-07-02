@@ -6,7 +6,7 @@ import {
   TYPE_KEY,
   RPC_RESULT_TYPE,
   CONSTRUCTOR_KEY,
-  RPC_RESULT_CONSTRUCTOR
+  RPC_RESULT_CONSTRUCTOR,
 } from '../../constants';
 
 describe('loadRpcResult', () => {

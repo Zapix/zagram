@@ -6,7 +6,7 @@ import {
   CONSTRUCTOR_KEY,
   RPC_RESULT_CONSTRUCTOR,
   RPC_RESULT_TYPE,
-  TYPE_KEY
+  TYPE_KEY,
 } from '../../constants';
 import { buildLoadFunc, buildConstructorLoader, buildTypeLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';

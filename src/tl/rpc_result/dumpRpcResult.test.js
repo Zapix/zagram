@@ -4,7 +4,7 @@ import {
   CONSTRUCTOR_KEY,
   RPC_RESULT_CONSTRUCTOR,
   RPC_RESULT_TYPE,
-  TYPE_KEY
+  TYPE_KEY,
 } from '../../constants';
 import dumpRpcResult from './dumpRpcResult';
 import { arrayBufferToHex } from '../../utils';
