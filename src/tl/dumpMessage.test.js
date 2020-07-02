@@ -25,10 +25,10 @@ import {
   PING_DELAY_DISCONNECT_METHOD,
   PING_METHOD,
   PONG_CONSTRUCTOR,
-  RPC_ANSWER_DROPPED_RUNNING_TYPE,
-  RPC_ANSWER_DROPPED_TYPE,
-  RPC_ANSWER_UNKNOWN_TYPE,
-  RPC_DROP_ANSWER_TYPE,
+  RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+  RPC_ANSWER_DROPPED_CONSTRUCTOR,
+  RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+  RPC_DROP_ANSWER_METHOD,
   RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
@@ -41,7 +41,11 @@ import {
   MSG_RESEND_REQ_TYPE,
   MSGS_ACK_TYPE,
   MSGS_ALL_INFO_TYPE,
-  MSGS_STATE_INFO_TYPE, MSGS_STATE_REQ_TYPE, NEW_SESSION_CREATED_TYPE, PONG_TYPE,
+  MSGS_STATE_INFO_TYPE,
+  MSGS_STATE_REQ_TYPE,
+  NEW_SESSION_CREATED_TYPE,
+  PONG_TYPE,
+  RPC_DROP_ANSWER_TYPE,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -339,7 +343,8 @@ describe('dumpMessage', () => {
       {
         type: 'rpc_answer_dropped',
         msg: {
-          [TYPE_KEY]: RPC_ANSWER_DROPPED_TYPE,
+          [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_CONSTRUCTOR,
           msgId: BigInt('0x5e0b800e00000000'),
           seqNo: 28,
           bytes: 255,
@@ -349,14 +354,16 @@ describe('dumpMessage', () => {
       {
         type: 'rpc_answer_dropped_running',
         msg: {
-          [TYPE_KEY]: RPC_ANSWER_DROPPED_RUNNING_TYPE,
+          [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
         },
         hexStr: '86e578cd',
       },
       {
         type: 'rpc_answer_dropped_unknown',
         msg: {
-          [TYPE_KEY]: RPC_ANSWER_UNKNOWN_TYPE,
+          [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
         },
         hexStr: '6ed32a5e',
       },
@@ -364,6 +371,7 @@ describe('dumpMessage', () => {
         type: 'rpc_drop_answer',
         msg: {
           [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+          [METHOD_KEY]: RPC_DROP_ANSWER_METHOD,
           reqMsgId: BigInt('0x5e0b800e00000000'),
         },
         hexStr: '40a7e458000000000e800b5e',

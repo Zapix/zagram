@@ -16,9 +16,9 @@ import {
   MSG_RESEND_ANS_REQ_METHOD,
   RPC_RESULT_TYPE,
   RPC_ERROR_TYPE,
-  RPC_DROP_ANSWER_TYPE,
-  RPC_ANSWER_DROPPED_RUNNING_TYPE,
-  RPC_ANSWER_DROPPED_TYPE,
+  RPC_DROP_ANSWER_METHOD,
+  RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+  RPC_ANSWER_DROPPED_CONSTRUCTOR,
   FUTURE_SALT_CONSTRUCTOR,
   FUTURE_SALTS_CONSTRUCTOR,
   PING_METHOD,
@@ -45,7 +45,7 @@ import {
   MSGS_STATE_INFO_TYPE,
   MSGS_STATE_REQ_TYPE,
   NEW_SESSION_CREATED_TYPE,
-  PONG_TYPE,
+  PONG_TYPE, RPC_DROP_ANSWER_TYPE, RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -213,6 +213,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [METHOD_KEY]: RPC_DROP_ANSWER_METHOD,
       reqMsgId: BigInt('0x5e0b800e00000000'),
     });
   });
@@ -221,14 +222,20 @@ describe('load', () => {
     const hexStr = '6ed32a5e';
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(load(buffer)).toEqual({ [TYPE_KEY]: RPC_DROP_ANSWER_TYPE });
+    expect(load(buffer)).toEqual({
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+    });
   });
 
   it('rpc answer dropped running', () => {
     const hexStr = '86e578cd';
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(load(buffer)).toEqual({ [TYPE_KEY]: RPC_ANSWER_DROPPED_RUNNING_TYPE });
+    expect(load(buffer)).toEqual({
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+    });
   });
 
   it('rpc answer dropped', () => {
@@ -236,7 +243,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: RPC_ANSWER_DROPPED_TYPE,
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_CONSTRUCTOR,
       msgId: BigInt('0x5e0b800e00000000'),
       seqNo: 28,
       bytes: 255,

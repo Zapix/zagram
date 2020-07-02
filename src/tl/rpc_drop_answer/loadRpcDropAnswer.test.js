@@ -1,6 +1,11 @@
 import loadRpcDropAnswer from './loadRpcDropAnswer';
 import { hexToArrayBuffer } from '../../utils';
-import { RPC_DROP_ANSWER_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY,
+  RPC_DROP_ANSWER_METHOD,
+  RPC_DROP_ANSWER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadRpcDropAnswer', () => {
   const hexStr = '40a7e458000000000e800b5e';
@@ -9,6 +14,7 @@ describe('loadRpcDropAnswer', () => {
   it('without offset', () => {
     expect(loadRpcDropAnswer(buffer)).toEqual({
       [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [METHOD_KEY]: RPC_DROP_ANSWER_METHOD,
       reqMsgId: BigInt('0x5e0b800e00000000'),
     });
   });
@@ -17,6 +23,7 @@ describe('loadRpcDropAnswer', () => {
     expect(loadRpcDropAnswer(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+        [METHOD_KEY]: RPC_DROP_ANSWER_METHOD,
         reqMsgId: BigInt('0x5e0b800e00000000'),
       },
       offset: 12,

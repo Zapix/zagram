@@ -99,17 +99,18 @@ export const VECTOR = 0x1cb5c415;
 export const RPC_RESULT = 0xf35c6d01;
 export const RPC_RESULT_TYPE = 'rpc_result';
 
+export const RPC_DROP_ANSWER_TYPE = 'RpcDropAnswer';
 export const RPC_DROP_ANSWER = 0x58e4a740;
-export const RPC_DROP_ANSWER_TYPE = 'rpc_drop_answer';
+export const RPC_DROP_ANSWER_METHOD = 'rpc_drop_answer';
 
 export const RPC_ANSWER_UNKNOWN = 0x5e2ad36e;
-export const RPC_ANSWER_UNKNOWN_TYPE = 'rpc_answer_unknown';
+export const RPC_ANSWER_UNKNOWN_CONSTRUCTOR = 'rpc_answer_unknown';
 
 export const RPC_ANSWER_DROPPED_RUNNING = 0xcd78e586;
-export const RPC_ANSWER_DROPPED_RUNNING_TYPE = 'rpc_answer_dropped_running';
+export const RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR = 'rpc_answer_dropped_running';
 
 export const RPC_ANSWER_DROPPED = 0xa43ad8b7;
-export const RPC_ANSWER_DROPPED_TYPE = 'rpc_answer_dropped';
+export const RPC_ANSWER_DROPPED_CONSTRUCTOR = 'rpc_answer_dropped';
 
 export const RPC_ERROR = 0x2144ca19;
 export const RPC_ERROR_TYPE = 'rpc_error_type';

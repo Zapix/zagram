@@ -1,17 +1,15 @@
-import * as R from 'ramda';
-
-import { RPC_DROP_ANSWER_TYPE, TYPE_KEY } from '../../constants';
-import { isWithOffset, sliceBuffer, withConstantOffset } from '../../utils';
+import {
+  METHOD_KEY,
+  RPC_DROP_ANSWER_METHOD,
+  RPC_DROP_ANSWER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
+import { buildTypeLoader, buildLoadFunc, buildMethodLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 
-const loadType = R.always(RPC_DROP_ANSWER_TYPE);
-const loadReqMsgId = R.pipe(R.partialRight(sliceBuffer, [4, 12]), loadBigInt);
-
-const loadRpcDropAnswer = R.pipe(
-  R.of,
-  R.ap([loadType, loadReqMsgId]),
-  R.zipObj([TYPE_KEY, 'reqMsgId']),
-);
+const loadType = buildTypeLoader(RPC_DROP_ANSWER_TYPE);
+const loadMethod = buildMethodLoader(RPC_DROP_ANSWER_METHOD);
+const loadReqMsgId = loadBigInt;
 
 /**
  * rpc_drop_answer#58e4a740 req_msg_id:long = RpcDropAnswer;
@@ -20,7 +18,8 @@ const loadRpcDropAnswer = R.pipe(
  * @param {boolean}  withOffset
  * @return {*}
  */
-export default R.cond([
-  [isWithOffset, withConstantOffset(loadRpcDropAnswer, 12)],
-  [R.T, loadRpcDropAnswer],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [METHOD_KEY, loadMethod],
+  ['reqMsgId', loadReqMsgId],
 ]);
