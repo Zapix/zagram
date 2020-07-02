@@ -2,7 +2,12 @@ import * as R from 'ramda';
 
 import { arrayBufferToHex, hexToArrayBuffer, sliceBuffer } from '../../utils';
 import loadRpcResult from './loadRpcResult';
-import { TYPE_KEY, RPC_RESULT_TYPE } from '../../constants';
+import {
+  TYPE_KEY,
+  RPC_RESULT_TYPE,
+  CONSTRUCTOR_KEY,
+  RPC_RESULT_CONSTRUCTOR
+} from '../../constants';
 
 describe('loadRpcResult', () => {
   describe('not gzipped response', () => {
@@ -27,6 +32,7 @@ describe('loadRpcResult', () => {
     it('without offset', () => {
       expect(load(buffer)).toEqual({
         [TYPE_KEY]: RPC_RESULT_TYPE,
+        [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
         reqMsgId: BigInt('0x5e0b86bc00000000'),
         result: new Uint8Array(sliceBuffer(buffer, 12)),
       });
@@ -36,6 +42,7 @@ describe('loadRpcResult', () => {
       expect(load(buffer, true)).toEqual({
         value: {
           [TYPE_KEY]: RPC_RESULT_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
           reqMsgId: BigInt('0x5e0b86bc00000000'),
           result: new Uint8Array(sliceBuffer(buffer, 12)),
         },
@@ -67,6 +74,7 @@ describe('loadRpcResult', () => {
       expect(load(buffer)).toMatchObject({
         reqMsgId: BigInt('6802566759015514128'),
         [TYPE_KEY]: RPC_RESULT_TYPE,
+        [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
       });
     });
 
@@ -76,6 +84,7 @@ describe('loadRpcResult', () => {
         value: {
           reqMsgId: BigInt('6802566759015514128'),
           [TYPE_KEY]: RPC_RESULT_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
         },
       });
     });

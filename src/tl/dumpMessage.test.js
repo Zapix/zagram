@@ -45,7 +45,7 @@ import {
   MSGS_STATE_REQ_TYPE,
   NEW_SESSION_CREATED_TYPE,
   PONG_TYPE,
-  RPC_DROP_ANSWER_TYPE, RPC_ERROR_CONSTRUCTOR,
+  RPC_DROP_ANSWER_TYPE, RPC_ERROR_CONSTRUCTOR, RPC_RESULT_CONSTRUCTOR,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -390,6 +390,7 @@ describe('dumpMessage', () => {
         type: 'rpc_result',
         msg: {
           [TYPE_KEY]: RPC_RESULT_TYPE,
+          [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
           msgId: BigInt('0x5e0b86bc00000000'),
           result: {
             [TYPE_KEY]: RPC_ERROR_TYPE,

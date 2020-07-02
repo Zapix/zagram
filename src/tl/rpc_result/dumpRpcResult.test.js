@@ -1,12 +1,18 @@
 import * as R from 'ramda';
 
-import { RPC_RESULT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  RPC_RESULT_CONSTRUCTOR,
+  RPC_RESULT_TYPE,
+  TYPE_KEY
+} from '../../constants';
 import dumpRpcResult from './dumpRpcResult';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpRpcResult', () => {
   const msg = {
     [TYPE_KEY]: RPC_RESULT_TYPE,
+    [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
     msgId: BigInt('0x5e0b86bc00000000'),
     result: 0x12,
   };

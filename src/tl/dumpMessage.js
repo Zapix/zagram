@@ -28,7 +28,7 @@ import {
   RPC_ANSWER_DROPPED_CONSTRUCTOR,
   RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
   RPC_DROP_ANSWER_METHOD,
-  RPC_RESULT_TYPE, RPC_ERROR_CONSTRUCTOR,
+  RPC_RESULT_TYPE, RPC_ERROR_CONSTRUCTOR, RPC_RESULT_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -108,7 +108,7 @@ export default function dumpMessage(schema, msg) {
     [isMessageOf(RPC_ANSWER_UNKNOWN_CONSTRUCTOR), dumpRpcAnswerUnknown],
     [isMethodOf(RPC_DROP_ANSWER_METHOD), dumpRpcDropAnswer],
     [isMessageOf(RPC_ERROR_CONSTRUCTOR), dumpRpcError],
-    [isMessageOfType(RPC_RESULT_TYPE), R.partialRight(dumpRpcResult, [dump])],
+    [isMessageOf(RPC_RESULT_CONSTRUCTOR), R.partialRight(dumpRpcResult, [dump])],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);

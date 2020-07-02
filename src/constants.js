@@ -96,8 +96,9 @@ export const MSG_RESEND_ANS_REQ_METHOD = 'msg_resend_ans_req';
 
 export const VECTOR = 0x1cb5c415;
 
+export const RPC_RESULT_TYPE = 'RpcResult';
 export const RPC_RESULT = 0xf35c6d01;
-export const RPC_RESULT_TYPE = 'rpc_result';
+export const RPC_RESULT_CONSTRUCTOR = 'rpc_result';
 
 export const RPC_DROP_ANSWER_TYPE = 'RpcDropAnswer';
 export const RPC_DROP_ANSWER = 0x58e4a740;

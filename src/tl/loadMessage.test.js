@@ -45,7 +45,11 @@ import {
   MSGS_STATE_INFO_TYPE,
   MSGS_STATE_REQ_TYPE,
   NEW_SESSION_CREATED_TYPE,
-  PONG_TYPE, RPC_DROP_ANSWER_TYPE, RPC_ANSWER_UNKNOWN_CONSTRUCTOR, RPC_ERROR_CONSTRUCTOR,
+  PONG_TYPE,
+  RPC_DROP_ANSWER_TYPE,
+  RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+  RPC_ERROR_CONSTRUCTOR,
+  RPC_RESULT_CONSTRUCTOR,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -187,6 +191,7 @@ describe('load', () => {
 
     expect(load(buffer)).toMatchObject({
       [TYPE_KEY]: RPC_RESULT_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
       reqMsgId: BigInt('0x5e0b86bc00000000'),
       result: {
         [CONSTRUCTOR_KEY]: 'auth.sentCode',

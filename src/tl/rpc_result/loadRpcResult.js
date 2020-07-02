@@ -2,11 +2,17 @@
 // f35c6d01 5e0b86bc00000000 2215bcbd 997275b5
 import * as R from 'ramda';
 
-import { RPC_RESULT_TYPE, TYPE_KEY } from '../../constants';
-import { buildLoadFunc, buildConstructorLoader } from '../../utils';
+import {
+  CONSTRUCTOR_KEY,
+  RPC_RESULT_CONSTRUCTOR,
+  RPC_RESULT_TYPE,
+  TYPE_KEY
+} from '../../constants';
+import { buildLoadFunc, buildConstructorLoader, buildTypeLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 
-const loadType = buildConstructorLoader(RPC_RESULT_TYPE);
+const loadType = buildTypeLoader(RPC_RESULT_TYPE);
+const loadConstructor = buildConstructorLoader(RPC_RESULT_CONSTRUCTOR);
 const loadReqMsgId = loadBigInt;
 
 /**
@@ -22,6 +28,7 @@ const loadReqMsgId = loadBigInt;
 function loadRpcResult(buffer, withOffset, loadMessage) {
   return buildLoadFunc([
     [TYPE_KEY, loadType],
+    [CONSTRUCTOR_KEY, loadConstructor],
     ['reqMsgId', loadReqMsgId],
     ['result', loadMessage],
   ])(buffer, withOffset);
