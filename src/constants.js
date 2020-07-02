@@ -112,8 +112,9 @@ export const RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR = 'rpc_answer_dropped_runnin
 export const RPC_ANSWER_DROPPED = 0xa43ad8b7;
 export const RPC_ANSWER_DROPPED_CONSTRUCTOR = 'rpc_answer_dropped';
 
+export const RPC_ERROR_TYPE = 'RpcError';
 export const RPC_ERROR = 0x2144ca19;
-export const RPC_ERROR_TYPE = 'rpc_error_type';
+export const RPC_ERROR_CONSTRUCTOR = 'rpc_error_type';
 
 export const GET_FUTURE_SALTS = 0xb921bd04;
 export const GET_FUTURE_SALTS_METHOD = 'get_future_salts';

@@ -45,7 +45,7 @@ import {
   MSGS_STATE_INFO_TYPE,
   MSGS_STATE_REQ_TYPE,
   NEW_SESSION_CREATED_TYPE,
-  PONG_TYPE, RPC_DROP_ANSWER_TYPE, RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+  PONG_TYPE, RPC_DROP_ANSWER_TYPE, RPC_ANSWER_UNKNOWN_CONSTRUCTOR, RPC_ERROR_CONSTRUCTOR,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -201,8 +201,9 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hex);
 
     expect(load(buffer)).toEqual({
-      errorCode: 18,
       [TYPE_KEY]: RPC_ERROR_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ERROR_CONSTRUCTOR,
+      errorCode: 18,
       errorMessage: 'Hello World!',
     });
   });
