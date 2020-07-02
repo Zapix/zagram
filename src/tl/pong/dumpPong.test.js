@@ -1,4 +1,6 @@
-import { PONG_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY, PONG_CONSTRUCTOR, PONG_TYPE, TYPE_KEY,
+} from '../../constants';
 import dumpPong from './dumpPong';
 import { arrayBufferToHex } from '../../utils';
 
@@ -6,6 +8,7 @@ describe('dumpPong', () => {
   it('test', () => {
     const msg = {
       [TYPE_KEY]: PONG_TYPE,
+      [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
       msgId: BigInt('0x5e072d4500000000'),
       pingId: BigInt('0x56efe14fe8ab347e'),
     };

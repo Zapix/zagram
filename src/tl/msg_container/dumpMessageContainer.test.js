@@ -1,7 +1,9 @@
 import {
-  MESSAGE_CONTAINER,
-  NEW_SESSION_CREATED_TYPE,
-  PONG_TYPE,
+  CONSTRUCTOR_KEY,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  MESSAGE_CONTAINER_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
+  PONG_CONSTRUCTOR,
   TYPE_KEY,
 } from '../../constants';
 import { arrayBufferToHex, hexToArrayBuffer } from '../../utils';
@@ -11,13 +13,14 @@ import dumpMessageContainer from './dumpMessageContainer';
 describe('dumpMessage', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: MESSAGE_CONTAINER,
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           msgId: BigInt('0x5e072d4689993001'),
           seqNo: 1,
           body: {
-            [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [TYPE_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('0x5e072d4500000000'),
             uniqueId: BigInt('0x8f5524a763de8c07'),
             serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -27,7 +30,7 @@ describe('dumpMessage', () => {
           msgId: BigInt('0x5e072d4689996801'),
           seqNo: 2,
           body: {
-            [TYPE_KEY]: PONG_TYPE,
+            [TYPE_KEY]: PONG_CONSTRUCTOR,
             msgId: BigInt('0x5e072d4500000000'),
             pingId: BigInt('0x56efe14fe8ab347e'),
           },

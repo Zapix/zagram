@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 /**
  * @param {ArrayBuffer} buffer
  * @param {Boolean} withOffset
@@ -5,27 +6,23 @@
  */
 import { loadVector } from '../vector';
 import { loadBigInt } from '../bigInt';
-import { sliceBuffer } from '../../utils';
-import { getStringFromArrayBuffer } from '../tlSerialization';
-import { MSGS_ALL_INFO_TYPE, TYPE_KEY } from '../../constants';
+import { loadBytes } from '../bytes';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
+import {
+  CONSTRUCTOR_KEY,
+  MSGS_ALL_INFO_CONSTRUCTOR,
+  MSGS_ALL_INFO_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
-export default function loadMsgsAllInfo(buffer, withOffset) {
-  const { value: msgIds, offset: msgIdOffset } = loadVector(
-    loadBigInt,
-    sliceBuffer(buffer, 4),
-    true,
-  );
-  const { incomingString: info, offset: infoOffset } = getStringFromArrayBuffer(
-    sliceBuffer(buffer, 4 + msgIdOffset),
-    0,
-  );
+const loadType = buildTypeLoader(MSGS_ALL_INFO_TYPE);
+const loadConstructor = buildConstructorLoader(MSGS_ALL_INFO_CONSTRUCTOR);
+const loadMsgIds = R.partial(loadVector, [loadBigInt]);
+const loadInfo = loadBytes;
 
-  const value = {
-    msgIds,
-    info: Array.from(info),
-    [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
-  };
-  const offset = 4 + msgIdOffset + infoOffset;
-
-  return (withOffset) ? { value, offset } : value;
-}
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['msgIds', loadMsgIds],
+  ['info', loadInfo],
+]);

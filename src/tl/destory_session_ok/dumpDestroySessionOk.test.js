@@ -1,10 +1,10 @@
-import { DESTROY_SESSION_OK_TYPE, TYPE_KEY } from '../../constants';
+import { DESTROY_SESSION_OK_CONSTRUCTOR, TYPE_KEY } from '../../constants';
 import dumpDestroySessionOk from './dumpDestroySessionOk';
 import { arrayBufferToHex } from '../../utils';
 
 it('dumpDestroySession', () => {
   const msg = {
-    [TYPE_KEY]: DESTROY_SESSION_OK_TYPE,
+    [TYPE_KEY]: DESTROY_SESSION_OK_CONSTRUCTOR,
     sessionId: BigInt('0x56efe14fe8ab347e'),
   };
   const buffer = dumpDestroySessionOk(msg);

@@ -1,10 +1,16 @@
-import { HTTP_WAIT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  HTTP_WAIT_CONSTRUCTOR,
+  HTTP_WAIT_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import dumpHttpWait from './dumpHttpWait';
 import { arrayBufferToHex } from '../../utils';
 
 test('dumpHttpWait', () => {
   const msg = {
     [TYPE_KEY]: HTTP_WAIT_TYPE,
+    [CONSTRUCTOR_KEY]: HTTP_WAIT_CONSTRUCTOR,
     maxDelay: 0,
     waitAfter: 0,
     maxWait: 25000,

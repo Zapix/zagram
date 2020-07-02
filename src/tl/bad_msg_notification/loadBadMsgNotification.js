@@ -1,23 +1,18 @@
-import * as R from 'ramda';
-import { isWithOffset, sliceBuffer, withConstantOffset } from '../../utils';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 import { loadInt } from '../int';
-import { BAD_MSG_NOTIFICATION_TYPE, TYPE_KEY } from '../../constants';
+import {
+  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
+  TYPE_KEY,
+  CONSTRUCTOR_KEY,
+} from '../../constants';
 
-const getMsgId = R.pipe(
-  R.partialRight(sliceBuffer, [4, 12]),
-  loadBigInt,
-);
-
-const getSeqNo = R.pipe(
-  R.partialRight(sliceBuffer, [12, 16]),
-  loadInt,
-);
-
-const getErrorCode = R.pipe(
-  R.partialRight(sliceBuffer, [16, 20]),
-  loadInt,
-);
+const loadType = buildTypeLoader(BAD_MSG_NOTIFICATION_TYPE);
+const loadConstructor = buildConstructorLoader(BAD_MSG_NOTIFICATION_CONSTRUCTOR);
+const loadBadMsgId = loadBigInt;
+const loadSeqNo = loadInt;
+const loadErrorCode = loadInt;
 
 /**
  * Parse bad msg notification with schema:
@@ -25,13 +20,10 @@ const getErrorCode = R.pipe(
  * @param {ArrayBuffer} buffer
  * @returns {{}}
  */
-const loadBadMsgNotification = R.pipe(
-  R.of,
-  R.ap([R.always(BAD_MSG_NOTIFICATION_TYPE), getMsgId, getSeqNo, getErrorCode]),
-  R.zipObj([TYPE_KEY, 'badMsgId', 'badSeqNo', 'errorCode']),
-);
-
-export default R.cond([
-  [isWithOffset, withConstantOffset(loadBadMsgNotification, 20)],
-  [R.T, loadBadMsgNotification],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['badMsgId', loadBadMsgId],
+  ['badSeqNo', loadSeqNo],
+  ['errorCode', loadErrorCode],
 ]);

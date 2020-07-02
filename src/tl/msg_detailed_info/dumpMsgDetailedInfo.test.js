@@ -1,4 +1,4 @@
-import { MSG_DETAILED_INFO_TYPE, TYPE_KEY } from '../../constants';
+import { MSG_DETAILED_INFO_CONSTRUCTOR, TYPE_KEY } from '../../constants';
 
 import dumpMsgDetailedInfo from './dumpMsgDetailedInfo';
 import { arrayBufferToHex } from '../../utils';
@@ -6,7 +6,7 @@ import { arrayBufferToHex } from '../../utils';
 describe('dumpMsgDetailedInfo', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [TYPE_KEY]: MSG_DETAILED_INFO_CONSTRUCTOR,
       msgId: BigInt('0x5e0b700a00000000'),
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 123,

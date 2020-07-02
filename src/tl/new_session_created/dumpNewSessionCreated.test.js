@@ -1,4 +1,9 @@
-import { NEW_SESSION_CREATED_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
+  NEW_SESSION_CREATED_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import dumpNewSessionCreated from './dumpNewSessionCreated';
 import { arrayBufferToHex } from '../../utils';
 
@@ -6,6 +11,7 @@ describe('dumpNewSessionCreated', () => {
   it('test', () => {
     const msg = {
       [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+      [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
       firstMsgId: BigInt('0x5e072d4500000000'),
       uniqueId: BigInt('0x8f5524a763de8c07'),
       serverSalt: BigInt('0x6b02abc667623eb7'),

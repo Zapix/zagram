@@ -1,35 +1,21 @@
-import * as R from 'ramda';
-
-import { RPC_ERROR_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  RPC_ERROR_CONSTRUCTOR,
+  RPC_ERROR_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import { loadInt } from '../int';
 import { loadString } from '../string';
-import { computeOffset, isWithOffset, sliceBuffer } from '../../utils';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
 
-const loadType = R.always({ value: RPC_ERROR_TYPE, offset: 4 });
-const loadErrorCode = R.partialRight(loadInt, [true]);
-const loadErrorMessage = R.partialRight(loadString, [true]);
+const loadType = buildTypeLoader(RPC_ERROR_TYPE);
+const loadConstructor = buildConstructorLoader(RPC_ERROR_CONSTRUCTOR);
+const loadErrorCode = loadInt;
+const loadErrorMessage = loadString;
 
-const loadDataWithOffset = R.pipe(
-  R.of,
-  R.ap([
-    loadType,
-    R.pipe(R.partialRight(sliceBuffer, [4, 8]), loadErrorCode),
-    R.pipe(R.partialRight(sliceBuffer, [8, undefined]), loadErrorMessage),
-  ]),
-);
-
-const buildRpcError = R.pipe(
-  R.map(R.prop('value')),
-  R.zipObj([TYPE_KEY, 'errorCode', 'errorMessage']),
-);
-
-const buildWithOffset = R.pipe(
-  R.of,
-  R.ap([buildRpcError, computeOffset]),
-  R.zipObj(['value', 'offset']),
-);
-
-export default R.cond([
-  [isWithOffset, R.pipe(loadDataWithOffset, buildWithOffset)],
-  [R.T, R.pipe(loadDataWithOffset, buildRpcError)],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['errorCode', loadErrorCode],
+  ['errorMessage', loadErrorMessage],
 ]);

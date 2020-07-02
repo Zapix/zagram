@@ -1,11 +1,14 @@
-import { GET_FUTURE_SALTS, TYPE_KEY } from '../../constants';
+import {
+  FUTURE_SALTS_TYPE, GET_FUTURE_SALTS, METHOD_KEY, TYPE_KEY,
+} from '../../constants';
 import dumpGetFutureSalts from './dumpGetFutureSalts';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpGetFutureSalts', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: GET_FUTURE_SALTS,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [METHOD_KEY]: GET_FUTURE_SALTS,
       num: 18,
     };
 

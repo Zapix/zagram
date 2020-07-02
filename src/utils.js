@@ -524,10 +524,19 @@ export function buildLoadFunc(pairs) {
 
 export const buildTypeLoader = R.pipe(
   R.of,
+  R.ap([R.identity, R.always(0)]),
+  R.zipObj(['value', 'offset']),
+  R.always,
+);
+
+export const buildConstructorLoader = R.pipe(
+  R.of,
   R.ap([R.identity, R.always(4)]),
   R.zipObj(['value', 'offset']),
   R.always,
 );
+
+export const buildMethodLoader = buildConstructorLoader;
 
 /**
  * Call function that returns promise one bo one, and handle progress by progressCb

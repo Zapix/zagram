@@ -1,11 +1,17 @@
-import { RPC_ANSWER_DROPPED_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  RPC_ANSWER_DROPPED_CONSTRUCTOR,
+  RPC_DROP_ANSWER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import { arrayBufferToHex } from '../../utils';
 import dumpRpcAnswerDropped from './dumpRpcAnswerDropped';
 
 describe('dumpRpcAnswerDropped', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: RPC_ANSWER_DROPPED_TYPE,
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_CONSTRUCTOR,
       msgId: BigInt('0x5e0b800e00000000'),
       seqNo: 28,
       bytes: 255,

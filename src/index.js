@@ -7,10 +7,10 @@ import{
   constructorFromSchema as constructorFromSchema_,
   methodFromSchema as methodFromSchema_
 } from './tl';
-import { isMessageOf } from './tl/utils';
+import { isMessageOfType } from './tl/utils';
 import { RPC_ERROR_TYPE, PROTOCOL_ID } from './constants';
 import { getInitialDHExchangeMessage } from './createAuthorizationKey';
-export { isMessageOf } from './tl/utils';
+export { isMessageOfType } from './tl/utils';
 export { isObjectOf, isMethodOf } from './tl/schema/utils';
 export { dumpString, loadString} from './tl/string';
 export { default as Connection } from './Connection';
@@ -39,7 +39,7 @@ export const constructorFromSchema = constructorFromSchema_;
 
 export const method = partial(methodFromSchema, [schema]);
 export const construct = partial(constructorFromSchema, [schema]);
-export const isRpcError = isMessageOf(RPC_ERROR_TYPE);
+export const isRpcError = isMessageOfType(RPC_ERROR_TYPE);
 
 export const tlDumps = dumps;
 export const tlLoads = loads;

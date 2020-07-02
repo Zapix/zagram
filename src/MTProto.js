@@ -16,14 +16,14 @@ import {
   sliceBuffer, uint8ToArrayBuffer,
   uint8ToBigInt,
 } from './utils';
-import { isMessageOf } from './tl/utils';
+import { isMessageOfType } from './tl/utils';
 import {
-  BAD_SERVER_SALT_TYPE,
-  HTTP_WAIT_TYPE,
-  MESSAGE_CONTAINER_TYPE,
-  MSGS_ACK_TYPE,
-  NEW_SESSION_CREATED_TYPE,
-  PONG_TYPE, RPC_ERROR_TYPE,
+  BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
+  HTTP_WAIT_CONSTRUCTOR,
+  MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
+  MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
+  PONG_CONSTRUCTOR, RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
 } from './constants';
@@ -237,6 +237,7 @@ export default class MTProto extends EventTarget {
 
       const containerMessage = {
         [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+        [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
         messages: [
           {
             seqNo: ackSeqNo,
@@ -273,7 +274,7 @@ export default class MTProto extends EventTarget {
 
       const promise = sendEncryptedRequest(containerMessage);
 
-      if (isMessageOf(HTTP_WAIT_TYPE, message)) {
+      if (isMessageOfType(HTTP_WAIT_CONSTRUCTOR, message)) {
         promise.then(resolve).catch(reject);
       } else {
         this.rpcPromises[messageId] = { resolve, reject, message };
@@ -282,22 +283,22 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
-    if (isMessageOf(MESSAGE_CONTAINER_TYPE, message.body)) {
+    if (isMessageOfType(MESSAGE_CONTAINER_CONSTRUCTOR, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
         R.map(this.handleResponse.bind(this)),
       )(message);
-    } else if (isMessageOf(MSGS_ACK_TYPE, message.body)) {
+    } else if (isMessageOfType(MSGS_ACK_CONSTRUCTOR, message.body)) {
       this.handleMsgsAck(message);
-    } else if (isMessageOf(PONG_TYPE, message.body)) {
+    } else if (isMessageOfType(PONG_CONSTRUCTOR, message.body)) {
       this.handlePong(message);
-    } else if (isMessageOf(NEW_SESSION_CREATED_TYPE, message.body)) {
+    } else if (isMessageOfType(NEW_SESSION_CREATED_CONSTRUCTOR, message.body)) {
       this.handleNewSessionCreated(message);
-    } else if (isMessageOf(BAD_SERVER_SALT_TYPE, message.body)) {
+    } else if (isMessageOfType(BAD_SERVER_SALT_CONSTRUCTOR, message.body)) {
       this.handleBadServerSalt(message);
-    } else if (isMessageOf(RPC_RESULT_TYPE, message.body)) {
+    } else if (isMessageOfType(RPC_RESULT_TYPE, message.body)) {
       this.handleRpcResult(message);
-    } else if (isMessageOf('Updates')) {
+    } else if (isMessageOfType('Updates')) {
       this.handleUpdates(message);
     } else {
       this.handleUnExpected(message);
@@ -350,7 +351,7 @@ export default class MTProto extends EventTarget {
     const result = R.path(['body', 'result'], message);
     this.acknowledgements.push(msgId);
 
-    if (isMessageOf(RPC_ERROR_TYPE, result)) {
+    if (isMessageOfType(RPC_ERROR_TYPE, result)) {
       if (result.errorCode === 401) {
         this.handleAuthKeyError(result.errorMessage);
       }
@@ -374,6 +375,7 @@ export default class MTProto extends EventTarget {
   buildAcknowledgementMessage() {
     const msg = {
       [TYPE_KEY]: MSGS_ACK_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
       msgIds: [...this.acknowledgements],
     };
     this.acknowledgements = [];

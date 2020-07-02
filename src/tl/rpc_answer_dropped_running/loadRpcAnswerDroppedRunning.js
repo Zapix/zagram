@@ -1,18 +1,16 @@
-import * as R from 'ramda';
+import {
+  CONSTRUCTOR_KEY,
+  RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+  RPC_DROP_ANSWER_TYPE,
+  TYPE_KEY,
+} from '../../constants';
+import { buildTypeLoader, buildConstructorLoader, buildLoadFunc } from '../../utils';
 
-import { RPC_ANSWER_DROPPED_RUNNING_TYPE, TYPE_KEY } from '../../constants';
-import { isWithOffset } from '../../utils';
 
-const msg = {
-  value: {
-    [TYPE_KEY]: RPC_ANSWER_DROPPED_RUNNING_TYPE,
-  },
-  offset: 4,
-};
+const loadType = buildTypeLoader(RPC_DROP_ANSWER_TYPE);
+const loadConstructor = buildConstructorLoader(RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR);
 
-const getMsgWithOffset = R.always(msg);
-
-export default R.cond([
-  [isWithOffset, getMsgWithOffset],
-  [R.T, R.pipe(getMsgWithOffset, R.prop('value'))],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
 ]);

@@ -1,26 +1,28 @@
-import * as R from 'ramda';
-import { MSG_NEW_DETAILED_INFO_TYPE, TYPE_KEY } from '../../constants';
-import { isWithOffset, sliceBuffer, withConstantOffset } from '../../utils';
+import {
+  CONSTRUCTOR_KEY,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
+  TYPE_KEY,
+} from '../../constants';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 import { loadInt } from '../int';
 
-const loadType = R.pipe(R.always(MSG_NEW_DETAILED_INFO_TYPE));
-const loadAnswerMsgId = R.pipe(R.partialRight(sliceBuffer, [4, 12]), loadBigInt);
-const loadBytes = R.pipe(R.partialRight(sliceBuffer, [12, 16]), loadInt);
-const loadStatus = R.pipe(R.partialRight(sliceBuffer, [16, 20]), loadInt);
+const loadType = buildTypeLoader(MSG_DETAILED_INFO_TYPE);
+const loadConstructor = buildConstructorLoader(MSG_NEW_DETAILED_INFO_CONSTRUCTOR);
+const loadAnswerMsgId = loadBigInt;
+const loadBytes = loadInt;
+const loadStatus = loadInt;
 
 /**
  * @param {ArrayBuffer} buffer
  * @param {Boolean} withOffset
  * @returns {{}}
  */
-const loadMsgNewDetailInfo = R.pipe(
-  R.of,
-  R.ap([loadType, loadAnswerMsgId, loadBytes, loadStatus]),
-  R.zipObj([TYPE_KEY, 'answerMsgId', 'bytes', 'status']),
-);
-
-export default R.cond([
-  [isWithOffset, withConstantOffset(loadMsgNewDetailInfo, 20)],
-  [R.T, loadMsgNewDetailInfo],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['answerMsgId', loadAnswerMsgId],
+  ['bytes', loadBytes],
+  ['status', loadStatus],
 ]);

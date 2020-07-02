@@ -1,6 +1,11 @@
 import loadFutureSalt from './loadFutureSalt';
 import { hexToArrayBuffer } from '../../utils';
-import { FUTURE_SALT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  FUTURE_SALT_CONSTRUCTOR,
+  TYPE_KEY,
+  CONSTRUCTOR_KEY,
+  FUTURE_SALTS_TYPE,
+} from '../../constants';
 
 describe('loadFutureSalt', () => {
   // future_salt#0949d9dc valid_since:int valid_until:int salt:long = FutureSalt;
@@ -9,7 +14,8 @@ describe('loadFutureSalt', () => {
 
   it('without offset', () => {
     expect(loadFutureSalt(buffer)).toEqual({
-      [TYPE_KEY]: FUTURE_SALT_TYPE,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
       validSince: 256,
       validUntil: 65536,
       salt: BigInt(257),
@@ -19,7 +25,8 @@ describe('loadFutureSalt', () => {
   it('with offset', () => {
     expect(loadFutureSalt(buffer, true)).toEqual({
       value: {
-        [TYPE_KEY]: FUTURE_SALT_TYPE,
+        [TYPE_KEY]: FUTURE_SALTS_TYPE,
+        [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
         validSince: 256,
         validUntil: 65536,
         salt: BigInt(257),

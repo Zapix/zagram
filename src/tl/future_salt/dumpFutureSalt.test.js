@@ -1,11 +1,11 @@
-import { FUTURE_SALT_TYPE, TYPE_KEY } from '../../constants';
+import { FUTURE_SALT_CONSTRUCTOR, TYPE_KEY } from '../../constants';
 import dumpFutureSalt from './dumpFutureSalt';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpFutureSalt', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: FUTURE_SALT_TYPE,
+      [TYPE_KEY]: FUTURE_SALT_CONSTRUCTOR,
       validSince: 256,
       validUntil: 65536,
       salt: BigInt(257),

@@ -1,40 +1,29 @@
-import * as R from 'ramda';
-import { isWithOffset, sliceBuffer, withConstantOffset } from '../../utils';
+import { buildLoadFunc, buildTypeLoader, buildConstructorLoader } from '../../utils';
 import { loadBigInt } from '../bigInt';
 import { loadInt } from '../int';
-import { BAD_SERVER_SALT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  BAD_MSG_NOTIFICATION_TYPE,
+  BAD_SERVER_SALT_CONSTRUCTOR,
+  CONSTRUCTOR_KEY,
+  TYPE_KEY,
+} from '../../constants';
 
-const getMsgId = R.pipe(
-  R.partialRight(sliceBuffer, [4, 12]),
-  loadBigInt,
-);
-
-const getSeqNo = R.pipe(
-  R.partialRight(sliceBuffer, [12, 16]),
-  loadInt,
-);
-
-const getErrorCode = R.pipe(
-  R.partialRight(sliceBuffer, [16, 20]),
-  loadInt,
-);
-
-const getNewServerSalt = R.pipe(
-  R.partialRight(sliceBuffer, [20, 28]),
-  loadBigInt,
-);
+const loadType = buildTypeLoader(BAD_MSG_NOTIFICATION_TYPE);
+const loadConstructor = buildConstructorLoader(BAD_SERVER_SALT_CONSTRUCTOR);
+const loadBadMsgId = loadBigInt;
+const loadBadSeqNo = loadInt;
+const loadErrorCode = loadInt;
+const loadNewServerSalt = loadBigInt;
 
 /**
  * @param {ArrayBuffer} buffer
  * @returns {*} - loaded message
  */
-const loadBadServerSalt = R.pipe(
-  R.of,
-  R.ap([R.always(BAD_SERVER_SALT_TYPE), getMsgId, getSeqNo, getErrorCode, getNewServerSalt]),
-  R.zipObj([TYPE_KEY, 'badMsgId', 'badSeqNo', 'errorCode', 'newServerSalt']),
-);
-
-export default R.cond([
-  [isWithOffset, withConstantOffset(loadBadServerSalt, 28)],
-  [R.T, loadBadServerSalt],
+export default buildLoadFunc([
+  [TYPE_KEY, loadType],
+  [CONSTRUCTOR_KEY, loadConstructor],
+  ['badMsgId', loadBadMsgId],
+  ['badSeqNo', loadBadSeqNo],
+  ['errorCode', loadErrorCode],
+  ['newServerSalt', loadNewServerSalt],
 ]);

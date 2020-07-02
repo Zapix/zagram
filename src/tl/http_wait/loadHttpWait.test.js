@@ -1,6 +1,11 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadHttpWait from './loadHttpWait';
-import { HTTP_WAIT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  HTTP_WAIT_CONSTRUCTOR,
+  HTTP_WAIT_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadHttpWait', () => {
   const hexStr = '9f3599920000000000000000a8610000';
@@ -9,6 +14,7 @@ describe('loadHttpWait', () => {
   it('without offset', () => {
     expect(loadHttpWait(buffer)).toEqual({
       [TYPE_KEY]: HTTP_WAIT_TYPE,
+      [CONSTRUCTOR_KEY]: HTTP_WAIT_CONSTRUCTOR,
       maxDelay: 0,
       waitAfter: 0,
       maxWait: 25000,
@@ -19,6 +25,7 @@ describe('loadHttpWait', () => {
     expect(loadHttpWait(buffer, true)).toEqual({
       value: {
         [TYPE_KEY]: HTTP_WAIT_TYPE,
+        [CONSTRUCTOR_KEY]: HTTP_WAIT_CONSTRUCTOR,
         maxDelay: 0,
         waitAfter: 0,
         maxWait: 25000,

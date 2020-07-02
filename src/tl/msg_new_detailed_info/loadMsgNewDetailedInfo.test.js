@@ -1,7 +1,12 @@
 import { hexToArrayBuffer } from '../../utils';
 import loadMsgNewDetailedInfo from './loadMsgNewDetailedInfo';
 
-import { MSG_NEW_DETAILED_INFO_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
+  TYPE_KEY,
+} from '../../constants';
 
 describe('loadMsgNewDetailedInfo', () => {
   // msg_new_detailed_info#809db6df answer_msg_id:long bytes:int status:int
@@ -10,7 +15,8 @@ describe('loadMsgNewDetailedInfo', () => {
 
   it('without offset', () => {
     expect(loadMsgNewDetailedInfo(buffer)).toEqual({
-      [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+      [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 12,
       status: 0,
@@ -20,7 +26,8 @@ describe('loadMsgNewDetailedInfo', () => {
   it('with offset', () => {
     expect(loadMsgNewDetailedInfo(buffer, true)).toEqual({
       value: {
-        [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+        [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+        [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
         answerMsgId: BigInt('0x5e0b800e00000000'),
         bytes: 12,
         status: 0,

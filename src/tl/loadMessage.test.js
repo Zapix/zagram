@@ -4,31 +4,52 @@ import loadMessage from './loadMessage';
 import schema from './schema/layer108.json';
 import {
   TYPE_KEY,
-  BAD_MSG_NOTIFICATION_TYPE,
-  MSGS_ACK_TYPE,
-  BAD_SERVER_SALT_TYPE,
-  MSGS_STATE_REQ_TYPE,
-  MSGS_STATE_INFO_TYPE,
-  MSGS_ALL_INFO_TYPE,
-  MSG_DETAILED_INFO_TYPE,
-  MSG_NEW_DETAILED_INFO_TYPE,
-  MSG_RESEND_REQ_TYPE,
-  MSG_RESEND_ANS_REQ_TYPE,
+  BAD_MSG_NOTIFICATION_CONSTRUCTOR,
+  MSGS_ACK_CONSTRUCTOR,
+  BAD_SERVER_SALT_CONSTRUCTOR,
+  MSGS_STATE_REQ_METHOD,
+  MSGS_STATE_INFO_CONSTRUCTOR,
+  MSGS_ALL_INFO_CONSTRUCTOR,
+  MSG_DETAILED_INFO_CONSTRUCTOR,
+  MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
+  MSG_RESEND_REQ_METHOD,
+  MSG_RESEND_ANS_REQ_METHOD,
   RPC_RESULT_TYPE,
   RPC_ERROR_TYPE,
-  RPC_DROP_ANSWER_TYPE,
-  RPC_ANSWER_DROPPED_RUNNING_TYPE,
-  RPC_ANSWER_DROPPED_TYPE,
-  GET_FUTURE_SALTS,
-  FUTURE_SALT_TYPE,
-  FUTURE_SALTS_TYPE,
-  PING_TYPE,
-  PONG_TYPE,
-  PING_DELAY_DISCONNECT_TYPE,
+  RPC_DROP_ANSWER_METHOD,
+  RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+  RPC_ANSWER_DROPPED_CONSTRUCTOR,
+  FUTURE_SALT_CONSTRUCTOR,
+  FUTURE_SALTS_CONSTRUCTOR,
+  PING_METHOD,
+  PONG_CONSTRUCTOR,
+  PING_DELAY_DISCONNECT_METHOD,
+  DESTROY_SESSION_CONSTRUCTOR,
+  DESTROY_SESSION_OK_CONSTRUCTOR,
+  DESTROY_SESSION_NONE_CONSTRUCTOR,
+  NEW_SESSION_CREATED_CONSTRUCTOR,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  HTTP_WAIT_CONSTRUCTOR,
+  CONSTRUCTOR_KEY,
+  BAD_MSG_NOTIFICATION_TYPE,
   DESTROY_SESSION_TYPE,
-  DESTROY_SESSION_OK_TYPE,
-  DESTROY_SESSION_NONE_TYPE,
-  NEW_SESSION_CREATED_TYPE, MESSAGE_CONTAINER_TYPE, HTTP_WAIT_TYPE, CONSTRUCTOR_KEY,
+  FUTURE_SALTS_TYPE,
+  METHOD_KEY,
+  GET_FUTURE_SALTS_METHOD,
+  HTTP_WAIT_TYPE,
+  MESSAGE_CONTAINER_TYPE,
+  MSG_DETAILED_INFO_TYPE,
+  MSG_RESEND_REQ_TYPE,
+  MSGS_ACK_TYPE,
+  MSGS_ALL_INFO_TYPE,
+  MSGS_STATE_INFO_TYPE,
+  MSGS_STATE_REQ_TYPE,
+  NEW_SESSION_CREATED_TYPE,
+  PONG_TYPE,
+  RPC_DROP_ANSWER_TYPE,
+  RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+  RPC_ERROR_CONSTRUCTOR,
+  RPC_RESULT_CONSTRUCTOR,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -41,6 +62,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: PONG_TYPE,
+      [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
       msgId: BigInt('0x5e072d4500000000'),
       pingId: BigInt('0x56efe14fe8ab347e'),
     });
@@ -51,7 +73,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: PING_TYPE,
+      [TYPE_KEY]: PONG_TYPE,
+      [METHOD_KEY]: PING_METHOD,
       pingId: BigInt('0x5e0b800e00000000'),
     });
   });
@@ -61,7 +84,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: PING_DELAY_DISCONNECT_TYPE,
+      [TYPE_KEY]: PONG_TYPE,
+      [METHOD_KEY]: PING_DELAY_DISCONNECT_METHOD,
       pingId: BigInt('0x5e0b800e00000000'),
       disconnectDelay: 75,
     });
@@ -73,6 +97,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+      [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
       firstMsgId: BigInt('0x5e072d4500000000'),
       uniqueId: BigInt('0x8f5524a763de8c07'),
       serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -87,6 +112,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           msgId: BigInt('0x5e072d4689993001'),
@@ -94,6 +120,7 @@ describe('load', () => {
           bytes: 28,
           body: {
             [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('0x5e072d4500000000'),
             uniqueId: BigInt('0x8f5524a763de8c07'),
             serverSalt: BigInt('0x6b02abc667623eb7'),
@@ -105,6 +132,7 @@ describe('load', () => {
           bytes: 20,
           body: {
             [TYPE_KEY]: PONG_TYPE,
+            [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
             msgId: BigInt('0x5e072d4500000000'),
             pingId: BigInt('0x56efe14fe8ab347e'),
           },
@@ -119,6 +147,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: BAD_MSG_NOTIFICATION_TYPE,
+      [CONSTRUCTOR_KEY]: BAD_MSG_NOTIFICATION_CONSTRUCTOR,
       badMsgId: BigInt('0x5e0af67900000000'),
       badSeqNo: 2,
       errorCode: 0x23,
@@ -131,7 +160,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: BAD_SERVER_SALT_TYPE,
+      [TYPE_KEY]: BAD_MSG_NOTIFICATION_TYPE,
+      [CONSTRUCTOR_KEY]: BAD_SERVER_SALT_CONSTRUCTOR,
       badMsgId: BigInt('0x5e0af67900000000'),
       badSeqNo: 2,
       errorCode: 0x23,
@@ -145,6 +175,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_ACK_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ACK_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -160,6 +191,7 @@ describe('load', () => {
 
     expect(load(buffer)).toMatchObject({
       [TYPE_KEY]: RPC_RESULT_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_RESULT_CONSTRUCTOR,
       reqMsgId: BigInt('0x5e0b86bc00000000'),
       result: {
         [CONSTRUCTOR_KEY]: 'auth.sentCode',
@@ -174,8 +206,9 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hex);
 
     expect(load(buffer)).toEqual({
-      errorCode: 18,
       [TYPE_KEY]: RPC_ERROR_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ERROR_CONSTRUCTOR,
+      errorCode: 18,
       errorMessage: 'Hello World!',
     });
   });
@@ -186,6 +219,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [METHOD_KEY]: RPC_DROP_ANSWER_METHOD,
       reqMsgId: BigInt('0x5e0b800e00000000'),
     });
   });
@@ -194,14 +228,20 @@ describe('load', () => {
     const hexStr = '6ed32a5e';
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(load(buffer)).toEqual({ [TYPE_KEY]: RPC_DROP_ANSWER_TYPE });
+    expect(load(buffer)).toEqual({
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
+    });
   });
 
   it('rpc answer dropped running', () => {
     const hexStr = '86e578cd';
     const buffer = hexToArrayBuffer(hexStr);
 
-    expect(load(buffer)).toEqual({ [TYPE_KEY]: RPC_ANSWER_DROPPED_RUNNING_TYPE });
+    expect(load(buffer)).toEqual({
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_RUNNING_CONSTRUCTOR,
+    });
   });
 
   it('rpc answer dropped', () => {
@@ -209,7 +249,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: RPC_ANSWER_DROPPED_TYPE,
+      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [CONSTRUCTOR_KEY]: RPC_ANSWER_DROPPED_CONSTRUCTOR,
       msgId: BigInt('0x5e0b800e00000000'),
       seqNo: 28,
       bytes: 255,
@@ -222,6 +263,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_STATE_REQ_TYPE,
+      [METHOD_KEY]: MSGS_STATE_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -235,6 +277,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_STATE_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_STATE_INFO_CONSTRUCTOR,
       reqMsgId: BigInt('0x5e072d4500000000'),
       info: [1, 1, 4, 12],
     });
@@ -246,6 +289,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ALL_INFO_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -260,6 +304,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSG_DETAILED_INFO_CONSTRUCTOR,
       msgId: BigInt('0x5e0b700a00000000'),
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 123,
@@ -272,7 +317,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: MSG_NEW_DETAILED_INFO_TYPE,
+      [TYPE_KEY]: MSG_DETAILED_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSG_NEW_DETAILED_INFO_CONSTRUCTOR,
       answerMsgId: BigInt('0x5e0b800e00000000'),
       bytes: 12,
       status: 0,
@@ -285,6 +331,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -297,7 +344,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: MSG_RESEND_ANS_REQ_TYPE,
+      [TYPE_KEY]: MSG_RESEND_REQ_TYPE,
+      [METHOD_KEY]: MSG_RESEND_ANS_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),
@@ -310,7 +358,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: GET_FUTURE_SALTS,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [METHOD_KEY]: GET_FUTURE_SALTS_METHOD,
       num: 18,
     });
   });
@@ -320,7 +369,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: FUTURE_SALT_TYPE,
+      [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
       validSince: 256,
       validUntil: 65536,
       salt: BigInt(257),
@@ -335,17 +385,20 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: FUTURE_SALTS_TYPE,
+      [CONSTRUCTOR_KEY]: FUTURE_SALTS_CONSTRUCTOR,
       reqMsgId: BigInt('0x5e0b800e00000000'),
       now: 255,
       salts: [
         {
-          [TYPE_KEY]: FUTURE_SALT_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
           validSince: 256,
           validUntil: 65536,
           salt: BigInt(257),
         },
         {
-          [TYPE_KEY]: FUTURE_SALT_TYPE,
+          [TYPE_KEY]: FUTURE_SALTS_TYPE,
+          [CONSTRUCTOR_KEY]: FUTURE_SALT_CONSTRUCTOR,
           validSince: 65537,
           validUntil: 16777216,
           salt: BigInt(4369),
@@ -360,6 +413,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: DESTROY_SESSION_TYPE,
+      [CONSTRUCTOR_KEY]: DESTROY_SESSION_CONSTRUCTOR,
       sessionId: BigInt('0x56efe14fe8ab347e'),
     });
   });
@@ -370,7 +424,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: DESTROY_SESSION_OK_TYPE,
+      [TYPE_KEY]: DESTROY_SESSION_TYPE,
+      [CONSTRUCTOR_KEY]: DESTROY_SESSION_OK_CONSTRUCTOR,
       sessionId: BigInt('0x56efe14fe8ab347e'),
     });
   });
@@ -380,7 +435,8 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(load(buffer)).toEqual({
-      [TYPE_KEY]: DESTROY_SESSION_NONE_TYPE,
+      [TYPE_KEY]: DESTROY_SESSION_TYPE,
+      [CONSTRUCTOR_KEY]: DESTROY_SESSION_NONE_CONSTRUCTOR,
       sessionId: BigInt('0x56efe14fe8ab347e'),
     });
   });
@@ -398,6 +454,7 @@ describe('load', () => {
 
     expect(load(buffer)).toEqual({
       [TYPE_KEY]: HTTP_WAIT_TYPE,
+      [CONSTRUCTOR_KEY]: HTTP_WAIT_CONSTRUCTOR,
       maxDelay: 0,
       waitAfter: 0,
       maxWait: 25000,
@@ -445,6 +502,7 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
     expect(loadMessage(schema, buffer)).toMatchObject({
       [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           seqNo: 1,
@@ -452,6 +510,7 @@ describe('load', () => {
           bytes: 28,
           body: {
             [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+            [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
             firstMsgId: BigInt('6802566759015514128'),
             serverSalt: BigInt('4900676089628893644'),
             uniqueId: BigInt('283200375724287429'),
@@ -526,6 +585,8 @@ describe('load', () => {
 
     const buffer = hexToArrayBuffer(hexStr);
     expect(loadMessage(schema, buffer)).toMatchObject({
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: [
         {
           body: {
@@ -546,7 +607,6 @@ describe('load', () => {
           msgId: BigInt('6813361436378866689'),
         },
       ],
-      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
     });
   });
 
@@ -558,13 +618,14 @@ describe('load', () => {
     const buffer = hexToArrayBuffer(hexStr);
 
     expect(loadMessage(schema, buffer)).toMatchObject({
+      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+      [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
       messages: expect.arrayContaining([
         expect.objectContaining({
           bytes: expect.any(Number),
           seqNo: expect.any(Number),
         }),
       ]),
-      [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
     });
   });
 });

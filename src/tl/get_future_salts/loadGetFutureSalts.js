@@ -1,14 +1,23 @@
-import * as R from 'ramda';
-
-import { GET_FUTURE_SALTS, TYPE_KEY } from '../../constants';
-import { buildLoadFunc } from '../../utils';
+import {
+  FUTURE_SALTS_TYPE,
+  GET_FUTURE_SALTS_METHOD,
+  TYPE_KEY,
+  METHOD_KEY,
+} from '../../constants';
+import {
+  buildLoadFunc,
+  buildTypeLoader,
+  buildMethodLoader,
+} from '../../utils';
 import { loadInt } from '../int';
 
 
-const loadType = R.always({ value: GET_FUTURE_SALTS, offset: 4 });
+const loadType = buildTypeLoader(FUTURE_SALTS_TYPE);
+const loadMethod = buildMethodLoader(GET_FUTURE_SALTS_METHOD);
 const loadNum = loadInt;
 
 export default buildLoadFunc([
   [TYPE_KEY, loadType],
+  [METHOD_KEY, loadMethod],
   ['num', loadNum],
 ]);

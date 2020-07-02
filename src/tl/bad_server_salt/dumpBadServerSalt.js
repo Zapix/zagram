@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { getEmptyArrayBuffer, mergeArrayBuffer } from '../../utils';
+import { buildDumpFunc } from '../../utils';
 import { dumpInt } from '../int';
 import { BAD_SERVER_SALT } from '../../constants';
 import { dumpBigInt } from '../bigInt';
@@ -14,14 +14,10 @@ const dumpNewServerSalt = R.pipe(R.prop('newServerSalt'), dumpBigInt);
  * @param {{*}} value
  * @returns {ArrayBuffer}
  */
-export default R.pipe(
-  R.of,
-  R.ap([
-    dumpConstructor,
-    dumpBadMsgId,
-    dumpBadSeqNo,
-    dumpErrorCode,
-    dumpNewServerSalt,
-  ]),
-  R.reduce(mergeArrayBuffer, getEmptyArrayBuffer()),
-);
+export default buildDumpFunc([
+  dumpConstructor,
+  dumpBadMsgId,
+  dumpBadSeqNo,
+  dumpErrorCode,
+  dumpNewServerSalt,
+]);

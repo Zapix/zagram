@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import {
   AUTH_SENT_CODE,
   BAD_MSG_NOTIFICATION,
-  BAD_SERVER_SALT,
+  BAD_SERVER_SALT, CONSTRUCTOR_KEY,
   DESTROY_SESSION,
   DESTROY_SESSION_NONE,
   DESTROY_SESSION_OK,
@@ -11,7 +11,7 @@ import {
   GET_FUTURE_SALTS,
   GZIP_PACKED,
   HTTP_WAIT,
-  MESSAGE_CONTAINER,
+  MESSAGE_CONTAINER, METHOD_KEY,
   MSG_DETAILED_INFO,
   MSG_NEW_DETAILED_INFO,
   MSG_RESEND_ANS_REQ,
@@ -310,9 +310,17 @@ export const isHttpWait = R.pipe(
   R.equals(HTTP_WAIT),
 );
 
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
 export const isGzipped = R.pipe(
   getConstructor,
   R.equals(GZIP_PACKED),
 );
 
-export const isMessageOf = R.propEq(TYPE_KEY);
+export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
+
+export const isMessageOfType = R.propEq(TYPE_KEY);
+
+export const isMethodOf = R.propEq(METHOD_KEY);

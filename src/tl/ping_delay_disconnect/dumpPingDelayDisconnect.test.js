@@ -1,11 +1,14 @@
-import { PING_DELAY_DISCONNECT_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY, PING_DELAY_DISCONNECT_METHOD, PONG_TYPE, TYPE_KEY,
+} from '../../constants';
 import dumpPingDelayDisconnect from './dumpPingDelayDisconnect';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpPingDelayDisconnect', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: PING_DELAY_DISCONNECT_TYPE,
+      [TYPE_KEY]: PONG_TYPE,
+      [METHOD_KEY]: PING_DELAY_DISCONNECT_METHOD,
       pingId: BigInt('0x5e0b800e00000000'),
       disconnectDelay: 75,
     };

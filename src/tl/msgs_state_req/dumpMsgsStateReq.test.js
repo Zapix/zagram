@@ -1,4 +1,6 @@
-import { MSGS_STATE_REQ_TYPE, TYPE_KEY } from '../../constants';
+import {
+  METHOD_KEY, MSGS_STATE_REQ_METHOD, MSGS_STATE_REQ_TYPE, TYPE_KEY,
+} from '../../constants';
 import { arrayBufferToHex } from '../../utils';
 
 import dumpMsgsStateReq from './dumpMsgsStateReq';
@@ -7,6 +9,7 @@ describe('dumpMsgsStateReq', () => {
   it('dump', () => {
     const msg = {
       [TYPE_KEY]: MSGS_STATE_REQ_TYPE,
+      [METHOD_KEY]: MSGS_STATE_REQ_METHOD,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),

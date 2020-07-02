@@ -1,4 +1,9 @@
-import { MSGS_ALL_INFO_TYPE, TYPE_KEY } from '../../constants';
+import {
+  CONSTRUCTOR_KEY,
+  MSGS_ALL_INFO_CONSTRUCTOR,
+  MSGS_ALL_INFO_TYPE,
+  TYPE_KEY,
+} from '../../constants';
 import { arrayBufferToHex } from '../../utils';
 
 import dumpMsgsAllInfo from './dumpMsgsAllInfo';
@@ -7,6 +12,7 @@ describe('dumpMsgsAllInfo', () => {
   it('test', () => {
     const msg = {
       [TYPE_KEY]: MSGS_ALL_INFO_TYPE,
+      [CONSTRUCTOR_KEY]: MSGS_ALL_INFO_CONSTRUCTOR,
       msgIds: [
         BigInt('0x5e0b700a00000000'),
         BigInt('0x5e0b800e00000000'),

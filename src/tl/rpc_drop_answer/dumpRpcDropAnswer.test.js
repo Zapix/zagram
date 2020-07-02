@@ -1,11 +1,11 @@
-import { RPC_DROP_ANSWER_TYPE, TYPE_KEY } from '../../constants';
+import { RPC_DROP_ANSWER_METHOD, TYPE_KEY } from '../../constants';
 import dumpRpcDropAnswer from './dumpRpcDropAnswer';
 import { arrayBufferToHex } from '../../utils';
 
 describe('dumpRpcDropAnswer', () => {
   it('test', () => {
     const msg = {
-      [TYPE_KEY]: RPC_DROP_ANSWER_TYPE,
+      [TYPE_KEY]: RPC_DROP_ANSWER_METHOD,
       reqMsgId: BigInt('0x5e0b800e00000000'),
     };
     const buffer = dumpRpcDropAnswer(msg);
