@@ -49,7 +49,7 @@ import {
   RPC_DROP_ANSWER_TYPE,
   RPC_ANSWER_UNKNOWN_CONSTRUCTOR,
   RPC_ERROR_CONSTRUCTOR,
-  RPC_RESULT_CONSTRUCTOR,
+  RPC_RESULT_CONSTRUCTOR, RES_PQ_TYPE, REQ_PQ_CONSTRUCTOR,
 } from '../constants';
 import { hexToArrayBuffer } from '../utils';
 
@@ -626,6 +626,17 @@ describe('load', () => {
           seqNo: expect.any(Number),
         }),
       ]),
+    });
+  });
+
+  it('load req_pq', () => {
+    const hexStr = '78974660fce2ec8fa401b366e927ca8c8249053e';
+    const buffer = hexToArrayBuffer(hexStr);
+
+    expect(loadMessage(schema, buffer)).toEqual({
+      [TYPE_KEY]: RES_PQ_TYPE,
+      [CONSTRUCTOR_KEY]: REQ_PQ_CONSTRUCTOR,
+      nonce: BigInt('0x3E0549828CCA27E966B301A48FECE2FC'),
     });
   });
 });

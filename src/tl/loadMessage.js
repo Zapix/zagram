@@ -31,7 +31,7 @@ import {
   isDestroySession,
   isDestroySessionOk,
   isDestroySessionNone,
-  isHttpWait, isGzipped,
+  isHttpWait, isGzipped, isReqPQ,
 } from './utils';
 import { loadMessageContainer } from './msg_container';
 import { loadBadMsgNotification } from './bad_msg_notification';
@@ -61,6 +61,7 @@ import { loadDestroySessionOk } from './destory_session_ok';
 import { loadDestroySessionNone } from './destory_session_none';
 import { loadNewSessionCreated } from './new_session_created';
 import { loadHttpWait } from './http_wait';
+import { loadReqPQ } from './req_pq';
 import { loadBySchema, isFromSchemaFactory } from './schema';
 import unzipMessage from './unzipMessage';
 
@@ -123,6 +124,7 @@ export default function loadMessage(schema, buffer, withOffset) {
     [isDestroySessionOk, loadDestroySessionOk],
     [isDestroySessionNone, loadDestroySessionNone],
     [isMessageContainer, R.partialRight(loadMessageContainer, [load])],
+    [isReqPQ, loadReqPQ],
     [isFromSchemaFactory(schema), R.partial(loadBySchema, [schema])],
     [R.T, parseUnexpectedMessage],
   ])(buffer, withOffset);

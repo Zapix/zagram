@@ -26,6 +26,7 @@ import {
   PING,
   PING_DELAY_DISCONNECT,
   PONG,
+  REQ_PQ,
   RPC_ANSWER_DROPPED,
   RPC_ANSWER_DROPPED_RUNNING,
   RPC_ANSWER_UNKNOWN,
@@ -319,6 +320,11 @@ export const isHttpWait = R.pipe(
 export const isGzipped = R.pipe(
   getConstructor,
   R.equals(GZIP_PACKED),
+);
+
+export const isReqPQ = R.pipe(
+  getConstructor,
+  R.equals(REQ_PQ),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
