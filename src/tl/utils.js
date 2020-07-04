@@ -2,7 +2,8 @@ import * as R from 'ramda';
 import {
   AUTH_SENT_CODE,
   BAD_MSG_NOTIFICATION,
-  BAD_SERVER_SALT, CONSTRUCTOR_KEY,
+  BAD_SERVER_SALT,
+  CONSTRUCTOR_KEY,
   DESTROY_SESSION,
   DESTROY_SESSION_NONE,
   DESTROY_SESSION_OK,
@@ -11,7 +12,8 @@ import {
   GET_FUTURE_SALTS,
   GZIP_PACKED,
   HTTP_WAIT,
-  MESSAGE_CONTAINER, METHOD_KEY,
+  MESSAGE_CONTAINER,
+  METHOD_KEY,
   MSG_DETAILED_INFO,
   MSG_NEW_DETAILED_INFO,
   MSG_RESEND_ANS_REQ,
@@ -324,3 +326,20 @@ export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
 export const isMessageOfType = R.propEq(TYPE_KEY);
 
 export const isMethodOf = R.propEq(METHOD_KEY);
+
+export const toBigInt = (x) => BigInt(x);
+
+const pow = (x, y) => x ** y;
+
+export const add = (x, y) => x + y;
+
+const base256 = R.pipe(toBigInt, R.partial(pow, [BigInt(256)]));
+
+export const getBase = R.pipe(
+  R.of,
+  R.ap([
+    R.identity,
+    R.pipe(R.length, R.times(base256)),
+  ]),
+  R.apply(R.zip),
+);
