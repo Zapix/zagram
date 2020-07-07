@@ -49,7 +49,7 @@ import {
   RPC_ERROR_CONSTRUCTOR,
   RPC_RESULT_CONSTRUCTOR,
   RES_PQ_TYPE,
-  REQ_PQ_CONSTRUCTOR,
+  REQ_PQ_METHOD,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -409,7 +409,7 @@ describe('dumpMessage', () => {
         type: 'req_pq',
         msg: {
           [TYPE_KEY]: RES_PQ_TYPE,
-          [CONSTRUCTOR_KEY]: REQ_PQ_CONSTRUCTOR,
+          [METHOD_KEY]: REQ_PQ_METHOD,
           nonce: BigInt('0x3E0549828CCA27E966B301A48FECE2FC'),
         },
         hexStr: '78974660fce2ec8fa401b366e927ca8c8249053e',

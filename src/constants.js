@@ -14,7 +14,7 @@ export const DC_ID = 0b0100000000000000; // DC-2 in little endian form
 export const TEST_DC_INC = 10000; // INCREMENT DC FOR TEST
 
 export const RES_PQ_TYPE = 'ResPQ';
-export const REQ_PQ_CONSTRUCTOR = 'req_pq';
+export const REQ_PQ_METHOD = 'req_pq';
 export const REQ_PQ = 0x60469778;
 
 export const PQ_INNER_DATA = 0x83c95aec;
