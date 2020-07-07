@@ -30,7 +30,7 @@ import {
   RPC_DROP_ANSWER_METHOD,
   RPC_ERROR_CONSTRUCTOR,
   RPC_RESULT_CONSTRUCTOR,
-  REQ_PQ_METHOD, RES_PQ_CONSTRUCTOR,
+  REQ_PQ_METHOD, RES_PQ_CONSTRUCTOR, PQ_INNER_DATA_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -63,6 +63,7 @@ import { dumpBySchema, isMsgCouldBeDump } from './schema';
 import { isMessageOf, isMethodOf } from './utils';
 import { dumpReqPQ } from './req_pq';
 import { dumpResPQ } from './res_pq';
+import { dumpPQInnerData } from './p_q_inner_data';
 
 
 /**
@@ -115,6 +116,7 @@ export default function dumpMessage(schema, msg) {
     [isMessageOf(RPC_RESULT_CONSTRUCTOR), R.partialRight(dumpRpcResult, [dump])],
     [isMethodOf(REQ_PQ_METHOD), dumpReqPQ],
     [isMessageOf(RES_PQ_CONSTRUCTOR), dumpResPQ],
+    [isMessageOf(PQ_INNER_DATA_CONSTRUCTOR), dumpPQInnerData],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);

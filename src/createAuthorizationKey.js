@@ -163,7 +163,7 @@ export function buildPQInnerData(responsePQ) {
   const newNonce = new Uint8Array(innerPQ, 64, 32);
   for (let i = 0; i < 32; i += 1) newNonce[i] = getRandomInt(256);
 
-  return {
+  const data = {
     constructor,
     pq,
     p,
@@ -173,6 +173,8 @@ export function buildPQInnerData(responsePQ) {
     new_nonce: newNonce,
     buffer: innerPQ,
   };
+
+  return data;
 }
 
 export function encryptPQInner(responsePQ, pqInnerData) {
