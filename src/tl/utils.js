@@ -26,7 +26,7 @@ import {
   PING,
   PING_DELAY_DISCONNECT,
   PONG,
-  REQ_PQ,
+  REQ_PQ, RES_PQ,
   RPC_ANSWER_DROPPED,
   RPC_ANSWER_DROPPED_RUNNING,
   RPC_ANSWER_UNKNOWN,
@@ -322,9 +322,22 @@ export const isGzipped = R.pipe(
   R.equals(GZIP_PACKED),
 );
 
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
 export const isReqPQ = R.pipe(
   getConstructor,
   R.equals(REQ_PQ),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isResPQ = R.pipe(
+  getConstructor,
+  R.equals(RES_PQ),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);

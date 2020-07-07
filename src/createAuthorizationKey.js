@@ -24,7 +24,10 @@ import {
   copyBytes,
   getNRandomBytes,
   generateKeyDataFromNonce,
-  powModulo, hexToUint8Array, uint8ToArrayBuffer, uint8ArrayToHex,
+  powModulo,
+  hexToUint8Array,
+  uint8ToArrayBuffer,
+  uint8ArrayToHex,
 } from './utils';
 import { fromTlString, getStringFromArrayBuffer, toTlString } from './tl/tlSerialization';
 import { getPublicKey } from './pems';

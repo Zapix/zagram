@@ -17,6 +17,9 @@ export const RES_PQ_TYPE = 'ResPQ';
 export const REQ_PQ_METHOD = 'req_pq';
 export const REQ_PQ = 0x60469778;
 
+export const RES_PQ = 0x05162463;
+export const RES_PQ_CONSTRUCTOR = 'resPQ';
+
 export const PQ_INNER_DATA = 0x83c95aec;
 export const REQ_DH_PARAMS = 0xd712e4be;
 
