@@ -25,7 +25,7 @@ import {
   NEW_SESSION_CREATED,
   PING,
   PING_DELAY_DISCONNECT,
-  PONG, PQ_INNER_DATA,
+  PONG, PQ_INNER_DATA, PQ_INNER_DATA_TEMP,
   REQ_PQ, RES_PQ,
   RPC_ANSWER_DROPPED,
   RPC_ANSWER_DROPPED_RUNNING,
@@ -347,6 +347,15 @@ export const isResPQ = R.pipe(
 export const isPQInnerData = R.pipe(
   getConstructor,
   R.equals(PQ_INNER_DATA),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isPQInnerDataTemp = R.pipe(
+  getConstructor,
+  R.equals(PQ_INNER_DATA_TEMP),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
