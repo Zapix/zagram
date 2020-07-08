@@ -25,6 +25,9 @@ export const PQ_INNER_DATA_CONSTRUCTOR = 'p_q_inner_data';
 export const PQ_INNER_DATA = 0x83c95aec;
 export const PQ_INNER_DATA_TEMP_CONSTRUCTOR = 'p_q_inner_data_temp';
 export const PQ_INNER_DATA_TEMP = 0x3c6a84d4;
+
+export const SERVER_DH_PARAMS_TYPE = 'Server_DH_Params';
+export const REQ_DH_PARAMS_METHOD = 'req_DH_params';
 export const REQ_DH_PARAMS = 0xd712e4be;
 
 export const SERVER_DH_PARAMS_FAIL = 0x79cb045d;

@@ -31,7 +31,7 @@ import {
   isDestroySession,
   isDestroySessionOk,
   isDestroySessionNone,
-  isHttpWait, isGzipped, isReqPQ, isResPQ, isPQInnerData, isPQInnerDataTemp,
+  isHttpWait, isGzipped, isReqPQ, isResPQ, isPQInnerData, isPQInnerDataTemp, isReqDhParams,
 } from './utils';
 import { loadMessageContainer } from './msg_container';
 import { loadBadMsgNotification } from './bad_msg_notification';
@@ -67,6 +67,7 @@ import unzipMessage from './unzipMessage';
 import { loadResPQ } from './res_pq';
 import { loadPQInnerData } from './p_q_inner_data';
 import { loadPQInnerDataTemp } from './p_q_inner_data_temp';
+import { loadReqDHParams } from './req_DH_params';
 
 /**
  * Writes warning message into console and returns null
@@ -131,6 +132,7 @@ export default function loadMessage(schema, buffer, withOffset) {
     [isResPQ, loadResPQ],
     [isPQInnerData, loadPQInnerData],
     [isPQInnerDataTemp, loadPQInnerDataTemp],
+    [isReqDhParams, loadReqDHParams],
     [isFromSchemaFactory(schema), R.partial(loadBySchema, [schema])],
     [R.T, parseUnexpectedMessage],
   ])(buffer, withOffset);
