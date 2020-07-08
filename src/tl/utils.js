@@ -32,7 +32,7 @@ import {
   RPC_ANSWER_UNKNOWN,
   RPC_DROP_ANSWER,
   RPC_ERROR,
-  RPC_RESULT,
+  RPC_RESULT, SERVER_DH_PARAMS_FAIL,
   TYPE_KEY,
   VECTOR,
 } from '../constants';
@@ -365,6 +365,15 @@ export const isPQInnerDataTemp = R.pipe(
 export const isReqDhParams = R.pipe(
   getConstructor,
   R.equals(REQ_DH_PARAMS),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isServerDHParamsFail = R.pipe(
+  getConstructor,
+  R.equals(SERVER_DH_PARAMS_FAIL),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);

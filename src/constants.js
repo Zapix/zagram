@@ -30,6 +30,7 @@ export const SERVER_DH_PARAMS_TYPE = 'Server_DH_Params';
 export const REQ_DH_PARAMS_METHOD = 'req_DH_params';
 export const REQ_DH_PARAMS = 0xd712e4be;
 
+export const SERVER_DH_PARAMS_FAIL_CONSTRUCTOR = 'server_DH_params_fail';
 export const SERVER_DH_PARAMS_FAIL = 0x79cb045d;
 export const SERVER_DH_PARAMS_OK = 0xd0e8075c;
 export const SERVER_DH_INNER_DATA = 0xb5890dba;

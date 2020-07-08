@@ -53,7 +53,10 @@ import {
   RES_PQ_CONSTRUCTOR,
   PQ_INNER_DATA_TYPE,
   PQ_INNER_DATA_CONSTRUCTOR,
-  PQ_INNER_DATA_TEMP_CONSTRUCTOR, SERVER_DH_PARAMS_TYPE, REQ_DH_PARAMS_METHOD,
+  PQ_INNER_DATA_TEMP_CONSTRUCTOR,
+  SERVER_DH_PARAMS_TYPE,
+  REQ_DH_PARAMS_METHOD,
+  SERVER_DH_PARAMS_FAIL_CONSTRUCTOR,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -485,6 +488,19 @@ describe('dumpMessage', () => {
         },
         /* eslint-disable */
         hexStr: 'bee412d7d73dafa12e96d185e7d827eef2cbcf8d33d41cc16e714a5203ac3a53a95c012f04488e6e7d0000000464d40817000000216be86c022bb4c3fe0001005a70c4185360c7d3eef725f39ee202640fc6cc9316ddd412822012aa399997a2dbe49838644c01d4032abacbd977b9e9dc1cb219fdf40854e1574bf546f3546683cab1be3c60aa580eeaaea456e4e64928861cc9b95d182d39419e27ea4eb3e50c8d50241a8e4a6ebe60a58eff1cda2482088f6ce23df9c8e70fe896bd2cd98be868b01d4866b92c291bdc00275f5b1265d0658b2e8d8f587c72721bf89407673581487b7900a89bb85db036de484a6832699b0258ad26e5ada8335bcc153dd7c8846c2915c8dd5babec1d49450f087e5aa1eea9118b330254337d023574113b908d47da2c878139e6a8d9909775318b965e21b73842b817f85a4b6ec40cf730',
+        /* eslint-enable */
+      },
+      {
+        type: 'server_DH_params_fail',
+        msg: {
+          [TYPE_KEY]: SERVER_DH_PARAMS_TYPE,
+          [CONSTRUCTOR_KEY]: SERVER_DH_PARAMS_FAIL_CONSTRUCTOR,
+          nonce: BigInt('0x8dcfcbf2ee27d8e785d1962ea1af3dd7'),
+          server_nonce: BigInt('0x2f015ca9533aac03524a716ec11cd433'),
+          new_nonce_hash: BigInt('0x5817189911221165924498422996457278'),
+        },
+        /* eslint-disable */
+        hexStr: '5d04cb79d73dafa12e96d185e7d827eef2cbcf8d33d41cc16e714a5203ac3a53a95c012f78724596294298449265112211991817',
         /* eslint-enable */
       },
     ],
