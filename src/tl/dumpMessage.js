@@ -34,7 +34,10 @@ import {
   RES_PQ_CONSTRUCTOR,
   PQ_INNER_DATA_CONSTRUCTOR,
   PQ_INNER_DATA_TEMP_CONSTRUCTOR,
-  REQ_DH_PARAMS_METHOD, SERVER_DH_PARAMS_FAIL_CONSTRUCTOR, SERVER_DH_PARAMS_OK_CONSTRUCTOR,
+  REQ_DH_PARAMS_METHOD,
+  SERVER_DH_PARAMS_FAIL_CONSTRUCTOR,
+  SERVER_DH_PARAMS_OK_CONSTRUCTOR,
+  SERVER_DH_INNER_DATA_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -72,6 +75,7 @@ import { dumpPQInnerDataTemp } from './p_q_inner_data_temp';
 import { dumpReqDHParams } from './req_DH_params';
 import { dumpServerDHParamsFail } from './server_DH_params_fail';
 import { dumpServerDHParamsOk } from './server_DH_params_ok';
+import { dumpServerDHInnerData } from './server_DH_inner_data';
 
 
 /**
@@ -129,6 +133,7 @@ export default function dumpMessage(schema, msg) {
     [isMethodOf(REQ_DH_PARAMS_METHOD), dumpReqDHParams],
     [isMessageOf(SERVER_DH_PARAMS_FAIL_CONSTRUCTOR), dumpServerDHParamsFail],
     [isMessageOf(SERVER_DH_PARAMS_OK_CONSTRUCTOR), dumpServerDHParamsOk],
+    [isMessageOf(SERVER_DH_INNER_DATA_CONSTRUCTOR), dumpServerDHInnerData],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);

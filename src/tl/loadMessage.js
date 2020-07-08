@@ -38,7 +38,7 @@ import {
   isPQInnerData,
   isPQInnerDataTemp,
   isReqDhParams,
-  isServerDHParamsFail, isServerDHParamsOk,
+  isServerDHParamsFail, isServerDHParamsOk, isServerDHInnerData,
 } from './utils';
 import { loadMessageContainer } from './msg_container';
 import { loadBadMsgNotification } from './bad_msg_notification';
@@ -77,6 +77,7 @@ import { loadPQInnerDataTemp } from './p_q_inner_data_temp';
 import { loadReqDHParams } from './req_DH_params';
 import { loadServerDHParamsFail } from './server_DH_params_fail';
 import { loadServerDHParamsOk } from './server_DH_params_ok';
+import { loadServerDHInnerData } from './server_DH_inner_data';
 
 /**
  * Writes warning message into console and returns null
@@ -144,6 +145,7 @@ export default function loadMessage(schema, buffer, withOffset) {
     [isReqDhParams, loadReqDHParams],
     [isServerDHParamsFail, loadServerDHParamsFail],
     [isServerDHParamsOk, loadServerDHParamsOk],
+    [isServerDHInnerData, loadServerDHInnerData],
     [isFromSchemaFactory(schema), R.partial(loadBySchema, [schema])],
     [R.T, parseUnexpectedMessage],
   ])(buffer, withOffset);
