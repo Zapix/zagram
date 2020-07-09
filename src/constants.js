@@ -51,6 +51,7 @@ export const DH_GEN_OK_CONSTRUCTOR = 'dh_gen_ok';
 export const DH_GEN_OK = 0x3bcbf734;
 export const DH_GEN_RETRY_CONSTRUCTOR = 'dh_gen_retry';
 export const DH_GEN_RETRY = 0x46dc1fb9;
+export const DH_GEN_FAIL_CONSTRUCTOR = 'dh_gen_fail';
 export const DH_GEN_FAIL = 0xa69dae02;
 
 export const AUTH_SEND_CODE = 0xa677244f;

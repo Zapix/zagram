@@ -42,7 +42,7 @@ import {
   isServerDHParamsOk,
   isServerDHInnerData,
   isClienDHInnerData,
-  isSetClientDHParams, isDHGenOk, isDHGenRetry,
+  isSetClientDHParams, isDHGenOk, isDHGenRetry, isDHGenFail,
 } from './utils';
 import { loadMessageContainer } from './msg_container';
 import { loadBadMsgNotification } from './bad_msg_notification';
@@ -86,6 +86,7 @@ import { loadClientDHInnerData } from './client_DH_inner_data';
 import { loadSetClientDHParams } from './set_client_DH_params';
 import { loadDHGenOk } from './dh_gen_ok';
 import { loadDHGenRetry } from './dh_gen_retry';
+import { loadDHGenFail } from './dh_gen_fail';
 
 /**
  * Writes warning message into console and returns null
@@ -158,6 +159,7 @@ export default function loadMessage(schema, buffer, withOffset) {
     [isSetClientDHParams, loadSetClientDHParams],
     [isDHGenOk, loadDHGenOk],
     [isDHGenRetry, loadDHGenRetry],
+    [isDHGenFail, loadDHGenFail],
     [isFromSchemaFactory(schema), R.partial(loadBySchema, [schema])],
     [R.T, parseUnexpectedMessage],
   ])(buffer, withOffset);
