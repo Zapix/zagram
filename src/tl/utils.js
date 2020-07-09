@@ -2,7 +2,8 @@ import * as R from 'ramda';
 import {
   AUTH_SENT_CODE,
   BAD_MSG_NOTIFICATION,
-  BAD_SERVER_SALT, CLIENT_DH_INNER_DATA,
+  BAD_SERVER_SALT,
+  CLIENT_DH_INNER_DATA,
   CONSTRUCTOR_KEY,
   DESTROY_SESSION,
   DESTROY_SESSION_NONE,
@@ -25,14 +26,22 @@ import {
   NEW_SESSION_CREATED,
   PING,
   PING_DELAY_DISCONNECT,
-  PONG, PQ_INNER_DATA, PQ_INNER_DATA_TEMP, REQ_DH_PARAMS,
-  REQ_PQ, RES_PQ,
+  PONG,
+  PQ_INNER_DATA,
+  PQ_INNER_DATA_TEMP,
+  REQ_DH_PARAMS,
+  REQ_PQ,
+  RES_PQ,
   RPC_ANSWER_DROPPED,
   RPC_ANSWER_DROPPED_RUNNING,
   RPC_ANSWER_UNKNOWN,
   RPC_DROP_ANSWER,
   RPC_ERROR,
-  RPC_RESULT, SERVER_DH_INNER_DATA, SERVER_DH_PARAMS_FAIL, SERVER_DH_PARAMS_OK,
+  RPC_RESULT,
+  SERVER_DH_INNER_DATA,
+  SERVER_DH_PARAMS_FAIL,
+  SERVER_DH_PARAMS_OK,
+  SET_CLIENT_DH_PARAMS,
   TYPE_KEY,
   VECTOR,
 } from '../constants';
@@ -401,6 +410,15 @@ export const isServerDHInnerData = R.pipe(
 export const isClienDHInnerData = R.pipe(
   getConstructor,
   R.equals(CLIENT_DH_INNER_DATA),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isSetClientDHParams = R.pipe(
+  getConstructor,
+  R.equals(SET_CLIENT_DH_PARAMS),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
