@@ -49,6 +49,7 @@ export const SET_CLIENT_DH_PARAMS = 0xf5045f1f;
 
 export const DH_GEN_OK_CONSTRUCTOR = 'dh_gen_ok';
 export const DH_GEN_OK = 0x3bcbf734;
+export const DH_GEN_RETRY_CONSTRUCTOR = 'dh_gen_retry';
 export const DH_GEN_RETRY = 0x46dc1fb9;
 export const DH_GEN_FAIL = 0xa69dae02;
 

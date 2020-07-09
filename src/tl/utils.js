@@ -7,7 +7,7 @@ import {
   CONSTRUCTOR_KEY,
   DESTROY_SESSION,
   DESTROY_SESSION_NONE,
-  DESTROY_SESSION_OK, DH_GEN_OK,
+  DESTROY_SESSION_OK, DH_GEN_OK, DH_GEN_RETRY,
   FUTURE_SALT,
   FUTURE_SALTS,
   GET_FUTURE_SALTS,
@@ -428,6 +428,15 @@ export const isSetClientDHParams = R.pipe(
 export const isDHGenOk = R.pipe(
   getConstructor,
   R.equals(DH_GEN_OK),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isDHGenRetry = R.pipe(
+  getConstructor,
+  R.equals(DH_GEN_RETRY),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
