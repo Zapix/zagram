@@ -62,7 +62,7 @@ import {
   SERVER_DH_INNER_DATA_CONSTRUCTOR,
   CLIENT_DH_INNER_DATA_TYPE,
   CLIENT_DH_INNER_DATA_CONSTRUCTOR,
-  SET_CLIENT_DH_PARAMS_ANSWER_TYPE, SET_CLIENT_DH_PARAMS_METHOD,
+  SET_CLIENT_DH_PARAMS_ANSWER_TYPE, SET_CLIENT_DH_PARAMS_METHOD, DH_GEN_OK_CONSTRUCTOR,
 } from '../constants';
 import dumpMessage from './dumpMessage';
 import schema from './schema/layer108.json';
@@ -571,6 +571,19 @@ describe('dumpMessage', () => {
         },
         /* eslint-disable */
         hexStr: '1f5f04f5bc351c82b48a9c273461c8eba34af227c0a67141f8dac223493e476ed72ca5cafe5001007b7b12dfc9ab251d37a550a4fdb2161dd7a4f004261363fc7eedbd0e4e320470b0adf4c2c63561ce112cc1931068a83ecfd572211afca165d273b18f57616841609ed6c07233940ffa073dd9026a3216fbbe1dfae7f4bcc5be54082b7e23e7c8a1dc2953ad96cc2b070975618a444181bec9e93c23aa2229c1ce93321e6839d825ecf5809ed2b75f4e8a872bd1c1ed4fcdfdcb46e38b3628ebab164e9c9efbfecf6f48427f971c9b992b4648a1bc1662e759f9c38c1ff26eb137ad9fc9b1a015a38a7084183c41815322010ff3d8d86de7f6c3f412a0b89703c93a05e005ecbd598a94813e1eeeb93dfc095f72f717d0c9526deecc9d73e3fc9228a195782182183e8450cd88a302ef8878d8cc6fcfdd8407d24954a6beff2bc507ace6fd4190568c93f7e714e70f83381d0d6c1b38665412e130543c4073713db5cfb7cb146b7f48f390c79e1fbe6fcf554a69068b40',
+        /* eslint-enable */
+      },
+      {
+        type: 'dh_gen_ok',
+        msg: {
+          [TYPE_KEY]: SET_CLIENT_DH_PARAMS_ANSWER_TYPE,
+          [CONSTRUCTOR_KEY]: DH_GEN_OK_CONSTRUCTOR,
+          nonce: BigInt('0xdc7f6971655650cebc8f90f449f6b6f5'),
+          server_nonce: BigInt('0xd2c1224835c79ef217e48e20f6fa7d42'),
+          new_nonce_hash1: BigInt('0x92a2609c6f1d942b18cc87e636593655'),
+        },
+        /* eslint-disable */
+        hexStr: '34f7cb3bf5b6f649f4908fbcce50566571697fdc427dfaf6208ee417f29ec7354822c1d255365936e687cc182b941d6f9c60a292',
         /* eslint-enable */
       },
     ],

@@ -38,7 +38,7 @@ import {
   SERVER_DH_PARAMS_FAIL_CONSTRUCTOR,
   SERVER_DH_PARAMS_OK_CONSTRUCTOR,
   SERVER_DH_INNER_DATA_CONSTRUCTOR,
-  CLIENT_DH_INNER_DATA_CONSTRUCTOR, SET_CLIENT_DH_PARAMS_METHOD,
+  CLIENT_DH_INNER_DATA_CONSTRUCTOR, SET_CLIENT_DH_PARAMS_METHOD, DH_GEN_OK_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -79,6 +79,7 @@ import { dumpServerDHParamsOk } from './server_DH_params_ok';
 import { dumpServerDHInnerData } from './server_DH_inner_data';
 import { dumpClientDHInnerData } from './client_DH_inner_data';
 import { dumpSetClientDHParams } from './set_client_DH_params';
+import { dumpDHGenOk } from './dh_gen_ok';
 
 
 /**
@@ -139,6 +140,7 @@ export default function dumpMessage(schema, msg) {
     [isMessageOf(SERVER_DH_INNER_DATA_CONSTRUCTOR), dumpServerDHInnerData],
     [isMessageOf(CLIENT_DH_INNER_DATA_CONSTRUCTOR), dumpClientDHInnerData],
     [isMethodOf(SET_CLIENT_DH_PARAMS_METHOD), dumpSetClientDHParams],
+    [isMessageOf(DH_GEN_OK_CONSTRUCTOR), dumpDHGenOk],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);
