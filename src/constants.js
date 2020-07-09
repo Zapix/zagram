@@ -39,7 +39,10 @@ export const SERVER_DH_INNER_DATA_TYPE = 'Server_DH_inner_data';
 export const SERVER_DH_INNER_DATA_CONSTRUCTOR = 'server_DH_inner_data';
 export const SERVER_DH_INNER_DATA = 0xb5890dba;
 
+export const CLIENT_DH_INNER_DATA_TYPE = 'Client_DH_Inner_Data';
+export const CLIENT_DH_INNER_DATA_CONSTRUCTOR = 'client_DH_inner_data';
 export const CLIENT_DH_INNER_DATA = 0x6643b654;
+
 export const SET_CLIENT_DH_PARAMS = 0xf5045f1f;
 
 export const DH_GEN_OK = 0x3bcbf734;

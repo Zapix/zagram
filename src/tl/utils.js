@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import {
   AUTH_SENT_CODE,
   BAD_MSG_NOTIFICATION,
-  BAD_SERVER_SALT,
+  BAD_SERVER_SALT, CLIENT_DH_INNER_DATA,
   CONSTRUCTOR_KEY,
   DESTROY_SESSION,
   DESTROY_SESSION_NONE,
@@ -392,6 +392,15 @@ export const isServerDHParamsOk = R.pipe(
 export const isServerDHInnerData = R.pipe(
   getConstructor,
   R.equals(SERVER_DH_INNER_DATA),
+);
+
+/**
+ * @param {ArrayBuffer} - message buffer
+ * @returns {boolean}
+ */
+export const isClienDHInnerData = R.pipe(
+  getConstructor,
+  R.equals(CLIENT_DH_INNER_DATA),
 );
 
 export const isMessageOf = R.propEq(CONSTRUCTOR_KEY);
