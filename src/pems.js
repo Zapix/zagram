@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 import forge from 'node-forge';
 
-import { bigIntToUint8Array, uint8ArrayToHex } from './utils';
+import { bigIntToUint8Array } from './utils';
 import { toTlString } from './tl/tlSerialization';
 
 const pems = [`
@@ -110,11 +110,11 @@ const publicKeyMap = R.pipe(
 
 /**
  * Gets finger print and return publicKey that should be used;
- * @param {Uint8Array} fingerprint
+ * @param {BigInt} fingerprint
  * @returns - publicKey object;
  */
 export const getPublicKey = R.pipe(
-  uint8ArrayToHex,
+  (x) => x.toString(16),
   R.prop(R.__, publicKeyMap),
 );
 

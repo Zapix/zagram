@@ -30,6 +30,18 @@ import {
   RPC_DROP_ANSWER_METHOD,
   RPC_ERROR_CONSTRUCTOR,
   RPC_RESULT_CONSTRUCTOR,
+  REQ_PQ_METHOD,
+  RES_PQ_CONSTRUCTOR,
+  PQ_INNER_DATA_CONSTRUCTOR,
+  PQ_INNER_DATA_TEMP_CONSTRUCTOR,
+  REQ_DH_PARAMS_METHOD,
+  SERVER_DH_PARAMS_FAIL_CONSTRUCTOR,
+  SERVER_DH_PARAMS_OK_CONSTRUCTOR,
+  SERVER_DH_INNER_DATA_CONSTRUCTOR,
+  CLIENT_DH_INNER_DATA_CONSTRUCTOR,
+  SET_CLIENT_DH_PARAMS_METHOD,
+  DH_GEN_OK_CONSTRUCTOR,
+  DH_GEN_RETRY_CONSTRUCTOR, DH_GEN_FAIL_CONSTRUCTOR,
 } from '../constants';
 import { dumpBadServerSalt } from './bad_server_salt';
 import { dumpDestroySession } from './destory_session';
@@ -60,6 +72,19 @@ import { dumpRpcError } from './rpc_error';
 import { dumpRpcResult } from './rpc_result';
 import { dumpBySchema, isMsgCouldBeDump } from './schema';
 import { isMessageOf, isMethodOf } from './utils';
+import { dumpReqPQ } from './req_pq';
+import { dumpResPQ } from './res_pq';
+import { dumpPQInnerData } from './p_q_inner_data';
+import { dumpPQInnerDataTemp } from './p_q_inner_data_temp';
+import { dumpReqDHParams } from './req_DH_params';
+import { dumpServerDHParamsFail } from './server_DH_params_fail';
+import { dumpServerDHParamsOk } from './server_DH_params_ok';
+import { dumpServerDHInnerData } from './server_DH_inner_data';
+import { dumpClientDHInnerData } from './client_DH_inner_data';
+import { dumpSetClientDHParams } from './set_client_DH_params';
+import { dumpDHGenOk } from './dh_gen_ok';
+import { dumpDHGenRetry } from './dh_gen_retry';
+import { dumpDHGenFail } from './dh_gen_fail';
 
 
 /**
@@ -110,6 +135,19 @@ export default function dumpMessage(schema, msg) {
     [isMethodOf(RPC_DROP_ANSWER_METHOD), dumpRpcDropAnswer],
     [isMessageOf(RPC_ERROR_CONSTRUCTOR), dumpRpcError],
     [isMessageOf(RPC_RESULT_CONSTRUCTOR), R.partialRight(dumpRpcResult, [dump])],
+    [isMethodOf(REQ_PQ_METHOD), dumpReqPQ],
+    [isMessageOf(RES_PQ_CONSTRUCTOR), dumpResPQ],
+    [isMessageOf(PQ_INNER_DATA_CONSTRUCTOR), dumpPQInnerData],
+    [isMessageOf(PQ_INNER_DATA_TEMP_CONSTRUCTOR), dumpPQInnerDataTemp],
+    [isMethodOf(REQ_DH_PARAMS_METHOD), dumpReqDHParams],
+    [isMessageOf(SERVER_DH_PARAMS_FAIL_CONSTRUCTOR), dumpServerDHParamsFail],
+    [isMessageOf(SERVER_DH_PARAMS_OK_CONSTRUCTOR), dumpServerDHParamsOk],
+    [isMessageOf(SERVER_DH_INNER_DATA_CONSTRUCTOR), dumpServerDHInnerData],
+    [isMessageOf(CLIENT_DH_INNER_DATA_CONSTRUCTOR), dumpClientDHInnerData],
+    [isMethodOf(SET_CLIENT_DH_PARAMS_METHOD), dumpSetClientDHParams],
+    [isMessageOf(DH_GEN_OK_CONSTRUCTOR), dumpDHGenOk],
+    [isMessageOf(DH_GEN_RETRY_CONSTRUCTOR), dumpDHGenRetry],
+    [isMessageOf(DH_GEN_FAIL_CONSTRUCTOR), dumpDHGenFail],
     [R.partial(isMsgCouldBeDump, [schema]), R.partial(dumpBySchema, [schema])],
     [R.T, dumpUnexpectedMessage],
   ])(msg);

@@ -1,8 +1,14 @@
+import { getMessageId } from './utils';
+import wrapPlainMessage from './wrapPlainMessage';
+import unwrapPlainMessage from './unwrapPlainMessage';
+
 /**
- * @param {Connection} ws - ws connection object
- * @param {ArrayBuffer} buffer - array buffer object
+ * @param {Connection} ws - ws MTProto connection object
+ * @param {Function} loads - loads object by MTProto schema
+ * @param {Function} dumps - dumps object by MTProto schema
+ * @param {*} payload - payload to send request
  */
-export default function sendWsRequest(ws, buffer) {
+export default function sendWsRequest(ws, loads, dumps, payload) {
   return new Promise((resolve, reject) => {
     function handleSuccess(event) {
       ws.removeEventListener('wsMessage', handleSuccess);
@@ -10,7 +16,8 @@ export default function sendWsRequest(ws, buffer) {
       ws.removeEventListener('wsError', handleError);
       ws.removeEventListener('wsClose', handleError);
       /* eslint-enable */
-      resolve(event.buffer);
+      const { buffer: plainMessageBuffer } = unwrapPlainMessage(event.buffer);
+      resolve(loads(plainMessageBuffer));
     }
 
     function handleError(error) {
@@ -24,6 +31,10 @@ export default function sendWsRequest(ws, buffer) {
     ws.addEventListener('wsMessage', handleSuccess);
     ws.addEventListener('wsError', handleError);
     ws.addEventListener('wsClose', handleError);
-    ws.send(buffer);
+
+    const payloadBuffer = dumps(payload);
+    const messageId = getMessageId();
+    const messageBuffer = wrapPlainMessage(messageId, payloadBuffer);
+    ws.send(messageBuffer);
   });
 }
