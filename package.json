@@ -5,7 +5,7 @@
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "start": "NODE_ENV=development webpack",
-    "test": "jest",
+    "test": "jest --coverage",
     "testw": "jest --watch",
     "lint": "eslint src/",
     "lintw": "esw -w --quiet --color --clear src/",

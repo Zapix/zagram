@@ -108,7 +108,16 @@ export default class MTProto extends EventTarget {
       this.emitAuthKeyCreated();
       this.ws.addEventListener('wsMessage', this.read.bind(this));
     } else {
-      createAuthorizationKey(R.partial(sendWsRequest, [this.ws]))
+      createAuthorizationKey(
+        R.partial(
+          sendWsRequest,
+          [
+            this.ws,
+            R.partial(loads, [this.schema]),
+            R.partial(dumps, [this.schema]),
+          ],
+        ),
+      )
         .then((authData) => {
           this.authKey = getAuthKey(authData);
           this.authKeyId = getAuthKeyId(authData);
