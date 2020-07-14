@@ -2,6 +2,10 @@ import * as R from 'ramda';
 import random from 'random-bigint';
 import forge from 'node-forge';
 
+export function arrayBufferToUint8Array(x) {
+  return new Uint8Array(x);
+}
+
 export const debug = (x) => {
   console.log(x);
   return x;
@@ -413,8 +417,6 @@ export const uint8toForgeBuffer = R.pipe(
   uint8ToArrayBuffer,
   arrayBufferToForgeBuffer,
 );
-
-export const arrayBufferToUint8Array = (x) => new Uint8Array(x);
 
 export const dumpArrayBuffer = R.pipe(
   arrayBufferToUint8Array,

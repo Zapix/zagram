@@ -1,30 +1,42 @@
 import * as R from 'ramda';
-import forge from 'node-forge';
-import { arrayBufferToForgeBuffer } from './utils';
+import sha1_ from '@cryptography/sha1';
+import sha256_ from '@cryptography/sha256';
 
-const prepareData = R.cond([
-  [R.is(ArrayBuffer), arrayBufferToForgeBuffer],
-  [R.T, R.identity],
-]);
+import {
+  arrayBufferToUint8Array,
+  forgeBufferToArrayBuffer,
+  hexToArrayBuffer,
+} from './utils';
 
-function sha(md, data) {
-  md.update(data.bytes());
-  return md.digest();
-}
+const prepareData = R.pipe(
+  R.cond([
+    [R.is(ArrayBuffer), arrayBufferToUint8Array],
+    [R.is(Uint8Array), R.identity],
+    [R.T, R.pipe(forgeBufferToArrayBuffer, arrayBufferToUint8Array)],
+  ]),
+  (x) => Array.from(x),
+  R.map((buf) => String.fromCharCode(buf)),
+  R.join(''),
+);
 
 /**
  * Returns
  * @param {ArrayBuffer|forge.util.ByteBuffer} data
- * @returns {*}
+ * @returns {ArrayBuffer}
  */
-export function sha1(data) {
-  const md = forge.md.sha1.create();
-  const preparedData = prepareData(data);
-  return sha(md, preparedData);
-}
+export const sha1 = R.pipe(
+  prepareData,
+  R.partialRight(sha1_, ['hex']),
+  hexToArrayBuffer,
+);
 
-export function sha256(data) {
-  const md = forge.md.sha256.create();
-  const preparedData = prepareData(data);
-  return sha(md, preparedData);
-}
+/**
+ * Returns
+ * @param {ArrayBuffer|forge.util.ByteBuffer} data
+ * @returns {ArrayBuffer}
+ */
+export const sha256 = R.pipe(
+  prepareData,
+  R.partialRight(sha256_, ['hex']),
+  hexToArrayBuffer,
+);
