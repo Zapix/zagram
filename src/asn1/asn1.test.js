@@ -121,6 +121,19 @@ describe('decodeBlockHeader', () => {
         offset: 1,
       },
     },
+    {
+      type: 'with long block id header',
+      buffer: hexToArrayBuffer('1f8a8b14'),
+      value: {
+        value: {
+          blockClass: 'UNIVERSAL',
+          blockId: 162707,
+          blockIdName: 'unknown',
+          multiValue: false,
+        },
+        offset: 4,
+      },
+    },
   ];
 
   R.forEach(testFunc, valueArray);

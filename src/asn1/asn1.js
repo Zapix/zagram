@@ -1,8 +1,11 @@
 import * as R from 'ramda';
 import {
-  arrayBufferToUint8Array,
   shiftRightNBit,
-  getNBit, maskNumber, withConstantOffset,
+  getNBit,
+  maskNumber,
+  withConstantOffset,
+  getFirstByte,
+  arrayBufferToUint8Array,
 } from '../utils';
 
 const UNIVERSAL = 'UNIVERSAL';
@@ -16,8 +19,7 @@ const PRIVATE = 'PRIVATE';
  * @returns {str} - block class
  */
 export const getBlockClass = R.pipe(
-  arrayBufferToUint8Array,
-  R.nth(0),
+  getFirstByte,
   R.partialRight(shiftRightNBit, [6]),
   R.cond([
     [R.equals(0), R.always(UNIVERSAL)],
@@ -33,8 +35,7 @@ export const getBlockClass = R.pipe(
  * @returns {str}
  */
 export const isMultiBlock = R.pipe(
-  arrayBufferToUint8Array,
-  R.nth(0),
+  getFirstByte,
   R.partialRight(getNBit, [5]),
   Boolean,
 );
@@ -44,10 +45,32 @@ export const isMultiBlock = R.pipe(
  * @returns {Number}
  */
 export const getSimpleBlockId = R.pipe(
-  arrayBufferToUint8Array,
-  R.nth(0),
+  getFirstByte,
   R.partial(maskNumber, [0b00011111]),
 );
+
+/**
+ * Comblex blockId on asn1 encoded as:
+ * sequence of bytes. where 8th bit is a flag to get next byte or not.
+ * for computing key use other 7 bits
+ * @param {ArrayBuffer} buffer
+ * @returns {Number}
+ */
+export function getComplexBlockId(buffer) {
+  const uint8Arr = arrayBufferToUint8Array(buffer);
+  function readBlockId(value, offset) {
+    const byte = uint8Arr[offset];
+    const currentValue = value * 127 + maskNumber(byte, 0b01111111);
+    if (maskNumber(byte, 0b10000000)) {
+      return readBlockId(currentValue, offset + 1);
+    }
+    return {
+      value: currentValue,
+      offset: offset + 1,
+    };
+  }
+  return readBlockId(0, 1);
+}
 
 /**
  * @param {ArrayBuffer} - asn1 array buffer
@@ -63,7 +86,14 @@ export const isComplexBlockId = R.pipe(
  * @returns {{ value: Number, offset: Number }}
  */
 export const getBlockId = R.cond([
-  [R.T, withConstantOffset(getSimpleBlockId, 1)],
+  [
+    isComplexBlockId,
+    getComplexBlockId,
+  ],
+  [
+    R.T,
+    withConstantOffset(getSimpleBlockId, 1),
+  ],
 ]);
 
 export const getBlockIdName = R.cond([
@@ -73,6 +103,7 @@ export const getBlockIdName = R.cond([
   [R.equals(6), R.always('OID')],
   [R.equals(9), R.always('real')],
   [R.equals(16), R.always('sequence')],
+  [R.T, R.always('unknown')],
 ]);
 
 /**

@@ -628,6 +628,16 @@ export function shiftRightNBit(x, n) {
 }
 
 /**
+ * Return first value from array buffer
+ * @param {ArrayBuffer} buffer
+ * @returns {Number}
+ */
+export const getFirstByte = R.pipe(
+  arrayBufferToUint8Array,
+  R.nth(0),
+);
+
+/**
  * @param {Number} x
  * @param {Number} n
  * @return {Number}
