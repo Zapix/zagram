@@ -5,7 +5,7 @@ import {
   maskNumber,
   withConstantOffset,
   getFirstByte,
-  arrayBufferToUint8Array,
+  arrayBufferToUint8Array, sliceBuffer,
 } from '../utils';
 
 const UNIVERSAL = 'UNIVERSAL';
@@ -104,6 +104,63 @@ export const getBlockIdName = R.cond([
   [R.equals(9), R.always('real')],
   [R.equals(16), R.always('sequence')],
   [R.T, R.always('unknown')],
+]);
+
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {Boolean}
+ */
+const isSeveralByteLength = R.pipe(
+  getFirstByte,
+  R.partial(maskNumber, [0b10000000]),
+  Boolean,
+);
+
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {Number}
+ */
+const getSeveralByteLength = R.pipe(
+  R.of,
+  R.ap([
+    R.identity,
+    R.pipe(getFirstByte, R.partial(maskNumber, [0b01111111])),
+  ]),
+  R.of,
+  R.ap([
+    R.pipe(
+      R.of,
+      R.ap([
+        R.nth(0),
+        R.always(1),
+        R.pipe(R.nth(1), R.add(1)),
+      ]),
+      R.apply(sliceBuffer),
+      arrayBufferToUint8Array,
+      R.reduce(
+        (a, b) => a * 256 + b,
+        0,
+      ),
+    ),
+    R.pipe(R.nth(1), R.add(1)),
+  ]),
+  R.zipObj(['value', 'offset']),
+);
+
+/**
+ * Get's length from buffer
+ * @param {ArrayBuffer} buffer
+ * @param {{ value: Number, offset: Number }}
+ */
+export const getBlockLength = R.cond([
+  [
+    isSeveralByteLength,
+    getSeveralByteLength,
+  ],
+  [
+    R.T,
+    withConstantOffset(getFirstByte, 1),
+  ],
 ]);
 
 /**

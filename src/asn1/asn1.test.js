@@ -2,7 +2,7 @@ import * as R from 'ramda';
 
 import {
   decodeBlockHeader,
-  getBlockClass,
+  getBlockClass, getBlockLength,
 } from './asn1';
 import { hexToArrayBuffer, uint8ToArrayBuffer } from '../utils';
 
@@ -137,4 +137,41 @@ describe('decodeBlockHeader', () => {
   ];
 
   R.forEach(testFunc, valueArray);
+});
+
+describe('getBlockLength', () => {
+  function testFunction({ type, buffer, value }) {
+    it(`get length for ${type}`, () => {
+      expect(getBlockLength(buffer)).toEqual(value);
+    });
+  }
+
+  const testArray = [
+    {
+      type: '820122: length 290, offset 3',
+      buffer: hexToArrayBuffer('820122'),
+      value: {
+        value: 290,
+        offset: 3,
+      },
+    },
+    {
+      type: '04: length 4, offset 1',
+      buffer: hexToArrayBuffer('04'),
+      value: {
+        value: 4,
+        offset: 1,
+      },
+    },
+    {
+      type: '820201: length 513, offset 3',
+      buffer: hexToArrayBuffer('820201'),
+      value: {
+        value: 513,
+        offset: 3,
+      },
+    },
+  ];
+
+  R.forEach(testFunction, testArray);
 });
