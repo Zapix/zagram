@@ -604,3 +604,41 @@ export function promiseChainUntil(getPromiseFunc, conditionFunc, progressCb) {
   }
   return { promise, cancel };
 }
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export function shiftLeftNBit(x, n) {
+  /* eslint-disable */
+  return x << n;
+  /* eslint-enable */
+}
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export function shiftRightNBit(x, n) {
+  /* eslint-disable */
+  return x >> n;
+  /* eslint-enable */
+}
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export const getNBit = R.pipe(
+  shiftRightNBit,
+  R.modulo(R.__, 2),
+);
+
+export function maskNumber(x, y) {
+  /* eslint-disable */
+  return x & y;
+  /* eslint-enable */
+}
