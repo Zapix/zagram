@@ -184,6 +184,7 @@ describe('decode', () => {
     });
   }
 
+  // cases from https://github.com/lapo-luchini/asn1js/blob/trunk/test.js
   const testArray = [
     {
       type: 'Big Integer 126 bit',
@@ -248,6 +249,91 @@ describe('decode', () => {
       type: 'Negative 1 (4)',
       buffer: '0204FFFFFFFF',
       value: BigInt('-1'),
+    },
+    {
+      type: 'OID 0.39',
+      buffer: '060127',
+      value: '0.39',
+    },
+    {
+      type: 'OID 1.0',
+      buffer: '060128',
+      value: '1.0',
+    },
+    {
+      type: 'OID 1.39',
+      buffer: '06014F',
+      value: '1.39',
+    },
+    {
+      type: 'OID 2.0',
+      buffer: '060150',
+      value: '2.0',
+    },
+    {
+      type: 'OID 2.39',
+      buffer: '060177',
+      value: '2.39',
+    },
+    {
+      type: 'OID 2.339',
+      buffer: '06028323',
+      value: '2.339',
+    },
+    {
+      type: 'Big OID arc',
+      buffer: '060C69C7C79AB78084C289F9870D',
+      value: '2.25.84478768945400492475277',
+    },
+    {
+      type: 'Bigger OID arc',
+      buffer: '06146982968D8D889BCCA8C7B3BDD4C080AAAED78A1B',
+      value: '2.25.184830721219540099336690027854602552603',
+    },
+    {
+      type: 'OID arc > 2.47',
+      buffer: '060488378952',
+      value: '2.999.1234',
+    },
+    {
+      type: 'OID with Int10 corner case (1)',
+      buffer: '060782A384F3CAC00A',
+      value: '2.9999999999930',
+    },
+    {
+      type: 'OID with Int10 corner case (2)',
+      buffer: '060881E3AFEAA69A800A',
+      value: '2.999999999999930',
+    },
+    {
+      type: 'sha1WithRSAEncryption PKCS #1',
+      buffer: '06092A864886F70D010105',
+      value: '1.2.840.113549.1.1.5',
+    },
+    {
+      type: 'OID root 64 bit - 1',
+      buffer: '060A81FFFFFFFFFFFFFFFF7F',
+      value: '2.18446744073709551535',
+    },
+    {
+      type: 'OID root 64 bit',
+      buffer: '060A82808080808080808000',
+      value: '2.18446744073709551536',
+    },
+    {
+      type: 'OID root 64 bit + 1',
+      buffer: '060A82808080808080808001',
+      value: '2.18446744073709551537',
+    },
+    {
+      type: 'OID derLen20c',
+      buffer: '0620FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F',
+      value: '2.26959946667150639794667015087019630673637144422540572481103610249135',
+    },
+    {
+      type: 'OID derLen21c',
+      buffer: '0621818080808080808080808080808080808080808080808080808080808080808000',
+      value: '2.26959946667150639794667015087019630673637144422540572481103610249136',
     },
   ];
 

@@ -8,6 +8,7 @@ import {
   arrayBufferToUint8Array, sliceBuffer, applyAll, addWithOffsetArg,
 } from '../utils';
 import { decodeInt, isIntHeader } from './integer';
+import { decodeOID, isOIDHeader } from './OID';
 
 const UNIVERSAL = 'UNIVERSAL';
 const APPLICATION = 'APPLICATION';
@@ -258,6 +259,7 @@ function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
 
 export const getValueDecoder = R.cond([
   [isIntHeader, R.always(decodeInt)],
+  [isOIDHeader, R.always(decodeOID)],
   [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
 ]);
 
