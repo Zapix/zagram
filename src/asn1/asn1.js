@@ -1,11 +1,12 @@
 import * as R from 'ramda';
 import {
+  debug,
   shiftRightNBit,
   getNBit,
   maskNumber,
   withConstantOffset,
   getFirstByte,
-  arrayBufferToUint8Array, sliceBuffer,
+  arrayBufferToUint8Array, sliceBuffer, applyAll, addWithOffsetArg,
 } from '../utils';
 
 const UNIVERSAL = 'UNIVERSAL';
@@ -150,7 +151,7 @@ const getSeveralByteLength = R.pipe(
 /**
  * Get's length from buffer
  * @param {ArrayBuffer} buffer
- * @param {{ value: Number, offset: Number }}
+ * @return {{ value: Number, offset: Number }}
  */
 export const getBlockLength = R.cond([
   [
@@ -162,6 +163,66 @@ export const getBlockLength = R.cond([
     withConstantOffset(getFirstByte, 1),
   ],
 ]);
+
+
+/**
+ * Takes block header info and full asn1 array buffer, returns length
+ * @param {{ offset: Number, value: * }} header - asn1 header
+ * @param {ArrayBuffer} buffer - asn1 buffer
+ */
+const getBlockLengthFromBufferWithHeader = R.pipe(
+  applyAll([
+    R.nth(1),
+    R.pipe(R.nth(0), R.prop('offset')),
+  ]),
+  R.apply(sliceBuffer),
+  getBlockLength,
+);
+
+
+/**
+ * @param {{ offset: Number, value: * }} head - asn1 header info
+ * @param {{ offset: Number, value: Number }} length - asn1 block length info
+ * @returns {Number} - offset of header and length block for asn1 buffer
+ */
+const getHeaderAndLengthBlockOffset = R.unapply(R.pipe(
+  applyAll([
+    R.pipe(R.nth(0), R.prop('offset')),
+    R.pipe(R.nth(1), R.prop('offset')),
+  ]),
+  R.sum,
+));
+
+/**
+ * @param {{ offset: Number, value: * }} head - asn1 header info
+ * @param {{ offset: Number, value: Number }} length - asn1 block length info
+ * @returns {Number} - total length of whole asn1 block
+ */
+const getTotalBlockLength = R.unapply(R.pipe(
+  applyAll([
+    R.pipe(R.nth(0), R.prop('offset')),
+    R.pipe(R.nth(1), R.prop('offset')),
+    R.pipe(R.nth(1), R.prop('value')),
+  ]),
+  R.sum,
+));
+
+/**
+ * @param {{ offset: Number, value: * }} head - asn1 header info
+ * @param {{ offset: Number, value: Number }} length - asn1 block length info
+ * @param {ArrayBuffer} buffer - asn1 buffer
+ * @returns {ArrayBuffer} - asn1 encoded value without header and length blocks
+ */
+const cutValueBuffer = R.unapply(R.pipe(
+  debug,
+  applyAll([
+    R.nth(2),
+    R.apply(getHeaderAndLengthBlockOffset),
+    R.apply(getTotalBlockLength),
+  ]),
+  debug,
+  R.apply(sliceBuffer),
+));
 
 /**
  * Reads header of asn1 block.
@@ -190,3 +251,41 @@ export function decodeBlockHeader(buffer) {
     },
   };
 }
+
+function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
+  console.warn('Can`t decode asn1 buffer');
+  console.warn('Header value: ', header);
+  console.warn('Plain buffer value', buffer);
+}
+
+export const getValueDecoder = R.cond([
+  [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
+]);
+
+/**
+ * Decode asn1 value to js object
+ * @param {ArrayBuffer} buffer - asn1 encoded buffer
+ * @returns {*} - js object that has been encrypted
+ */
+export const decode = addWithOffsetArg(R.pipe(
+  applyAll([
+    decodeBlockHeader,
+    R.identity,
+  ]),
+  applyAll([
+    R.nth(0),
+    getBlockLengthFromBufferWithHeader,
+    R.nth(1),
+  ]),
+  applyAll([ // gets block header, buffer only with current value, and total offset
+    R.pipe(
+      applyAll([
+        R.pipe(R.nth(0), R.prop('value'), getValueDecoder),
+        R.apply(cutValueBuffer),
+      ]),
+      R.apply(R.call),
+    ),
+    R.apply(getTotalBlockLength),
+  ]),
+  R.zipObj(['value', 'offset']),
+));

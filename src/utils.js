@@ -487,6 +487,13 @@ export const computeOffset = R.pipe(
   R.sum,
 );
 
+export function addWithOffsetArg(load) {
+  return R.cond([
+    [isWithOffset, load],
+    [R.T, R.pipe(load, R.prop('value'))],
+  ]);
+}
+
 /**
  * loads data from pairs with array buffer
  * @param {{ value: *, offset: Number }} result
@@ -518,10 +525,7 @@ function loadByPairs(result, idx, pairs, buffer) {
  */
 export function buildLoadFunc(pairs) {
   const load = R.partial(loadByPairs, [{ value: {}, offset: 0 }, 0, pairs]);
-  return R.cond([
-    [isWithOffset, R.pipe(R.nthArg(0), load)],
-    [R.T, R.pipe(R.nthArg(0), load, R.prop('value'))],
-  ]);
+  return addWithOffsetArg(load);
 }
 
 export const buildTypeLoader = R.pipe(
@@ -652,3 +656,10 @@ export function maskNumber(x, y) {
   return x & y;
   /* eslint-enable */
 }
+
+const binaryPipe = R.binary(R.pipe);
+
+export const applyAll = R.pipe(
+  R.ap,
+  R.partial(binaryPipe, [R.of]),
+);
