@@ -1,6 +1,5 @@
 import * as R from 'ramda';
 import {
-  debug,
   shiftRightNBit,
   getNBit,
   maskNumber,
@@ -8,6 +7,7 @@ import {
   getFirstByte,
   arrayBufferToUint8Array, sliceBuffer, applyAll, addWithOffsetArg,
 } from '../utils';
+import { decodeInt, isIntHeader } from './integer';
 
 const UNIVERSAL = 'UNIVERSAL';
 const APPLICATION = 'APPLICATION';
@@ -214,13 +214,11 @@ const getTotalBlockLength = R.unapply(R.pipe(
  * @returns {ArrayBuffer} - asn1 encoded value without header and length blocks
  */
 const cutValueBuffer = R.unapply(R.pipe(
-  debug,
   applyAll([
     R.nth(2),
     R.apply(getHeaderAndLengthBlockOffset),
     R.apply(getTotalBlockLength),
   ]),
-  debug,
   R.apply(sliceBuffer),
 ));
 
@@ -259,6 +257,7 @@ function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
 }
 
 export const getValueDecoder = R.cond([
+  [isIntHeader, R.always(decodeInt)],
   [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
 ]);
 
