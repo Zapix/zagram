@@ -1,8 +1,16 @@
 import * as R from 'ramda';
 import forge from 'node-forge';
 
-import { bigIntToUint8Array } from './utils';
+import {
+  applyAll,
+  arrayBufferToUint8Array,
+  bigIntToUint8Array,
+  toArray, uint8ArrayToHex,
+  uint8ToArrayBuffer,
+} from './utils';
 import { toTlString } from './tl/tlSerialization';
+import readPublicKey from './readPublicKey';
+import { sha1 } from './sha';
 
 const pems = [`
 -----BEGIN RSA PUBLIC KEY-----
@@ -56,7 +64,7 @@ AQIDAQAB
 `];
 
 const publicKeys = pems.map((x) => forge.pki.publicKeyFromPem(x));
-
+const publicKeysNew = R.map(readPublicKey, pems);
 
 const forgeBigIntegerToBigInt = R.pipe(
   R.toString,
@@ -70,6 +78,11 @@ const forgeBigIntegerToUint8Array = R.pipe(
 
 const forgeBigIntegerToTlString = R.pipe(
   forgeBigIntegerToUint8Array,
+  toTlString,
+);
+
+const bigIntToTLString = R.pipe(
+  bigIntToUint8Array,
   toTlString,
 );
 
@@ -98,6 +111,21 @@ function buildFingerPrint(publicKey) {
   )(hex);
 }
 
+const buildFingerPrintNew = R.pipe(
+  applyAll([
+    R.pipe(R.prop('n'), bigIntToTLString),
+    R.pipe(R.prop('e'), bigIntToTLString),
+  ]),
+  R.flatten,
+  uint8ToArrayBuffer,
+  sha1,
+  arrayBufferToUint8Array,
+  toArray,
+  R.reverse,
+  R.take(8),
+  uint8ArrayToHex,
+);
+
 const publicKeyMap = R.pipe(
   R.map(
     R.pipe(
@@ -107,6 +135,20 @@ const publicKeyMap = R.pipe(
   ),
   R.fromPairs,
 )(publicKeys);
+
+console.log(publicKeyMap);
+
+const publicKeyMapNew = R.pipe(
+  R.map(
+    applyAll([
+      buildFingerPrintNew,
+      R.identity,
+    ]),
+  ),
+  R.fromPairs,
+)(publicKeysNew);
+
+console.log(publicKeyMapNew);
 
 /**
  * Gets finger print and return publicKey that should be used;
