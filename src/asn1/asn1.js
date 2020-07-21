@@ -11,6 +11,7 @@ import { decodeInt, isIntHeader } from './integer';
 import { decodeOID, isOIDHeader } from './OID';
 import { decodeNull, isNullHeader } from './null';
 import { decodeBoolean, isBooleanHeader } from './boolean';
+import { decodeBitStringHeader, isBitStringHeader } from './BitString';
 
 const UNIVERSAL = 'UNIVERSAL';
 const APPLICATION = 'APPLICATION';
@@ -264,6 +265,7 @@ function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
 export const getValueDecoder = R.cond([
   [isBooleanHeader, R.always(decodeBoolean)],
   [isIntHeader, R.always(decodeInt)],
+  [isBitStringHeader, R.always(decodeBitStringHeader)],
   [isNullHeader, R.always(decodeNull)],
   [isOIDHeader, R.always(decodeOID)],
   [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],

@@ -2,6 +2,10 @@ import * as R from 'ramda';
 import random from 'random-bigint';
 import forge from 'node-forge';
 
+export const toArray = (x) => Array.from(x);
+
+export const byteToStrBase2 = (x) => x.toString(2).padStart(8, '0');
+
 export function arrayBufferToUint8Array(x) {
   return new Uint8Array(x);
 }

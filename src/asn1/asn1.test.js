@@ -5,7 +5,7 @@ import {
   decodeBlockHeader,
   getBlockClass, getBlockLength,
 } from './asn1';
-import { hexToArrayBuffer, uint8ToArrayBuffer } from '../utils';
+import { hexToArrayBuffer, uint8ArrayToHex, uint8ToArrayBuffer } from '../utils';
 
 describe('getBlockClass', () => {
   function testFunc({ type, value }) {
@@ -180,7 +180,12 @@ describe('getBlockLength', () => {
 describe('decode', () => {
   function testFunction({ type, buffer, value }) {
     it(`decode ${type}`, () => {
-      expect(decode(hexToArrayBuffer(buffer))).toEqual(value);
+      const obj = decode(hexToArrayBuffer(buffer));
+      if (R.is(Function, value)) {
+        value(obj);
+      } else {
+        expect(obj).toEqual(value);
+      }
     });
   }
 
@@ -350,7 +355,55 @@ describe('decode', () => {
       buffer: '010101',
       value: true,
     },
+    {
+      type: 'Bit string: DER encoding',
+      buffer: '0304066E5DC0',
+      value: (obj) => expect(obj.toString()).toEqual('011011100101110111'),
+    },
+    {
+      type: 'Bit string: padded with "100000"',
+      buffer: '0304066E5DE0',
+      value: (obj) => expect(obj.toString()).toEqual('011011100101110111'),
+    },
+    {
+      type: 'Bit string: long form of length octets',
+      buffer: '038104066E5DC0',
+      value: (obj) => expect(obj.toString()).toEqual('011011100101110111'),
+    },
+    {
+      type: 'RSA Public key array buffer',
+      /* eslint-disable */
+      buffer: '0382010f003082010a0282010100aeec36c8ffc109cb099624685b97815415657bd76d8c9c3e398103d7ad16c9bba6f525ed0412d7ae2c2de2b44e77d72cbf4b7438709a4e646a05c43427c7f184debf72947519680e651500890c6832796dd11f772c25ff8f576755afe055b0a3752c696eb7d8da0d8be1faf38c9bdd97ce0a77d3916230c4032167100edd0f9e7a3a9b602d04367b689536af0d64b613ccba7962939d3b57682beb6dae5b608130b2e52aca78ba023cf6ce806b1dc49c72cf928a7199d22e3d7ac84e47bc9427d0236945d10dbd15177bab413fbf0edfda09f014c7a7da088dde9759702ca760af2b8e4e97cc055c617bd74c3d97008635b98dc4d621b4891da9fb04730479270203010001',
+      /* eslint-enable */
+      value: (obj) => {
+        expect(obj.padding).toEqual(0);
+        expect(obj.size).toEqual(2160);
+      },
+    },
   ];
+
+  const pem = `
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAruw2yP/BCcsJliRoW5eB
+VBVle9dtjJw+OYED160Wybum9SXtBBLXriwt4rROd9csv0t0OHCaTmRqBcQ0J8fx
+hN6/cpR1GWgOZRUAiQxoMnlt0R93LCX/j1dnVa/gVbCjdSxpbrfY2g2L4frzjJvd
+l84Kd9ORYjDEAyFnEA7dD556OptgLQQ2e2iVNq8NZLYTzLp5YpOdO1doK+ttrltg
+gTCy5SrKeLoCPPbOgGsdxJxyz5KKcZnSLj16yE5HvJQn0CNpRdENvRUXe6tBP78O
+39oJ8BTHp9oIjd6XWXAsp2CvK45Ol8wFXGF710w9lwCGNbmNxNYhtIkdqfsEcwR5
+JwIDAQAB
+-----END PUBLIC KEY-----
+`;
+  const foo = R.pipe(
+    R.replace('-----BEGIN PUBLIC KEY-----', ''),
+    R.replace('-----END PUBLIC KEY-----', ''),
+    R.replace('\n', ''),
+    R.trim,
+    atob,
+    R.split(''),
+    R.map((x) => x.charCodeAt(0)),
+    uint8ArrayToHex,
+  );
+  console.log(foo(pem));
 
   R.forEach(testFunction, testArray);
 });
