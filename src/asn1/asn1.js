@@ -9,6 +9,8 @@ import {
 } from '../utils';
 import { decodeInt, isIntHeader } from './integer';
 import { decodeOID, isOIDHeader } from './OID';
+import { decodeNull, isNullHeader } from './null';
+import { decodeBoolean, isBooleanHeader } from './boolean';
 
 const UNIVERSAL = 'UNIVERSAL';
 const APPLICATION = 'APPLICATION';
@@ -99,9 +101,11 @@ export const getBlockId = R.cond([
 ]);
 
 export const getBlockIdName = R.cond([
+  [R.equals(1), R.always('boolean')],
   [R.equals(2), R.always('int')],
   [R.equals(3), R.always('BitString')],
   [R.equals(4), R.always('OctetString')],
+  [R.equals(5), R.always('null')],
   [R.equals(6), R.always('OID')],
   [R.equals(9), R.always('real')],
   [R.equals(16), R.always('sequence')],
@@ -258,7 +262,9 @@ function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
 }
 
 export const getValueDecoder = R.cond([
+  [isBooleanHeader, R.always(decodeBoolean)],
   [isIntHeader, R.always(decodeInt)],
+  [isNullHeader, R.always(decodeNull)],
   [isOIDHeader, R.always(decodeOID)],
   [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
 ]);

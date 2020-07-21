@@ -335,6 +335,21 @@ describe('decode', () => {
       buffer: '0621818080808080808080808080808080808080808080808080808080808080808000',
       value: '2.26959946667150639794667015087019630673637144422540572481103610249136',
     },
+    {
+      type: 'NULL',
+      buffer: '0500',
+      value: null,
+    },
+    {
+      type: 'False',
+      buffer: '010100',
+      value: false,
+    },
+    {
+      type: 'True',
+      buffer: '010101',
+      value: true,
+    },
   ];
 
   R.forEach(testFunction, testArray);
