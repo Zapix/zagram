@@ -12,6 +12,7 @@ import { decodeOID, isOIDHeader } from './OID';
 import { decodeNull, isNullHeader } from './null';
 import { decodeBoolean, isBooleanHeader } from './boolean';
 import { decodeBitStringHeader, isBitStringHeader } from './BitString';
+import { decodeSequence, isSequenceHeader } from './sequence';
 
 const UNIVERSAL = 'UNIVERSAL';
 const APPLICATION = 'APPLICATION';
@@ -262,39 +263,45 @@ function notifyThatAsn1BufferCannotBeenDecoded(header, buffer) {
   console.warn('Plain buffer value', buffer);
 }
 
-export const getValueDecoder = R.cond([
-  [isBooleanHeader, R.always(decodeBoolean)],
-  [isIntHeader, R.always(decodeInt)],
-  [isBitStringHeader, R.always(decodeBitStringHeader)],
-  [isNullHeader, R.always(decodeNull)],
-  [isOIDHeader, R.always(decodeOID)],
-  [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
-]);
-
 /**
  * Decode asn1 value to js object
  * @param {ArrayBuffer} buffer - asn1 encoded buffer
+ * @param {Boolean} withOffset - returns offset of decoded buffer or not
  * @returns {*} - js object that has been encrypted
  */
-export const decode = addWithOffsetArg(R.pipe(
-  applyAll([
-    decodeBlockHeader,
-    R.identity,
-  ]),
-  applyAll([
-    R.nth(0),
-    getBlockLengthFromBufferWithHeader,
-    R.nth(1),
-  ]),
-  applyAll([ // gets block header, buffer only with current value, and total offset
-    R.pipe(
-      applyAll([
-        R.pipe(R.nth(0), R.prop('value'), getValueDecoder),
-        R.apply(cutValueBuffer),
-      ]),
-      R.apply(R.call),
-    ),
-    R.apply(getTotalBlockLength),
-  ]),
-  R.zipObj(['value', 'offset']),
-));
+export function decode(buffer, withOffset) {
+  const getValueDecoder = R.cond([
+    [isBooleanHeader, R.always(decodeBoolean)],
+    [isIntHeader, R.always(decodeInt)],
+    [isBitStringHeader, R.always(decodeBitStringHeader)],
+    [isNullHeader, R.always(decodeNull)],
+    [isOIDHeader, R.always(decodeOID)],
+    [isSequenceHeader, R.always(R.partialRight(decodeSequence, [decode]))],
+    [R.T, R.curry(notifyThatAsn1BufferCannotBeenDecoded)],
+  ]);
+
+  const decodeBuffer = addWithOffsetArg(R.pipe(
+    applyAll([
+      decodeBlockHeader,
+      R.identity,
+    ]),
+    applyAll([
+      R.nth(0),
+      getBlockLengthFromBufferWithHeader,
+      R.nth(1),
+    ]),
+    applyAll([ // gets block header, buffer only with current value, and total offset
+      R.pipe(
+        applyAll([
+          R.pipe(R.nth(0), R.prop('value'), getValueDecoder),
+          R.apply(cutValueBuffer),
+        ]),
+        R.apply(R.call),
+      ),
+      R.apply(getTotalBlockLength),
+    ]),
+    R.zipObj(['value', 'offset']),
+  ));
+
+  return decodeBuffer(buffer, withOffset);
+}
