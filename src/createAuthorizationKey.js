@@ -39,6 +39,7 @@ import {
 import { getPublicKey } from './pems';
 import { decryptIge as decryptAesIge, encryptIge as encryptAesIge } from './aes';
 import { sha1 } from './sha';
+import rsaEncrypt from './rsa';
 import { dumpPQInnerData } from './tl/p_q_inner_data';
 import { isMessageOf } from './tl/utils';
 import { loadServerDHInnerData } from './tl/server_DH_inner_data';
@@ -143,22 +144,12 @@ export function encryptPQInner(responsePQ, pqInnerData) {
     uint8ToArrayBuffer,
   )(randomBytesCount);
 
-  const encryptMessage = R.pipe(
-    mergeAllArrayBuffers,
-    arrayBufferToUint8Array,
-    (x) => Array.from(x),
-    R.map((x) => String.fromCharCode(x)),
-    R.join(''),
-  )([hash, pqInnerBuffer, randomBytes]);
-
   const fingerprint = responsePQ.fingerprints[0];
   const pubKey = getPublicKey(fingerprint);
 
-  const encryptedData = pubKey.encrypt(encryptMessage, 'RAW');
-  const encryptedDataBuffer = forge.util.createBuffer(encryptedData);
-  const encryptedArrayBuffer = forgeBufferToArrayBuffer(encryptedDataBuffer);
-
-  return arrayBufferToUint8Array(encryptedArrayBuffer);
+  const originBuffer = mergeAllArrayBuffers([hash, pqInnerBuffer, randomBytes]);
+  const encryptedBuffer = rsaEncrypt(originBuffer, pubKey);
+  return arrayBufferToUint8Array(encryptedBuffer);
 }
 
 
