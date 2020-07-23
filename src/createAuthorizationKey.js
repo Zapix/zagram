@@ -27,7 +27,6 @@ import {
   forgeBufferToArrayBuffer,
   copyBytes,
   getNRandomBytes,
-  generateKeyDataFromNonce,
   powModulo,
   uint8ToArrayBuffer,
   uint8ArrayToHex,
@@ -37,7 +36,11 @@ import {
   arrayBufferToHex,
 } from './utils';
 import { getPublicKey } from './pems';
-import { decryptIge as decryptAesIge, encryptIge as encryptAesIge } from './aes';
+import {
+  decryptIge as decryptAesIge,
+  encryptIge as encryptAesIge,
+  generateKeyDataFromNonce,
+} from './aes';
 import { sha1 } from './sha';
 import rsaEncrypt from './rsa';
 import { dumpPQInnerData } from './tl/p_q_inner_data';

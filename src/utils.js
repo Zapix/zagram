@@ -365,58 +365,6 @@ export function copyBuffer(fromBuffer, toBuffer, offset = 0) {
 }
 
 
-/**
- * Takes buffers on nonce and builds sha1 has of them
- * @param {forge.util.ByteBuffer} aNonce
- * @param {forge.utils.ByteBuffer} bNonce
- * @returns {Object} - hash digest
- */
-function hashFromNonces(aNonce, bNonce) {
-  const md = forge.md.sha1.create();
-  md.update(aNonce.data + bNonce.data);
-  return md.digest();
-}
-
-/**
- * Generates key, iv values for AES encryption
- *
- * answer_with_hash := SHA1(answer) + answer + (0-15 random bytes); such that the length
- * be divisible by 16;
- * tmp_aes_key := SHA1(new_nonce + server_nonce) + substr (SHA1(server_nonce + new_nonce), 0, 12);
- * tmp_aes_iv := substr (SHA1(server_nonce + new_nonce), 12, 8) + SHA1(new_nonce + new_nonce) +
- * substr (new_nonce, 0, 4);
- *
- * @param {Uint8Array|Number[]} serverNonce
- * @param {Uint8Array|Number[]} newNonce
- * @returns {{iv: forge.util.ByteBuffer, key: forge.util.ByteBuffer}} - byte strings of data
- */
-export function generateKeyDataFromNonce(serverNonce, newNonce) {
-  const serverNonceBuffer = forge.util.createBuffer();
-  R.forEach((x) => serverNonceBuffer.putByte(x), serverNonce);
-  const newNonceBuffer = forge.util.createBuffer();
-  R.forEach((x) => newNonceBuffer.putByte(x), newNonce);
-
-  const newNonceServerNonceHash = hashFromNonces(newNonceBuffer, serverNonceBuffer);
-  const serverNonceNewNonceHash = hashFromNonces(serverNonceBuffer, newNonceBuffer);
-  const newNonceNewNonceHash = hashFromNonces(newNonceBuffer, newNonceBuffer);
-
-  const keyBytes = (
-    newNonceServerNonceHash.data
-    + serverNonceNewNonceHash.data.slice(0, 12)
-  );
-
-  const ivBytes = (
-    serverNonceNewNonceHash.data.slice(12)
-    + newNonceNewNonceHash.data
-    + newNonceBuffer.data.slice(0, 4)
-  );
-
-  return {
-    key: forge.util.createBuffer(keyBytes),
-    iv: forge.util.createBuffer(ivBytes),
-  };
-}
-
 export const uint8toForgeBuffer = R.pipe(
   uint8ToArrayBuffer,
   arrayBufferToForgeBuffer,
