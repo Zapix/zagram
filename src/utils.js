@@ -1,5 +1,4 @@
 import * as R from 'ramda';
-import random from 'random-bigint';
 
 export const toArray = (x) => Array.from(x);
 
@@ -7,6 +6,31 @@ export const byteToStrBase2 = (x) => x.toString(2).padStart(8, '0');
 
 export function arrayBufferToUint8Array(x) {
   return new Uint8Array(x);
+}
+
+/**
+ * Return hex variant of uint8array
+ * @param {Uint8Array|Number[]} arr
+ * @returns {string} - hex string
+ */
+export function uint8ArrayToHex(arr) {
+  let hex = '';
+  for (let i = 0; i < arr.length; i += 1) {
+    hex += arr[i].toString(16).padStart(2, '0');
+  }
+  return hex;
+}
+
+/**
+ * Parse sequence of bytes to BigInt. Sequence has got big endian format as default
+ * @param {Uint8Array|Number[]} arr
+ * @param {boolean} [littleEndian]
+ * @returns {BigInt}
+ */
+export function uint8ToBigInt(arr, littleEndian) {
+  const calc = littleEndian ? arr.reverse() : arr;
+  const hex = uint8ArrayToHex(calc);
+  return BigInt(`0x${hex}`);
 }
 
 export const debug = (x) => {
@@ -21,6 +45,12 @@ export function getRandomInt(max) {
 const getRandomByte = R.partial(getRandomInt, [256]);
 
 export const getNRandomBytes = R.times(getRandomByte);
+
+export const randomBigInt = R.pipe(
+  R.always(8),
+  getNRandomBytes,
+  uint8ToBigInt,
+);
 
 /**
  * Copy bytes from Uint8Array `from` to Uint*Array `to`;
@@ -163,9 +193,9 @@ export function findPrimeFactors(pq) {
     return [2, pq / BigInt(2)];
   }
 
-  let y = BigInt(1) + (random(64) % (pq - BigInt(1)));
-  const c = BigInt(1) + (random(64) % (pq - BigInt(1)));
-  const m = BigInt(1) + (random(64) % (pq - BigInt(1)));
+  let y = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
+  const c = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
+  const m = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
 
   let g = BigInt(1);
   let r = BigInt(1);
@@ -219,19 +249,6 @@ export function numberToHex(x) {
 }
 
 /**
- * Return hex variant of uint8array
- * @param {Uint8Array|Number[]} arr
- * @returns {string} - hex string
- */
-export function uint8ArrayToHex(arr) {
-  let hex = '';
-  for (let i = 0; i < arr.length; i += 1) {
-    hex += arr[i].toString(16).padStart(2, '0');
-  }
-  return hex;
-}
-
-/**
  * Parases hex string to number array of bytes
  * @param {string} - hex string,
  * @return {Number[]}
@@ -257,18 +274,6 @@ export function hexToArrayBuffer(hexStr) {
 
   copyBytes(bytesArr, bufferBytes);
   return buffer;
-}
-
-/**
- * Parse sequence of bytes to BigInt. Sequence has got big endian format as default
- * @param {Uint8Array|Number[]} arr
- * @param {boolean} [littleEndian]
- * @returns {BigInt}
- */
-export function uint8ToBigInt(arr, littleEndian) {
-  const calc = littleEndian ? arr.reverse() : arr;
-  const hex = uint8ArrayToHex(calc);
-  return BigInt(`0x${hex}`);
 }
 
 
