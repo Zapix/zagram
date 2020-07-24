@@ -1,6 +1,37 @@
 import * as R from 'ramda';
-import random from 'random-bigint';
-import forge from 'node-forge';
+
+export const toArray = (x) => Array.from(x);
+
+export const byteToStrBase2 = (x) => x.toString(2).padStart(8, '0');
+
+export function arrayBufferToUint8Array(x) {
+  return new Uint8Array(x);
+}
+
+/**
+ * Return hex variant of uint8array
+ * @param {Uint8Array|Number[]} arr
+ * @returns {string} - hex string
+ */
+export function uint8ArrayToHex(arr) {
+  let hex = '';
+  for (let i = 0; i < arr.length; i += 1) {
+    hex += arr[i].toString(16).padStart(2, '0');
+  }
+  return hex;
+}
+
+/**
+ * Parse sequence of bytes to BigInt. Sequence has got big endian format as default
+ * @param {Uint8Array|Number[]} arr
+ * @param {boolean} [littleEndian]
+ * @returns {BigInt}
+ */
+export function uint8ToBigInt(arr, littleEndian) {
+  const calc = littleEndian ? arr.reverse() : arr;
+  const hex = uint8ArrayToHex(calc);
+  return BigInt(`0x${hex}`);
+}
 
 export const debug = (x) => {
   console.log(x);
@@ -14,6 +45,12 @@ export function getRandomInt(max) {
 const getRandomByte = R.partial(getRandomInt, [256]);
 
 export const getNRandomBytes = R.times(getRandomByte);
+
+export const randomBigInt = R.pipe(
+  R.always(8),
+  getNRandomBytes,
+  uint8ToBigInt,
+);
 
 /**
  * Copy bytes from Uint8Array `from` to Uint*Array `to`;
@@ -156,9 +193,9 @@ export function findPrimeFactors(pq) {
     return [2, pq / BigInt(2)];
   }
 
-  let y = BigInt(1) + (random(64) % (pq - BigInt(1)));
-  const c = BigInt(1) + (random(64) % (pq - BigInt(1)));
-  const m = BigInt(1) + (random(64) % (pq - BigInt(1)));
+  let y = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
+  const c = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
+  const m = BigInt(1) + (randomBigInt() % (pq - BigInt(1)));
 
   let g = BigInt(1);
   let r = BigInt(1);
@@ -212,19 +249,6 @@ export function numberToHex(x) {
 }
 
 /**
- * Return hex variant of uint8array
- * @param {Uint8Array|Number[]} arr
- * @returns {string} - hex string
- */
-export function uint8ArrayToHex(arr) {
-  let hex = '';
-  for (let i = 0; i < arr.length; i += 1) {
-    hex += arr[i].toString(16).padStart(2, '0');
-  }
-  return hex;
-}
-
-/**
  * Parases hex string to number array of bytes
  * @param {string} - hex string,
  * @return {Number[]}
@@ -250,18 +274,6 @@ export function hexToArrayBuffer(hexStr) {
 
   copyBytes(bytesArr, bufferBytes);
   return buffer;
-}
-
-/**
- * Parse sequence of bytes to BigInt. Sequence has got big endian format as default
- * @param {Uint8Array|Number[]} arr
- * @param {boolean} [littleEndian]
- * @returns {BigInt}
- */
-export function uint8ToBigInt(arr, littleEndian) {
-  const calc = littleEndian ? arr.reverse() : arr;
-  const hex = uint8ArrayToHex(calc);
-  return BigInt(`0x${hex}`);
 }
 
 
@@ -297,34 +309,6 @@ export function bigIntToUint8Array(bigint, littleEndian) {
 }
 
 /**
- * Converts ByteBuffer to ArrayBuffer
- * @param {ByteBuffer} forgeBuffer
- * @returns {ArrayBuffer}
- */
-export function forgeBufferToArrayBuffer(forgeBuffer) {
-  const bufferHex = forgeBuffer.toHex();
-  const bufferArray = hexToUint8Array(bufferHex);
-
-  const buffer = new ArrayBuffer(bufferArray.length);
-  const uintArray = new Uint8Array(buffer);
-  for (let i = 0; i < uintArray.length; i += 1) uintArray[i] = bufferArray[i];
-  return buffer;
-}
-
-/**
- * Converts ArrayBuffer to node-forge ByteBuffer;
- * @param arrayBuffer
- * @returns {ByteBuffer}
- */
-export function arrayBufferToForgeBuffer(arrayBuffer) {
-  const forgeBuffer = forge.util.createBuffer();
-  const uintArray = new Uint8Array(arrayBuffer);
-  for (let i = 0; i < uintArray.length; i += 1) forgeBuffer.putByte(uintArray[i]);
-  return forgeBuffer;
-}
-
-
-/**
  * @returns {number}
  */
 export function getUnixTimestamp() {
@@ -356,65 +340,6 @@ export function copyBuffer(fromBuffer, toBuffer, offset = 0) {
   copyBytes(fromBufferBytes, toBufferBytes);
 }
 
-
-/**
- * Takes buffers on nonce and builds sha1 has of them
- * @param {forge.util.ByteBuffer} aNonce
- * @param {forge.utils.ByteBuffer} bNonce
- * @returns {Object} - hash digest
- */
-function hashFromNonces(aNonce, bNonce) {
-  const md = forge.md.sha1.create();
-  md.update(aNonce.data + bNonce.data);
-  return md.digest();
-}
-
-/**
- * Generates key, iv values for AES encryption
- *
- * answer_with_hash := SHA1(answer) + answer + (0-15 random bytes); such that the length
- * be divisible by 16;
- * tmp_aes_key := SHA1(new_nonce + server_nonce) + substr (SHA1(server_nonce + new_nonce), 0, 12);
- * tmp_aes_iv := substr (SHA1(server_nonce + new_nonce), 12, 8) + SHA1(new_nonce + new_nonce) +
- * substr (new_nonce, 0, 4);
- *
- * @param {Uint8Array|Number[]} serverNonce
- * @param {Uint8Array|Number[]} newNonce
- * @returns {{iv: forge.util.ByteBuffer, key: forge.util.ByteBuffer}} - byte strings of data
- */
-export function generateKeyDataFromNonce(serverNonce, newNonce) {
-  const serverNonceBuffer = forge.util.createBuffer();
-  R.forEach((x) => serverNonceBuffer.putByte(x), serverNonce);
-  const newNonceBuffer = forge.util.createBuffer();
-  R.forEach((x) => newNonceBuffer.putByte(x), newNonce);
-
-  const newNonceServerNonceHash = hashFromNonces(newNonceBuffer, serverNonceBuffer);
-  const serverNonceNewNonceHash = hashFromNonces(serverNonceBuffer, newNonceBuffer);
-  const newNonceNewNonceHash = hashFromNonces(newNonceBuffer, newNonceBuffer);
-
-  const keyBytes = (
-    newNonceServerNonceHash.data
-    + serverNonceNewNonceHash.data.slice(0, 12)
-  );
-
-  const ivBytes = (
-    serverNonceNewNonceHash.data.slice(12)
-    + newNonceNewNonceHash.data
-    + newNonceBuffer.data.slice(0, 4)
-  );
-
-  return {
-    key: forge.util.createBuffer(keyBytes),
-    iv: forge.util.createBuffer(ivBytes),
-  };
-}
-
-export const uint8toForgeBuffer = R.pipe(
-  uint8ToArrayBuffer,
-  arrayBufferToForgeBuffer,
-);
-
-export const arrayBufferToUint8Array = (x) => new Uint8Array(x);
 
 export const dumpArrayBuffer = R.pipe(
   arrayBufferToUint8Array,
@@ -485,6 +410,13 @@ export const computeOffset = R.pipe(
   R.sum,
 );
 
+export function addWithOffsetArg(load) {
+  return R.cond([
+    [isWithOffset, load],
+    [R.T, R.pipe(load, R.prop('value'))],
+  ]);
+}
+
 /**
  * loads data from pairs with array buffer
  * @param {{ value: *, offset: Number }} result
@@ -516,10 +448,7 @@ function loadByPairs(result, idx, pairs, buffer) {
  */
 export function buildLoadFunc(pairs) {
   const load = R.partial(loadByPairs, [{ value: {}, offset: 0 }, 0, pairs]);
-  return R.cond([
-    [isWithOffset, R.pipe(R.nthArg(0), load)],
-    [R.T, R.pipe(R.nthArg(0), load, R.prop('value'))],
-  ]);
+  return addWithOffsetArg(load);
 }
 
 export const buildTypeLoader = R.pipe(
@@ -602,3 +531,58 @@ export function promiseChainUntil(getPromiseFunc, conditionFunc, progressCb) {
   }
   return { promise, cancel };
 }
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export function shiftLeftNBit(x, n) {
+  /* eslint-disable */
+  return x << n;
+  /* eslint-enable */
+}
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export function shiftRightNBit(x, n) {
+  /* eslint-disable */
+  return x >> n;
+  /* eslint-enable */
+}
+
+/**
+ * Return first value from array buffer
+ * @param {ArrayBuffer} buffer
+ * @returns {Number}
+ */
+export const getFirstByte = R.pipe(
+  arrayBufferToUint8Array,
+  R.nth(0),
+);
+
+/**
+ * @param {Number} x
+ * @param {Number} n
+ * @return {Number}
+ */
+export const getNBit = R.pipe(
+  shiftRightNBit,
+  R.modulo(R.__, 2),
+);
+
+export function maskNumber(x, y) {
+  /* eslint-disable */
+  return x & y;
+  /* eslint-enable */
+}
+
+const binaryPipe = R.binary(R.pipe);
+
+export const applyAll = R.pipe(
+  R.ap,
+  R.partial(binaryPipe, [R.of]),
+);

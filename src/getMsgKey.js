@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import { sha256 } from './sha';
-import { forgeBufferToArrayBuffer, uint8ToArrayBuffer } from './utils';
+import { arrayBufferToUint8Array, uint8ToArrayBuffer } from './utils';
 
 
 /**
@@ -14,8 +14,7 @@ const getMsgKey = R.pipe(
   R.unapply(R.flatten),
   uint8ToArrayBuffer,
   sha256,
-  forgeBufferToArrayBuffer,
-  (x) => new Uint8Array(x),
+  arrayBufferToUint8Array,
   R.slice(8, 24),
 );
 

@@ -3,8 +3,6 @@ import {
   isPrime,
   findPrimeFactors,
   primeGenerator,
-  generateKeyDataFromNonce,
-  hexToUint8Array,
   arrayBufferToHex,
   mergeArrayBuffer,
   hexToArrayBuffer,
@@ -87,24 +85,6 @@ describe('findPrimeFactors', () => {
     const [p, q] = findPrimeFactors(BigInt('0x256edefca64f89db'));
     expect(p === BigInt('0x5556e63f')).toBeTruthy();
     expect(q === BigInt('0x704a8d65')).toBeTruthy();
-  });
-});
-
-describe('generateKeyDataFromNonce()', () => {
-  test('telegram example', () => {
-    const serverNonce = hexToUint8Array('A5CF4D33F4A11EA877BA4AA573907330');
-    const newNonce = hexToUint8Array(
-      '311C85DB234AA2640AFC4A76A735CF5B1F0FD68BD17FA181E1229AD867CC024D',
-    );
-
-    const { key, iv } = generateKeyDataFromNonce(serverNonce, newNonce);
-
-    expect(key.toHex().toUpperCase()).toEqual(
-      'F011280887C7BB01DF0FC4E17830E0B91FBB8BE4B2267CB985AE25F33B527253',
-    );
-    expect(iv.toHex().toUpperCase()).toEqual(
-      '3212D579EE35452ED23E0D0C92841AA7D31B2E9BDEF2151E80D15860311C85DB',
-    );
   });
 });
 

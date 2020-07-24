@@ -1,25 +1,8 @@
-import * as R from 'ramda';
-
-import {
-  arrayBufferToForgeBuffer,
-  forgeBufferToArrayBuffer,
-  uint8toForgeBuffer,
-} from './utils';
 import parseExternalHeader from './parseExternalHeader';
 import generateKeyIv from './generateKeyIv';
 import { decryptIge as decryptAesIge } from './aes';
 import parseSessionInfo from './parseSessionInfo';
-
-const decrypt = R.pipe(
-  R.unapply(R.of),
-  R.ap([
-    R.pipe(R.nth(0), arrayBufferToForgeBuffer),
-    R.pipe(R.nth(1), uint8toForgeBuffer),
-    R.pipe(R.nth(2), uint8toForgeBuffer),
-  ]),
-  R.apply(decryptAesIge),
-  forgeBufferToArrayBuffer,
-);
+import { uint8ToArrayBuffer } from './utils';
 
 /**
  * Decrypts servers message
@@ -36,7 +19,11 @@ export default function decryptMessage(authKey, authKeyId, salt, sessionId, serv
   } = parseExternalHeader(serverMessage);
 
   const { key, iv } = generateKeyIv(authKey, serverMessageKey, true);
-  const messageWithHeaders = decrypt(encryptedMessage, key, iv);
+  const messageWithHeaders = decryptAesIge(
+    encryptedMessage,
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
   const {
     seqNo,
     messageId,

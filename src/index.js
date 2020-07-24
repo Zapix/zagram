@@ -10,7 +10,7 @@ import{
 import { isMessageOfType } from './tl/utils';
 import { RPC_ERROR_TYPE, PROTOCOL_ID } from './constants';
 import { getInitialDHExchangeMessage } from './createAuthorizationKey';
-export { isMessageOfType } from './tl/utils';
+export { isMessageOfType, isMessageOf } from './tl/utils';
 export { isObjectOf, isMethodOf } from './tl/schema/utils';
 export { dumpString, loadString} from './tl/string';
 export { default as Connection } from './Connection';
@@ -24,6 +24,8 @@ export {
   uint8ToBigInt,
   uint8ToArrayBuffer,
   arrayBufferToUint8Array,
+  arrayBufferToHex,
+  hexToArrayBuffer,
   bigIntToUint8Array,
   powModulo,
 } from './utils'

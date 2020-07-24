@@ -1,18 +1,12 @@
 import * as R from 'ramda';
 
-import { forgeBufferToArrayBuffer, uint8toForgeBuffer } from './utils';
 import addSessionInfo from './addSessionInfo';
 import getMsgKey from './getMsgKey';
 import generateKeyIv from './generateKeyIv';
 import { encryptIge as encryptAesIge } from './aes';
 import padBytes from './padBytes';
 import addExternalHeader from './addExternalHeader';
-
-const encrypt = R.pipe(
-  R.unapply(R.map(uint8toForgeBuffer)),
-  R.apply(encryptAesIge),
-  forgeBufferToArrayBuffer,
-);
+import { uint8ToArrayBuffer } from './utils';
 
 export default function encryptMessage(
   authKey,
@@ -30,7 +24,11 @@ export default function encryptMessage(
   const messageKey = getMsgKey(R.slice(88, 88 + 32, authKey), padded);
 
   const { key, iv } = generateKeyIv(authKey, messageKey);
-  const encryptedBuffer = encrypt(padded, key, iv);
+  const encryptedBuffer = encryptAesIge(
+    uint8ToArrayBuffer(padded),
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
 
   return addExternalHeader(authKeyId, messageKey, encryptedBuffer);
 }

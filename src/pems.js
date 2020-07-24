@@ -1,8 +1,15 @@
 import * as R from 'ramda';
-import forge from 'node-forge';
 
-import { bigIntToUint8Array } from './utils';
+import {
+  applyAll,
+  arrayBufferToUint8Array,
+  bigIntToUint8Array,
+  toArray, uint8ArrayToHex,
+  uint8ToArrayBuffer,
+} from './utils';
 import { toTlString } from './tl/tlSerialization';
+import readPublicKey from './readPublicKey';
+import { sha1 } from './sha';
 
 const pems = [`
 -----BEGIN RSA PUBLIC KEY-----
@@ -55,58 +62,43 @@ AQIDAQAB
 -----END PUBLIC KEY-----
 `];
 
-const publicKeys = pems.map((x) => forge.pki.publicKeyFromPem(x));
 
-
-const forgeBigIntegerToBigInt = R.pipe(
-  R.toString,
-  BigInt,
-);
-
-const forgeBigIntegerToUint8Array = R.pipe(
-  forgeBigIntegerToBigInt,
+const bigIntToTLString = R.pipe(
   bigIntToUint8Array,
-);
-
-const forgeBigIntegerToTlString = R.pipe(
-  forgeBigIntegerToUint8Array,
   toTlString,
 );
 
 /**
- * Takes publicKey and returns telegram fingerprint for them.
- * @param {publicKeys} publickKey - node-force public-key implementation
+ * @param {{n: BigInt, e: BigInt}} - rsa public key,
+ * @returns {string} - hex representation of fingerprint
  */
-function buildFingerPrint(publicKey) {
-  const md = forge.md.sha1.create();
-  const buffer = forge.util.createBuffer();
-
-  const nArray = forgeBigIntegerToTlString(publicKey.n);
-  const eArray = forgeBigIntegerToTlString(publicKey.e);
-  const neArray = R.concat(nArray, eArray);
-  for (let i = 0; i < neArray.length; i += 1) {
-    buffer.putByte(neArray[i]);
-  }
-
-  md.update(buffer.data);
-  const hex = md.digest().toHex();
-  return R.pipe(
-    R.splitEvery(2),
-    R.reverse(),
-    R.take(8),
-    R.join(''),
-  )(hex);
-}
+const buildFingerPrint = R.pipe(
+  applyAll([
+    R.pipe(R.prop('n'), bigIntToTLString),
+    R.pipe(R.prop('e'), bigIntToTLString),
+  ]),
+  R.flatten,
+  uint8ToArrayBuffer,
+  sha1,
+  arrayBufferToUint8Array,
+  toArray,
+  R.reverse,
+  R.take(8),
+  uint8ArrayToHex,
+);
 
 const publicKeyMap = R.pipe(
   R.map(
     R.pipe(
-      R.of,
-      R.ap([buildFingerPrint, R.identity]),
+      readPublicKey,
+      applyAll([
+        buildFingerPrint,
+        R.identity,
+      ]),
     ),
   ),
   R.fromPairs,
-)(publicKeys);
+)(pems);
 
 /**
  * Gets finger print and return publicKey that should be used;

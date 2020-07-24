@@ -1,5 +1,4 @@
 import * as R from 'ramda';
-import forge from 'node-forge';
 
 import {
   TYPE_KEY,
@@ -23,20 +22,24 @@ import {
   bigIntToUint8Array,
   findPrimeFactors,
   uint8ToBigInt,
-  arrayBufferToForgeBuffer,
-  forgeBufferToArrayBuffer,
   copyBytes,
   getNRandomBytes,
-  generateKeyDataFromNonce,
   powModulo,
-  hexToUint8Array,
   uint8ToArrayBuffer,
   uint8ArrayToHex,
   arrayBufferToUint8Array,
+  mergeAllArrayBuffers,
+  sliceBuffer,
+  arrayBufferToHex,
 } from './utils';
 import { getPublicKey } from './pems';
-import { decryptIge as decryptAesIge, encryptIge as encryptAesIge } from './aes';
+import {
+  decryptIge as decryptAesIge,
+  encryptIge as encryptAesIge,
+  generateKeyDataFromNonce,
+} from './aes';
 import { sha1 } from './sha';
+import rsaEncrypt from './rsa';
 import { dumpPQInnerData } from './tl/p_q_inner_data';
 import { isMessageOf } from './tl/utils';
 import { loadServerDHInnerData } from './tl/server_DH_inner_data';
@@ -134,28 +137,19 @@ export function buildPQInnerData(responsePQ) {
 
 export function encryptPQInner(responsePQ, pqInnerData) {
   const pqInnerBuffer = dumpPQInnerData(pqInnerData);
-  const pQInnerForgeBuffer = arrayBufferToForgeBuffer(pqInnerBuffer);
-  const hash = sha1(pQInnerForgeBuffer);
-  const randomBytesCount = 255 - (hash.data.length + pQInnerForgeBuffer.data.length);
+  const hash = sha1(pqInnerBuffer);
+  const randomBytesCount = 255 - (hash.byteLength + pqInnerBuffer.byteLength);
   const randomBytes = R.pipe(
     R.curry(getNRandomBytes),
-    (x) => R.apply(String.fromCharCode, x),
-    (x) => forge.util.createBuffer(x),
+    uint8ToArrayBuffer,
   )(randomBytesCount);
-
-  const encryptMessage = R.pipe(
-    R.map(R.prop('data')),
-    R.join(''),
-  )([hash, pQInnerForgeBuffer, randomBytes]);
 
   const fingerprint = responsePQ.fingerprints[0];
   const pubKey = getPublicKey(fingerprint);
 
-  const encryptedData = pubKey.encrypt(encryptMessage, 'RAW');
-  const encryptedDataBuffer = forge.util.createBuffer(encryptedData);
-  const encryptedArrayBuffer = forgeBufferToArrayBuffer(encryptedDataBuffer);
-
-  return arrayBufferToUint8Array(encryptedArrayBuffer);
+  const originBuffer = mergeAllArrayBuffers([hash, pqInnerBuffer, randomBytes]);
+  const encryptedBuffer = rsaEncrypt(originBuffer, pubKey);
+  return arrayBufferToUint8Array(encryptedBuffer);
 }
 
 
@@ -190,14 +184,12 @@ export function decryptDHParams(encryptedDHParams, pqInnerData) {
     bigIntToUint8Array(pqInnerData.new_nonce, true),
   );
 
-  const encryptedAnswerBuffer = forge.util.createBuffer();
-  for (let i = 0; i < encryptedDHParams.encrypted_answer.length; i += 1) {
-    encryptedAnswerBuffer.putByte(encryptedDHParams.encrypted_answer[i]);
-  }
-
-  const answerForgeBuffer = decryptAesIge(encryptedAnswerBuffer, key, iv);
-  const answerBuffer = forgeBufferToArrayBuffer(answerForgeBuffer);
-  const answerWithoutHash = answerBuffer.slice(20);
+  const answerBuffer = decryptAesIge(
+    uint8ToArrayBuffer(encryptedDHParams.encrypted_answer),
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
+  const answerWithoutHash = sliceBuffer(answerBuffer, 20);
 
   return {
     key,
@@ -252,7 +244,7 @@ export function buildDHInnerMessage(encryptedDHParams, dhValues) {
 export function encryptInnerMessage(dhInnerMessage, key, iv) {
   const dhInnerMessageBuffer = dumpClientDHInnerData(dhInnerMessage);
   const innerHash = sha1(dhInnerMessageBuffer);
-  const innerHashBytes = hexToUint8Array(innerHash.toHex());
+  const innerHashBytes = arrayBufferToUint8Array(innerHash);
   const dataWithHashLength = innerHashBytes.length + dhInnerMessageBuffer.byteLength;
   const randomDataLength = (16 - (dataWithHashLength % 16)) % 16;
 
@@ -272,9 +264,12 @@ export function encryptInnerMessage(dhInnerMessage, key, iv) {
   const randomMessageBytes = new Uint8Array(dataWithHashBuffer, dataWithHashLength);
   copyBytes(randomBytes, randomMessageBytes);
 
-  const dataWithHashForgeBuffer = arrayBufferToForgeBuffer(dataWithHashBuffer);
-  const encryptedMessageForgeBuffer = encryptAesIge(dataWithHashForgeBuffer, key, iv);
-  return forgeBufferToArrayBuffer(encryptedMessageForgeBuffer);
+  const encryptedMessage = encryptAesIge(
+    dataWithHashBuffer,
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
+  return encryptedMessage;
 }
 
 export function buildSetClientDhParamsMessage(encodedMessage, dhParams) {
@@ -314,8 +309,7 @@ function buildAuthKeyHash(authKey) {
   copyBytes(authKey, authKeyBufferBytes);
   return R.pipe(
     sha1,
-    (x) => x.toHex(),
-    hexToUint8Array,
+    arrayBufferToUint8Array,
   )(authKeyBuffer);
 }
 
@@ -330,13 +324,19 @@ function verifyNewNonce(newNonce, authKeyAuxHash, verifyResponse) {
   ]);
 
   const buffer = uint8ToArrayBuffer(nonceNumberWithAuxHash);
-  const result = sha1(buffer);
+  const result = R.pipe(
+    sha1,
+    R.partialRight(sliceBuffer, [4]),
+    arrayBufferToHex,
+  )(buffer);
+
   const newNonceHash1Str = R.pipe(
     R.prop('new_nonce_hash1'),
     R.partialRight(bigIntToUint8Array, [true]),
     uint8ArrayToHex,
   )(verifyResponse);
-  if (result.toHex().slice(8) !== newNonceHash1Str) {
+
+  if (result !== newNonceHash1Str) {
     const message = 'Verify new nonce issue';
     console.error(message);
     throw new Error(message);
@@ -406,7 +406,6 @@ export default function createAuthorizationKey(sendRequest) {
         const authKeyAuxHash = buildAuthKeyAuxHash(authKeyHash);
 
         verifyNewNonce(pqInnerData.new_nonce, authKeyAuxHash, verifyResponse);
-
         return { authKey, authKeyId, serverSalt };
       }),
     new Promise((resolve, reject) => setTimeout(reject, 600 * 100))
