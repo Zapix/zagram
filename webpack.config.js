@@ -26,7 +26,6 @@ module.exports = {
       filename: isDevelopment ? '[name].css' : '[name].[hash].css',
       chunkFilename: isDevelopment ? '[id].css' : '[id].[hash].css'
     }),
-    new BundleAnalyzerPlugin(),
   ],
   devtool: 'source-map',
   devServer: {
