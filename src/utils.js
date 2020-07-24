@@ -1,6 +1,5 @@
 import * as R from 'ramda';
 import random from 'random-bigint';
-import forge from 'node-forge';
 
 export const toArray = (x) => Array.from(x);
 
@@ -305,34 +304,6 @@ export function bigIntToUint8Array(bigint, littleEndian) {
 }
 
 /**
- * Converts ByteBuffer to ArrayBuffer
- * @param {ByteBuffer} forgeBuffer
- * @returns {ArrayBuffer}
- */
-export function forgeBufferToArrayBuffer(forgeBuffer) {
-  const bufferHex = forgeBuffer.toHex();
-  const bufferArray = hexToUint8Array(bufferHex);
-
-  const buffer = new ArrayBuffer(bufferArray.length);
-  const uintArray = new Uint8Array(buffer);
-  for (let i = 0; i < uintArray.length; i += 1) uintArray[i] = bufferArray[i];
-  return buffer;
-}
-
-/**
- * Converts ArrayBuffer to node-forge ByteBuffer;
- * @param arrayBuffer
- * @returns {ByteBuffer}
- */
-export function arrayBufferToForgeBuffer(arrayBuffer) {
-  const forgeBuffer = forge.util.createBuffer();
-  const uintArray = new Uint8Array(arrayBuffer);
-  for (let i = 0; i < uintArray.length; i += 1) forgeBuffer.putByte(uintArray[i]);
-  return forgeBuffer;
-}
-
-
-/**
  * @returns {number}
  */
 export function getUnixTimestamp() {
@@ -364,11 +335,6 @@ export function copyBuffer(fromBuffer, toBuffer, offset = 0) {
   copyBytes(fromBufferBytes, toBufferBytes);
 }
 
-
-export const uint8toForgeBuffer = R.pipe(
-  uint8ToArrayBuffer,
-  arrayBufferToForgeBuffer,
-);
 
 export const dumpArrayBuffer = R.pipe(
   arrayBufferToUint8Array,

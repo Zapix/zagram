@@ -2,6 +2,7 @@ import parseExternalHeader from './parseExternalHeader';
 import generateKeyIv from './generateKeyIv';
 import { decryptIge as decryptAesIge } from './aes';
 import parseSessionInfo from './parseSessionInfo';
+import { uint8ToArrayBuffer } from './utils';
 
 /**
  * Decrypts servers message
@@ -18,7 +19,11 @@ export default function decryptMessage(authKey, authKeyId, salt, sessionId, serv
   } = parseExternalHeader(serverMessage);
 
   const { key, iv } = generateKeyIv(authKey, serverMessageKey, true);
-  const messageWithHeaders = decryptAesIge(encryptedMessage, key, iv);
+  const messageWithHeaders = decryptAesIge(
+    encryptedMessage,
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
   const {
     seqNo,
     messageId,

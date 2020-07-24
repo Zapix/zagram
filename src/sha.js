@@ -4,7 +4,6 @@ import sha256_ from '@cryptography/sha256';
 
 import {
   arrayBufferToUint8Array,
-  forgeBufferToArrayBuffer,
   hexToArrayBuffer,
 } from './utils';
 
@@ -12,7 +11,6 @@ const prepareData = R.pipe(
   R.cond([
     [R.is(ArrayBuffer), arrayBufferToUint8Array],
     [R.is(Uint8Array), R.identity],
-    [R.T, R.pipe(forgeBufferToArrayBuffer, arrayBufferToUint8Array)],
   ]),
   (x) => Array.from(x),
   R.map((buf) => String.fromCharCode(buf)),

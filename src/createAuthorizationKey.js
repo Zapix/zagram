@@ -1,5 +1,4 @@
 import * as R from 'ramda';
-import forge from 'node-forge';
 
 import {
   TYPE_KEY,
@@ -23,8 +22,6 @@ import {
   bigIntToUint8Array,
   findPrimeFactors,
   uint8ToBigInt,
-  arrayBufferToForgeBuffer,
-  forgeBufferToArrayBuffer,
   copyBytes,
   getNRandomBytes,
   powModulo,
@@ -187,14 +184,12 @@ export function decryptDHParams(encryptedDHParams, pqInnerData) {
     bigIntToUint8Array(pqInnerData.new_nonce, true),
   );
 
-  const encryptedAnswerBuffer = forge.util.createBuffer();
-  for (let i = 0; i < encryptedDHParams.encrypted_answer.length; i += 1) {
-    encryptedAnswerBuffer.putByte(encryptedDHParams.encrypted_answer[i]);
-  }
-
-  const answerForgeBuffer = decryptAesIge(encryptedAnswerBuffer, key, iv);
-  const answerBuffer = forgeBufferToArrayBuffer(answerForgeBuffer);
-  const answerWithoutHash = answerBuffer.slice(20);
+  const answerBuffer = decryptAesIge(
+    uint8ToArrayBuffer(encryptedDHParams.encrypted_answer),
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
+  const answerWithoutHash = sliceBuffer(answerBuffer, 20);
 
   return {
     key,
@@ -269,9 +264,12 @@ export function encryptInnerMessage(dhInnerMessage, key, iv) {
   const randomMessageBytes = new Uint8Array(dataWithHashBuffer, dataWithHashLength);
   copyBytes(randomBytes, randomMessageBytes);
 
-  const dataWithHashForgeBuffer = arrayBufferToForgeBuffer(dataWithHashBuffer);
-  const encryptedMessageForgeBuffer = encryptAesIge(dataWithHashForgeBuffer, key, iv);
-  return forgeBufferToArrayBuffer(encryptedMessageForgeBuffer);
+  const encryptedMessage = encryptAesIge(
+    dataWithHashBuffer,
+    uint8ToArrayBuffer(key),
+    uint8ToArrayBuffer(iv),
+  );
+  return encryptedMessage;
 }
 
 export function buildSetClientDhParamsMessage(encodedMessage, dhParams) {
@@ -408,7 +406,6 @@ export default function createAuthorizationKey(sendRequest) {
         const authKeyAuxHash = buildAuthKeyAuxHash(authKeyHash);
 
         verifyNewNonce(pqInnerData.new_nonce, authKeyAuxHash, verifyResponse);
-
         return { authKey, authKeyId, serverSalt };
       }),
     new Promise((resolve, reject) => setTimeout(reject, 600 * 100))
