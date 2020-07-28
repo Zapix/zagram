@@ -24,6 +24,8 @@ import MTProto, {
   STATUS_CHANGED_EVENT,
   AUTH_KEY_CREATED,
   AUTH_KEY_CREATE_FAILED,
+  AUTH_KEY_CLOSED,
+  AUTH_KEY_ERROR,
   UPLOAD_PART_SIZE,
   DOWNLOAD_PART_SIZE,
 } from './MTProto';
@@ -85,6 +87,35 @@ describe('MTProto', () => {
     });
 
     connection.init();
+  });
+
+  it('connection error', (done) => {
+    const connection = new MTProto(url, schema);
+    createAuthorizationKey.mockImplementationOnce(() => new Promise(
+      (resolve, reject) => setTimeout(reject, 10000),
+    ));
+    connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
+      console.log('Check status event changed');
+      expect(e.status).toEqual(AUTH_KEY_ERROR);
+      expect(e.error.message).toEqual('some error');
+      done();
+    });
+    connection.init();
+    connection.ws.error();
+  });
+
+  it('connection close', (done) => {
+    const connection = new MTProto(url, schema);
+    createAuthorizationKey.mockImplementationOnce(() => new Promise(
+      (resolve, reject) => setTimeout(reject, 10000),
+    ));
+    connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
+      console.log('Check status event changed');
+      expect(e.status).toEqual(AUTH_KEY_CLOSED);
+      done();
+    });
+    connection.init();
+    connection.ws.close();
   });
 
   describe('request', () => {

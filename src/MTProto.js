@@ -35,6 +35,7 @@ export const INIT = 'INIT';
 export const AUTH_KEY_CREATED = 'AUTH_KEY_CREATED';
 export const AUTH_KEY_CREATE_FAILED = 'AUTH_KEY_CREATE_FAILED';
 export const AUTH_KEY_ERROR = 'AUTH_KEY_ERROR';
+export const AUTH_KEY_CLOSED = 'AUTH_KEY_CLOSED';
 
 export const STATUS_CHANGED_EVENT = 'statusChanged';
 export const UPDATE_EVENT = 'telegramUpdate';
@@ -94,6 +95,14 @@ export default class MTProto extends EventTarget {
   init() {
     this.ws.addEventListener('wsOpen', () => {
       this.buildAuthKey();
+    });
+    this.ws.addEventListener('wsClose', () => {
+      this.status = AUTH_KEY_CLOSED;
+      this.fireStatusChange();
+    });
+    this.ws.addEventListener('wsError', (e) => {
+      this.status = AUTH_KEY_ERROR;
+      this.fireStatusChange(e.error);
     });
     this.ws.init();
   }
