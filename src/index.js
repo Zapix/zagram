@@ -1,4 +1,6 @@
 /* eslint-disable */
+import { partial } from 'ramda';
+
 import { dumps, loads } from './tl';
 import { default as schema_ } from './tl/schema/layer108.json';
 import{
