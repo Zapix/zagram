@@ -5,9 +5,10 @@ import getObfuscation from './obfuscation';
  * Base class to work with telegram websocket
  */
 export default class Connection extends EventTarget {
-  constructor(url) {
+  constructor(url, protocols) {
     super();
     this.url = url;
+    this.protocols = protocols;
     this.tag = tag;
     this.ws = undefined;
     this.encode = encode;
@@ -19,7 +20,7 @@ export default class Connection extends EventTarget {
   }
 
   init() {
-    this.ws = new WebSocket(this.url, ['binary']);
+    this.ws = new WebSocket(this.url, this.protocols);
     this.ws.binaryType = 'arraybuffer';
     this.ws.addEventListener('open', (e) => {
       const event = new Event('wsOpen');
