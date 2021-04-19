@@ -29,6 +29,7 @@ import {
 } from './constants';
 import { dumpBigInt } from './tl/bigInt';
 import Connection from './Connection';
+import getPublicKeyFactory from './getPublicKeyFactory';
 import { getFileName, getFileType } from './downloadHelpers';
 
 export const INIT = 'INIT';
@@ -67,14 +68,16 @@ export default class MTProto extends EventTarget {
    * Creates authorizationKey for mtproto on object init
    * @param {string} serverUrl - url of data center that will be used
    * @param {{constructors: *, methods: *}} schema - should be used for sending/receiving
+   * @param {Array<string>} pems - list of public key pems
    * @param {{ authKey: Uint8Array, authKeyId: Uint8Array, serverSalt: Uint8Array}} [authData]
    * messages from protocol
    */
 
-  constructor(serverUrl, schema, authData) {
+  constructor(serverUrl, schema, pems, authData) {
     super();
     this.status = INIT;
     this.serverUrl = serverUrl;
+    this.pems = pems;
     this.schema = schema;
     this.ws = new Connection(serverUrl); // init ws connection;
 
@@ -126,6 +129,7 @@ export default class MTProto extends EventTarget {
             R.partial(dumps, [this.schema]),
           ],
         ),
+        getPublicKeyFactory(this.pems),
       )
         .then((authData) => {
           this.authKey = getAuthKey(authData);

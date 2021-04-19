@@ -32,6 +32,7 @@ import MTProto, {
 import schema from './tl/schema/layer108';
 import { hexToArrayBuffer } from './utils';
 import { isObjectOf } from './tl/schema/utils';
+import pems from './pems';
 /* eslint-enable */
 
 describe('MTProto', () => {
@@ -43,7 +44,7 @@ describe('MTProto', () => {
       serverSalt: 'asdfasdf',
     });
 
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema, pems);
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATED);
       expect(connection.authKey).toEqual('key');
@@ -61,7 +62,7 @@ describe('MTProto', () => {
       authKeyId: [4, 5, 1, 2],
       serverSalt: [2, 2, 1],
     };
-    const connection = new MTProto(url, schema, authData);
+    const connection = new MTProto(url, schema, pems, authData);
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATED);
 
@@ -80,7 +81,7 @@ describe('MTProto', () => {
   it('auth key create failed', (done) => {
     createAuthorizationKey.mockRejectedValueOnce('some reason');
 
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema, pems);
     connection.addEventListener(STATUS_CHANGED_EVENT, (e) => {
       expect(e.status).toEqual(AUTH_KEY_CREATE_FAILED);
       done();
@@ -90,7 +91,7 @@ describe('MTProto', () => {
   });
 
   it('connection error', (done) => {
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema, pems);
     createAuthorizationKey.mockImplementationOnce(() => new Promise(
       (resolve, reject) => setTimeout(reject, 10000),
     ));
@@ -105,7 +106,7 @@ describe('MTProto', () => {
   });
 
   it('connection close', (done) => {
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema, pems);
     createAuthorizationKey.mockImplementationOnce(() => new Promise(
       (resolve, reject) => setTimeout(reject, 10000),
     ));
@@ -120,7 +121,7 @@ describe('MTProto', () => {
 
   describe('request', () => {
     it('wrong connection status', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       return connection.request({ a: 1 }).catch((reason) => {
         expect(reason).toEqual(new Error('Auth key has not been created'));
       });
@@ -134,7 +135,7 @@ describe('MTProto', () => {
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         connection.request({}).catch((reason) => {
           expect(reason).toEqual(new Error('empty array buffer of message'));
@@ -162,7 +163,7 @@ describe('MTProto', () => {
       sendRequest.mockReturnValue(curried);
 
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         connection.request({
           [TYPE_KEY]: PONG_TYPE,
@@ -191,7 +192,7 @@ describe('MTProto', () => {
       curried.mockResolvedValue(new ArrayBuffer());
       sendRequest.mockReturnValue(curried);
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const method = R.partial(methodFromSchema, [schema]);
         const construct = R.partial(constructorFromSchema, [schema]);
@@ -234,7 +235,7 @@ describe('MTProto', () => {
       curried.mockResolvedValue(response);
       sendRequest.mockReturnValue(curried);
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.acknowledgements = [BigInt(1), BigInt(2)];
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const method = R.partial(methodFromSchema, [schema]);
@@ -264,7 +265,7 @@ describe('MTProto', () => {
 
   describe('handleResponse', () => {
     it('pong', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       const resolve = jest.fn();
       const reject = jest.fn();
 
@@ -304,7 +305,7 @@ describe('MTProto', () => {
     });
 
     it('rpc_result success', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
 
       const resolve = jest.fn();
       const reject = jest.fn();
@@ -338,7 +339,7 @@ describe('MTProto', () => {
     });
 
     it('rpc_result error', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
 
       const resolve = jest.fn();
       const reject = jest.fn();
@@ -370,7 +371,7 @@ describe('MTProto', () => {
     });
 
     it('handle message container messages one by one', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
 
       const resolvePing = jest.fn();
       const rejectPing = jest.fn();
@@ -442,7 +443,7 @@ describe('MTProto', () => {
         { country: 'russia', this_dc: 2, nearest_dc: 2 },
       );
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       const resolve = jest.fn();
       const reject = jest.fn();
       const message = methodFromSchema(schema, 'help.getNearestDc');
@@ -467,7 +468,7 @@ describe('MTProto', () => {
     });
 
     it('handle msgs_ack', () => {
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.handleResponse({
         msgId: BigInt(123123),
         seqNo: 13,
@@ -499,7 +500,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = () => Promise.resolve('success');
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const { promise } = connection.upload(file, progressCb);
@@ -532,7 +533,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = () => Promise.resolve('success');
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         const { promise } = connection.upload(file, progressCb);
@@ -565,7 +566,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = () => new Promise((resolve) => setTimeout(
         () => resolve('success'),
         100,
@@ -588,7 +589,7 @@ describe('MTProto', () => {
   it('fire updates that have been come from server', (done) => {
     const construct = R.partial(constructorFromSchema, [schema]);
 
-    const connection = new MTProto(url, schema);
+    const connection = new MTProto(url, schema, pems);
     const message = {
       body: construct(
         'updateShort',
@@ -660,7 +661,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = () => Promise.resolve('success');
       connection.addEventListener(STATUS_CHANGED_EVENT, () => {
         expect(() => connection.download({})).toThrowError();
@@ -676,7 +677,7 @@ describe('MTProto', () => {
         authKeyId: [206, 49, 208, 130, 207, 59, 41, 19],
         serverSalt: new Uint8Array([199, 141, 234, 177, 54, 191, 107, 190]),
       });
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = jest.fn()
         .mockResolvedValueOnce(
           construct(
@@ -738,7 +739,7 @@ describe('MTProto', () => {
         },
       );
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = jest.fn()
         .mockResolvedValue(resolvedValue);
 
@@ -787,7 +788,7 @@ describe('MTProto', () => {
         },
       );
 
-      const connection = new MTProto(url, schema);
+      const connection = new MTProto(url, schema, pems);
       connection.request = () => new Promise(
         (resolve) => setTimeout(() => resolve(resolvedValue), 100),
       );
