@@ -32,7 +32,6 @@ import {
   sliceBuffer,
   arrayBufferToHex,
 } from './utils';
-import { getPublicKey } from './pems';
 import {
   decryptIge as decryptAesIge,
   encryptIge as encryptAesIge,
@@ -135,7 +134,12 @@ export function buildPQInnerData(responsePQ) {
   return data;
 }
 
-export function encryptPQInner(responsePQ, pqInnerData) {
+/**
+ * @param responsePQ - response pq data from server
+ * @param pqInnerData - pq inner data that should be encrypted
+ * @param getPublicKey - function that returns public key by fingerpint
+ */
+export function encryptPQInner(responsePQ, pqInnerData, getPublicKey) {
   const pqInnerBuffer = dumpPQInnerData(pqInnerData);
   const hash = sha1(pqInnerBuffer);
   const randomBytesCount = 255 - (hash.byteLength + pqInnerBuffer.byteLength);
@@ -355,7 +359,7 @@ function buildSalt({ server_nonce: serverNonce, new_nonce: newNonce }) {
   return salt;
 }
 
-export default function createAuthorizationKey(sendRequest) {
+export default function createAuthorizationKey(sendRequest, getPublicKey) {
   const initDHMessage = getInitialDHExchangeMessage();
 
   return Promise.race([
@@ -366,7 +370,7 @@ export default function createAuthorizationKey(sendRequest) {
         }
 
         const pqInnerData = buildPQInnerData(responsePQ);
-        const encryptedData = encryptPQInner(responsePQ, pqInnerData);
+        const encryptedData = encryptPQInner(responsePQ, pqInnerData, getPublicKey);
         const exchangeMessage = buildDHExchangeMessage(responsePQ, pqInnerData, encryptedData);
 
         return Promise.all([

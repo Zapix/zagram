@@ -1,16 +1,3 @@
-import * as R from 'ramda';
-
-import {
-  applyAll,
-  arrayBufferToUint8Array,
-  bigIntToUint8Array,
-  toArray, uint8ArrayToHex,
-  uint8ToArrayBuffer,
-} from './utils';
-import { toTlString } from './tl/tlSerialization';
-import readPublicKey from './readPublicKey';
-import { sha1 } from './sha';
-
 const pems = [`
 -----BEGIN RSA PUBLIC KEY-----
 MIIBCgKCAQEAwVACPi9w23mF3tBkdZz+zwrzKOaaQdr01vAbU4E1pvkfj4sqDsm6
@@ -61,53 +48,5 @@ m+ZH1sadZspQCEPPrtbkQBlvHb4OLiIWPGHKSMeRFvp3IWcmdJqXahxLCUS1Eh6M
 AQIDAQAB
 -----END PUBLIC KEY-----
 `];
-
-
-const bigIntToTLString = R.pipe(
-  bigIntToUint8Array,
-  toTlString,
-);
-
-/**
- * @param {{n: BigInt, e: BigInt}} - rsa public key,
- * @returns {string} - hex representation of fingerprint
- */
-const buildFingerPrint = R.pipe(
-  applyAll([
-    R.pipe(R.prop('n'), bigIntToTLString),
-    R.pipe(R.prop('e'), bigIntToTLString),
-  ]),
-  R.flatten,
-  uint8ToArrayBuffer,
-  sha1,
-  arrayBufferToUint8Array,
-  toArray,
-  R.reverse,
-  R.take(8),
-  uint8ArrayToHex,
-);
-
-const publicKeyMap = R.pipe(
-  R.map(
-    R.pipe(
-      readPublicKey,
-      applyAll([
-        buildFingerPrint,
-        R.identity,
-      ]),
-    ),
-  ),
-  R.fromPairs,
-)(pems);
-
-/**
- * Gets finger print and return publicKey that should be used;
- * @param {BigInt} fingerprint
- * @returns - publicKey object;
- */
-export const getPublicKey = R.pipe(
-  (x) => x.toString(16),
-  R.prop(R.__, publicKeyMap),
-);
 
 export default pems;

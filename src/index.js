@@ -29,6 +29,7 @@ export {
   bigIntToUint8Array,
   powModulo,
 } from './utils'
+export { default as pems } from './pems';
 
 export { TYPE_KEY, CONSTRUCTOR_KEY, METHOD_KEY, RPC_ERROR_TYPE } from './constants';
 export { default as MTProto } from './MTProto';
