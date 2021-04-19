@@ -66,20 +66,27 @@ const getDownloadLimitOffset = R.pipe(
 export default class MTProto extends EventTarget {
   /**
    * Creates authorizationKey for mtproto on object init
-   * @param {string} serverUrl - url of data center that will be used
+   * @param {string|{url: string, protocols: Array<string>}} serverUrlParams - url of data center
+   * that will be used
    * @param {{constructors: *, methods: *}} schema - should be used for sending/receiving
    * @param {Array<string>} pems - list of public key pems
    * @param {{ authKey: Uint8Array, authKeyId: Uint8Array, serverSalt: Uint8Array}} [authData]
    * messages from protocol
    */
 
-  constructor(serverUrl, schema, pems, authData) {
+  constructor(serverUrlParams, schema, pems, authData) {
     super();
+    if (R.is(Object, serverUrlParams)) {
+      this.serverUrl = serverUrlParams.url;
+      this.serverProtocols = serverUrlParams.protocols;
+    } else {
+      this.serverUrl = serverUrlParams;
+      this.serverProtocols = undefined;
+    }
     this.status = INIT;
-    this.serverUrl = serverUrl;
     this.pems = pems;
     this.schema = schema;
-    this.ws = new Connection(serverUrl); // init ws connection;
+    this.ws = new Connection(this.serverUrl, this.serverProtocols); // init ws connection;
 
     this.authKey = getAuthKey(authData);
     this.authKeyId = getAuthKeyId(authData);
