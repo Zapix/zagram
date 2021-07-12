@@ -1,7 +1,7 @@
 {
-  "name": "telegram-contest",
+  "name": "zagram",
   "version": "0.0.1",
-  "description": "Telegram contest application ",
+  "description": "mtproto client library",
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "start": "NODE_ENV=development webpack",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Zapix/telegram-contest.git"
+    "url": "git+https://github.com/Zapix/zagram.git"
   },
   "keywords": [
     "Telegram",
@@ -24,9 +24,13 @@
   "author": "Aleksandr Aibulatov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Zapix/telegram-contest/issues"
+    "url": "https://github.com/Zapix/zagram/issues"
   },
-  "homepage": "https://github.com/Zapix/telegram-contest#readme",
+  "homepage": "https://github.com/Zapix/zagram#readme",
+  "main": "./dist/zagram.js",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@babel/core": "^7.7.0",
     "@babel/preset-env": "^7.10.3",
