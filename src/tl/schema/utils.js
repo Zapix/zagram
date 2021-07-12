@@ -2,20 +2,14 @@ import * as R from 'ramda';
 import { getConstructor } from '../utils';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
-function memoize(func) {
+function memoizeSchema(func) {
   const memo = {};
-  /* eslint-disable */
-  const slice = Array.prototype.slice;
-  /* eslint-enable */
-
-  return function wrapper(...funcargs) {
-    const args = slice.call(funcargs);
-
-    if (args in memo) {
-      return memo[args];
+  return function wrapper(schema) {
+    const schemaJson = JSON.stringify(schema);
+    if (!(schemaJson in memo)) {
+      memo[schemaJson] = func(schema);
     }
-    memo[args] = func.apply(this, args);
-    return memo[args];
+    return memo[schemaJson];
   };
 }
 
@@ -47,7 +41,7 @@ const updateSchemaWithUintId = R.over(R.lensProp('id'), parseId);
  * builds schema map
  * @param {Array<{id: Number, [method]}>}
  */
-const buildMap = memoize(R.pipe(
+const buildMap = R.pipe(
   R.map(
     R.pipe(
       R.of,
@@ -55,13 +49,13 @@ const buildMap = memoize(R.pipe(
     ),
   ),
   R.fromPairs,
-));
+);
 
 /**
  * Takes schema and builds map that allows search constructors by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildConstructorsMap = memoize(R.pipe(
+const buildConstructorsMap = memoizeSchema(R.pipe(
   R.prop('constructors'),
   buildMap,
 ));
@@ -70,7 +64,7 @@ const buildConstructorsMap = memoize(R.pipe(
  * Takes schema and builds map that allows search methods by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildMethodsMap = memoize(R.pipe(
+const buildMethodsMap = memoizeSchema(R.pipe(
   R.prop('methods'),
   buildMap,
 ));
@@ -79,7 +73,7 @@ const buildMethodsMap = memoize(R.pipe(
  * Takes global schema and builds map that allows search item by id
  * @param {{constructors: *, method: *}} schema - schema for parsing
  */
-const buildSchemaIdMap = memoize(R.pipe(
+const buildSchemaIdMap = memoizeSchema(R.pipe(
   R.of,
   R.ap([buildMethodsMap, buildConstructorsMap]),
   R.mergeAll,

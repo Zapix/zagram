@@ -9,6 +9,7 @@ import {
 } from './utils';
 
 import schema from './layer108.json';
+import echoSchema from './echo.json';
 import { hexToArrayBuffer } from '../../utils';
 
 describe('utils', () => {
@@ -107,6 +108,24 @@ describe('utils', () => {
             },
           ],
           type: 'auth.SentCode',
+        });
+      });
+
+      test('echo schema parser', () => {
+        expect(getParseSchemaById(echoSchema, 0x0d6a003e)).toEqual({
+          id: 225050686,
+          predicate: 'reply',
+          params: [
+            {
+              name: 'rand_id',
+              type: 'int',
+            },
+            {
+              name: 'content',
+              type: 'string',
+            },
+          ],
+          type: 'Reply',
         });
       });
 
