@@ -15,7 +15,6 @@ import {
   promiseChain, promiseChainUntil,
   sliceBuffer, uint8ToArrayBuffer,
   uint8ToBigInt,
-  arrayBufferToHex,
 } from './utils';
 import { isMessageOfType, isMessageOf } from './tl/utils';
 import {
@@ -297,15 +296,7 @@ export default class MTProto extends EventTarget {
       );
 
       const sendEncryptedRequest = R.pipe(
-        x => {
-          console.log(x);
-          return x;
-        },
         R.partial(dumps, [this.schema]),
-        x => {
-          console.log(arrayBufferToHex(x));
-          return x;
-        },
         encrypt,
         (x) => this.ws.send(x),
       );
@@ -321,7 +312,6 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
-    console.log('handle message:', message);
     if (isMessageOfType(MESSAGE_CONTAINER_CONSTRUCTOR, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
