@@ -1,0 +1,32 @@
+{
+  "constructors": [
+    {
+      "id": 225050686,
+      "predicate": "reply",
+      "type": "Reply",
+      "params": [
+        {
+          "name": "rand_id",
+          "type": "int"
+        },
+        {
+          "name": "content",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "id": 4214569738,
+      "method": "echo",
+      "type": "Reply",
+      "params": [
+        {
+          "name": "content",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
