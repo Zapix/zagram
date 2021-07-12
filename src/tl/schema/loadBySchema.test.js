@@ -2,12 +2,13 @@ import * as R from 'ramda';
 import { hexToArrayBuffer } from '../../utils';
 
 import layer108 from './layer108.json';
+import echoSchema from './echo.json';
 
 import loadBySchema from './loadBySchema';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
-describe('loadBySchema', () => {
-  describe('user api layer 108', () => {
+describe('loadBySchema layer108', () => {
+  describe.skip('user api layer 108', () => {
     const load = R.partial(loadBySchema, [layer108]);
 
     describe('auth.sentCode', () => {
@@ -160,6 +161,36 @@ describe('loadBySchema', () => {
               [TYPE_KEY]: 'Config',
             },
           },
+        });
+      });
+    });
+  });
+
+  describe('mtproto echo server api layer', () => {
+    const load = R.partial(loadBySchema, [echoSchema]);
+
+    describe('reply', () => {
+      const hexStr = '3e006a0d430000000b68656c6c6f20776f726c64';
+      const buffer = hexToArrayBuffer(hexStr);
+
+      it('without offset', () => {
+        expect(load(buffer)).toEqual({
+          [TYPE_KEY]: 'Reply',
+          [CONSTRUCTOR_KEY]: 'reply',
+          content: 'hello world',
+          rand_id: 67,
+        });
+      });
+
+      it('with offset', () => {
+        expect(load(buffer, true)).toEqual({
+          value: {
+            [TYPE_KEY]: 'Reply',
+            [CONSTRUCTOR_KEY]: 'reply',
+            content: 'hello world',
+            rand_id: 67,
+          },
+          offset: 20,
         });
       });
     });
