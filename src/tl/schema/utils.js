@@ -91,10 +91,6 @@ export const getParseSchemaById = R.unapply(
   R.pipe(
     R.of,
     R.ap([R.nth(1), R.pipe(R.nth(0), buildSchemaIdMap)]),
-    (x) => {
-      console.log(x);
-      return x;
-    },
     R.apply(R.prop),
   ),
 );

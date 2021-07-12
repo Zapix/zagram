@@ -8,7 +8,7 @@ import loadBySchema from './loadBySchema';
 import { CONSTRUCTOR_KEY, METHOD_KEY, TYPE_KEY } from '../../constants';
 
 describe('loadBySchema layer108', () => {
-  describe.skip('user api layer 108', () => {
+  describe('user api layer 108', () => {
     const load = R.partial(loadBySchema, [layer108]);
 
     describe('auth.sentCode', () => {

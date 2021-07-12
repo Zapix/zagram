@@ -135,7 +135,7 @@ describe('utils', () => {
     });
   });
 
-  describe.skip('isFromSchemaFactory', () => {
+  describe('isFromSchemaFactory', () => {
     describe('layer schema', () => {
       const isLoadableBySchema = isFromSchemaFactory(schema);
       test('found constructor', () => {
@@ -150,7 +150,7 @@ describe('utils', () => {
     });
   });
 
-  describe.skip('getSchemaForMethod', () => {
+  describe('getSchemaForMethod', () => {
     it('layer schema', () => {
       expect(getSchemaForMethod(schema, 'auth.sendCode')).toEqual({
         id: 0xa677244f,
@@ -178,7 +178,7 @@ describe('utils', () => {
     });
   });
 
-  describe.skip('getSchemaForConstructor', () => {
+  describe('getSchemaForConstructor', () => {
     describe('layer schema', () => {
       expect(getSchemaForConstructor(schema, 'photos.photosSlice')).toEqual({
         id: 352657236,
@@ -218,7 +218,7 @@ describe('utils', () => {
     )).toEqual(14381);
   });
 
-  describe.skip('hasConditionalField', () => {
+  describe('hasConditionalField', () => {
     it('has', () => {
       expect(hasConditionalField({
         id: '1355435489',
