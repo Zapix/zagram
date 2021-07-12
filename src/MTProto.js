@@ -15,8 +15,9 @@ import {
   promiseChain, promiseChainUntil,
   sliceBuffer, uint8ToArrayBuffer,
   uint8ToBigInt,
+  arrayBufferToHex,
 } from './utils';
-import { isMessageOfType } from './tl/utils';
+import { isMessageOfType, isMessageOf } from './tl/utils';
 import {
   BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
   HTTP_WAIT_CONSTRUCTOR,
@@ -296,7 +297,15 @@ export default class MTProto extends EventTarget {
       );
 
       const sendEncryptedRequest = R.pipe(
+        x => {
+          console.log(x);
+          return x;
+        },
         R.partial(dumps, [this.schema]),
+        x => {
+          console.log(arrayBufferToHex(x));
+          return x;
+        },
         encrypt,
         (x) => this.ws.send(x),
       );
@@ -312,6 +321,7 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
+    console.log('handle message:', message);
     if (isMessageOfType(MESSAGE_CONTAINER_CONSTRUCTOR, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
@@ -323,7 +333,7 @@ export default class MTProto extends EventTarget {
       this.handlePong(message);
     } else if (isMessageOfType(NEW_SESSION_CREATED_CONSTRUCTOR, message.body)) {
       this.handleNewSessionCreated(message);
-    } else if (isMessageOfType(BAD_SERVER_SALT_CONSTRUCTOR, message.body)) {
+    } else if (isMessageOf(BAD_SERVER_SALT_CONSTRUCTOR, message.body)) {
       this.handleBadServerSalt(message);
     } else if (isMessageOfType(RPC_RESULT_TYPE, message.body)) {
       this.handleRpcResult(message);
