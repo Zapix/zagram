@@ -1,7 +1,7 @@
 # zagram
 
 
-Zagram is pure-js implementation. 
+Zagram is pure-js implementation of mtproto client library. 
 
 Node version to build: `v12.13.0`
 
@@ -138,15 +138,17 @@ Node version to build: `v12.13.0`
  
  ## Example
  
+ **Connect to telegram server:**
+ 
  ```js
 
-const { MTProto, schema, methodFromSchema } = zagram;
+const { MTProto, schema, pems, methodFromSchema } = zagram;
 
 const url = 'ws://149.154.167.40/apiws';
   const API_ID = 1005944;
   const API_HASH = 'dfbf8ed1e37d1cd1ad370e7431ed8a87';
 
-  const connection = new MTProto(url, schema);
+  const connection = new MTProto({url: url, protocols: ['binary']}, schema, pems);
 
 
   connection.addEventListener('statusChanged', (e) => {
@@ -177,4 +179,45 @@ const url = 'ws://149.154.167.40/apiws';
   });
 
   connection.init();
+```
+
+
+**Connect to mtpylon server**
+
+```js
+const { MTProto, methodFromSchema } = zagram;
+
+const WS_URL = 'ws://localhost:8081/ws';
+const PUB_KEYS_URL = 'http://localhost:8081/pub-keys';
+const SCHEMA_URL = 'http://localhost:8081/schema';
+
+
+function initConnection(schema, pems) {
+  return new Promise((resolve, reject) => {
+    const connection = new MTProto(WS_URL, schema, pems);
+
+    connection.addEventListener('statusChanged', (e) => {
+       if (e.status === 'AUTH_KEY_CREATED') {
+         resolve([connection, schema]);
+       } else {
+         reject(e.status);
+       }
+     });
+
+     connection.init();
+  });  
+ 
+}
+
+Promise
+  .all([
+    fetch(SCHEMA_URL).then(r => r.json()),
+    fetch(PUB_KEYS_URL).then(r => r.json()),
+  ])
+  .then(([schema, pems]) => initConnection(schema, pems))
+  .then(([connection, schema]) => {
+    const rpc = methodFromSchema(schema, 'echo', {'content': 'hello world'});
+    return connection.request(rpc);
+  })
+  .then(console.log);  
 ```
