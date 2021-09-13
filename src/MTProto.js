@@ -22,8 +22,8 @@ import {
   HTTP_WAIT_CONSTRUCTOR,
   MESSAGE_CONTAINER_CONSTRUCTOR, MESSAGE_CONTAINER_TYPE,
   MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
-  NEW_SESSION_CREATED_CONSTRUCTOR,
-  PONG_CONSTRUCTOR, RPC_ERROR_TYPE,
+  NEW_SESSION_CREATED_TYPE,
+  PONG_TYPE, RPC_ERROR_TYPE,
   RPC_RESULT_TYPE,
   TYPE_KEY,
 } from './constants';
@@ -312,16 +312,16 @@ export default class MTProto extends EventTarget {
   }
 
   handleResponse(message) {
-    if (isMessageOfType(MESSAGE_CONTAINER_CONSTRUCTOR, message.body)) {
+    if (isMessageOfType(MESSAGE_CONTAINER_TYPE, message.body)) {
       R.pipe(
         R.path(['body', 'messages']),
         R.map(this.handleResponse.bind(this)),
       )(message);
-    } else if (isMessageOfType(MSGS_ACK_CONSTRUCTOR, message.body)) {
+    } else if (isMessageOfType(MSGS_ACK_TYPE, message.body)) {
       this.handleMsgsAck(message);
-    } else if (isMessageOfType(PONG_CONSTRUCTOR, message.body)) {
+    } else if (isMessageOfType(PONG_TYPE, message.body)) {
       this.handlePong(message);
-    } else if (isMessageOfType(NEW_SESSION_CREATED_CONSTRUCTOR, message.body)) {
+    } else if (isMessageOfType(NEW_SESSION_CREATED_TYPE, message.body)) {
       this.handleNewSessionCreated(message);
     } else if (isMessageOf(BAD_SERVER_SALT_CONSTRUCTOR, message.body)) {
       this.handleBadServerSalt(message);

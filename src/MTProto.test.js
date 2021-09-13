@@ -13,11 +13,21 @@ import * as R from 'ramda';
 
 import {
   API_HASH,
-  API_ID, BAD_MSG_NOTIFICATION, BAD_SERVER_SALT_CONSTRUCTOR, CONSTRUCTOR_KEY,
-  MESSAGE_CONTAINER_CONSTRUCTOR, METHOD_KEY, MSGS_ACK_CONSTRUCTOR, MSGS_ACK_TYPE,
-  NEW_SESSION_CREATED_CONSTRUCTOR,
+  API_ID,
+  BAD_MSG_NOTIFICATION,
+  BAD_SERVER_SALT_CONSTRUCTOR,
+  CONSTRUCTOR_KEY,
+  MESSAGE_CONTAINER_CONSTRUCTOR,
+  MESSAGE_CONTAINER_TYPE,
+  METHOD_KEY,
+  MSGS_ACK_CONSTRUCTOR,
+  MSGS_ACK_TYPE,
+  NEW_SESSION_CREATED_CONSTRUCTOR, NEW_SESSION_CREATED_TYPE,
   PING_METHOD,
-  PONG_CONSTRUCTOR, PONG_TYPE, RPC_ERROR_TYPE, RPC_RESULT_TYPE,
+  PONG_CONSTRUCTOR,
+  PONG_TYPE,
+  RPC_ERROR_TYPE,
+  RPC_RESULT_TYPE,
   TYPE_KEY
 } from './constants';
 import MTProto, {
@@ -274,7 +284,8 @@ describe('MTProto', () => {
         msgId: BigInt(123123),
         seqNo: 13,
         body: {
-          [TYPE_KEY]: PONG_CONSTRUCTOR,
+          [TYPE_KEY]: PONG_TYPE,
+          [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
           msgId: BigInt(123),
           pingId: BigInt(222),
         },
@@ -290,7 +301,8 @@ describe('MTProto', () => {
         msgId: BigInt(123123),
         seqNo: 13,
         body: {
-          [TYPE_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
+          [TYPE_KEY]: NEW_SESSION_CREATED_TYPE,
+          [CONSTRUCTOR_KEY]: NEW_SESSION_CREATED_CONSTRUCTOR,
           serverSalt: BigInt('14078893447025144951'),
           uniqueId: BigInt('10125449296245655081'),
           firstMsgId: BigInt('6798186738482151424'),
@@ -392,13 +404,15 @@ describe('MTProto', () => {
         seqNo: 4,
         msgId: BigInt(232),
         body: {
-          [TYPE_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
+          [TYPE_KEY]: MESSAGE_CONTAINER_TYPE,
+          [CONSTRUCTOR_KEY]: MESSAGE_CONTAINER_CONSTRUCTOR,
           messages: [
             {
               msgId: BigInt(123123),
               seqNo: 13,
               body: {
-                [TYPE_KEY]: PONG_CONSTRUCTOR,
+                [TYPE_KEY]: PONG_TYPE,
+                [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
                 msgId: BigInt(123),
                 pingId: BigInt(222),
               },
@@ -423,7 +437,8 @@ describe('MTProto', () => {
       connection.handleResponse(message);
 
       expect(resolvePing).toHaveBeenCalledWith({
-        [TYPE_KEY]: PONG_CONSTRUCTOR,
+        [TYPE_KEY]: PONG_TYPE,
+        [CONSTRUCTOR_KEY]: PONG_CONSTRUCTOR,
         msgId: BigInt(123),
         pingId: BigInt(222),
       });
